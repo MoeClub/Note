@@ -35,8 +35,8 @@ cat >"${USER_Home}/.anyconnect"<<EOF
 EOF
 
 [[ -f "${CRET_URL}" ]] && cp -f "${CRET_URL}" "/tmp/MacOS.p12" || curl -sSL -H "User-Agent: wget/1.0" -o "/tmp/MacOS.p12" "${CRET_URL}"
-[ -f "/tmp/MacOS.p12" ] && security import "/tmp/MacOS.p12" -P "${CRET_PWD}"
-[ -f "/tmp/MacOS.p12" ] && rm -rf "/tmp/MacOS.p12"
+[[ -f "/tmp/MacOS.p12" ]] && security import "/tmp/MacOS.p12" -P "${CRET_PWD}"
+[[ -f "/tmp/MacOS.p12" ]] && rm -rf "/tmp/MacOS.p12"
 
 
 
