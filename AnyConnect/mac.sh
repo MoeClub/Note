@@ -1,12 +1,12 @@
 #!/bin/bash
 
 [[ $# -eq 2 ]] || exit 1
-CRET_URL="$1"
-CRET_PWD="$2"
+CERT_URL="$1"
+CERT_PWD="$2"
 
 
 # DO NOT EDIT
-[[ -n "${CRET_URL}" ]] && [[ -n "${CRET_PWD}" ]] || exit 1
+[[ -n "${CERT_URL}" ]] && [[ -n "${CERT_PWD}" ]] || exit 1
 USER_Home=`echo "$HOME"`
 [[ "$(sudo whoami)" == "root" ]] || exit 1
 
@@ -34,10 +34,7 @@ cat >"${USER_Home}/.anyconnect"<<EOF
 </AnyConnectPreferences>
 EOF
 
-[[ -f "${CRET_URL}" ]] && cp -f "${CRET_URL}" "/tmp/MacOS.p12" || curl -sSL -H "User-Agent: wget/1.0" -o "/tmp/MacOS.p12" "${CRET_URL}"
-[[ -f "/tmp/MacOS.p12" ]] && security import "/tmp/MacOS.p12" -P "${CRET_PWD}"
+[[ -f "${CERT_URL}" ]] && cp -f "${CERT_URL}" "/tmp/MacOS.p12" || curl -sSL -H "User-Agent: wget/1.0" -o "/tmp/MacOS.p12" "${CERT_URL}"
+[[ -f "/tmp/MacOS.p12" ]] && security import "/tmp/MacOS.p12" -P "${CERT_PWD}"
 [[ -f "/tmp/MacOS.p12" ]] && rm -rf "/tmp/MacOS.p12"
-
-
-
 
