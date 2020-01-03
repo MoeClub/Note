@@ -6,6 +6,6 @@ bash <(curl -sSL -H "User-Agent: wget/1.0" "https://raw.githubusercontent.com/Mo
 # iOS
 ```
 anyconnect://create?usecert=true&certcommonname=<CERT_NAME>&name=<NAME>&host=<SERVER>
-anyconnect://import?type=profile&uri=<CERT_URL>
+anyconnect://import?type=profile&uri=<PROFILE_URL>
 anyconnect://import?type=pkcs12&uri=<CERT_URL>
 ```
