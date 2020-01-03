@@ -1,6 +1,6 @@
 # MacOS
 ```
-bash <(curl -sSL -H "User-Agent: wget/1.0" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/mac.sh") <CERT_URL> <CERT_PWD>
+bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/mac.sh") <CERT_URL> <CERT_PWD>
 ```
 
 # iOS
