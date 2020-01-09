@@ -22,6 +22,8 @@ user_pref("app.update.lastUpdateTime.telemetry_modules_ping", 0);
 user_pref("app.update.lastUpdateTime.xpi-signature-verification", 0);
 user_pref("app.update.service.enabled", false);
 user_pref("app.update.staging.enabled", false);
+user_pref("browser.search.openintab", true);
+user_pref("browser.tabs.loadBookmarksInTabs", true);
 user_pref("browser.bookmarks.restore_default_bookmarks", false);
 user_pref("browser.bookmarks.showMobileBookmarks", false);
 user_pref("browser.cache.disk.smart_size.first_run", false);
