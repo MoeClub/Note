@@ -25,3 +25,13 @@ sudo rm -rf /System/Applications/Stocks.app
 # Enable SIP
 csrutil enable
 ```
+
+# Modify user name and folder
+- Create a user as Administrator, like "temp".
+- Login "temp".
+- Change user name and folder.
+- Disable SIP.
+- Use `sudo mv <OldFolder> <NewFolder>` to rename folder.
+- Enable SIP.
+- Login.
+- Delete user "temp".
