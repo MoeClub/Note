@@ -21,6 +21,7 @@ sudo rm -rf /System/Applications/Books.app
 sudo rm -rf /System/Applications/Chess.app
 sudo rm -rf /System/Applications/Podcasts.app
 sudo rm -rf /System/Applications/Stocks.app
+sudo rm -rf /System/Applications/Music.app
 
 # Enable SIP
 csrutil enable
