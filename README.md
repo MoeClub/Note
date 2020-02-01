@@ -26,6 +26,11 @@ sudo rm -rf /System/Applications/Stocks.app
 csrutil enable
 ```
 
+### Disable sofeware update
+```
+defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
+```
+
 # Modify user name and folder
 - Create a user as Administrator, like "temp".
 - Login "temp".
