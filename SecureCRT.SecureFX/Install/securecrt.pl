@@ -17,7 +17,7 @@ sub license {
 sub usage {
     print "\n".
 	"help:\n\n".
-	"\tperl securecrt_crack.pl <file>\n\n\n".
+	"\tperl securecrt.pl <file>\n\n\n".
     "\n";
 	
 	&license;
