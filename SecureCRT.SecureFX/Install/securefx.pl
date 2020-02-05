@@ -17,7 +17,7 @@ sub license {
 sub usage {
     print "\n".
 	"help:\n\n".
-	"\tperl securefx_crack.pl <file>\n\n\n".
+	"\tperl securefx.pl <file>\n\n\n".
     "\n";
 	
 	&license;
