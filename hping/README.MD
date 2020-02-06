@@ -1,6 +1,10 @@
 # Install
 ```
-mkdir -p "/usr/local/Cellar"
-tar -xvf <(curl -sSL "https://homebrew.bintray.com/bottles/hping-3.20051105.catalina.bottle.tar.gz") -C "/usr/local/Cellar"
+bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/hping/hping.sh")
+```
 
+# Uninstall
+```
+sudo rm -rf "/usr/local/bin/hping"
+sudo rm -rf "/usr/local/Cellar/hping"
 ```
