@@ -1,5 +1,5 @@
-# Download
+# Download Dicionary
 [http://download.huzheng.org/zh_CN/](http://download.huzheng.org/zh_CN/)
 
-# Tools 
+# Download Tools 
 [jjgod/mac-dictionary-kit](https://github.com/jjgod/mac-dictionary-kit)
