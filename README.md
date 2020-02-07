@@ -3,7 +3,17 @@
 ## MacOS
 ### Uncheck "Reopen windows when logging back in" by defaults
 ```
-defaults write com.apple.loginwindow TALLogoutSavesState -bool false
+defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
+```
+
+### Disable system update
+```
+defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
+```
+
+### Disable App Store Update Notification
+```
+sudo defaults write /Library/Preferences/com.apple.AppStore.plist DisableSoftwareUpdateNotifications -bool TRUE
 ```
 
 ### Delete system file
@@ -25,11 +35,6 @@ sudo rm -rf /System/Applications/Music.app
 
 # Enable SIP
 csrutil enable
-```
-
-### Disable sofeware update
-```
-defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
 ```
 
 # Modify user name and folder
