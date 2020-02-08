@@ -5,7 +5,7 @@
 
 # package
 ```
-zip - ./file.dictionary |split -b 20m -a 3 - file.dictionary.zip.
+zip -r - ./file.dictionary |split -b 20m -a 3 - file.dictionary.zip.
 ```
 
 # unpackage
