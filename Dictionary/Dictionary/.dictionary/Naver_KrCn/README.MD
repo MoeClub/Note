@@ -1,0 +1,1 @@
+# Naver_KrCn.dictionary
