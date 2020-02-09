@@ -1,16 +1,28 @@
 #!/bin/bash
 
-# Usage: bash wget.sh <URL|FileName> <ThreadNum> <LoopNum>
+# Usage: bash wget.sh <URL/FileName> <ThreadNum> <LoopNum> <HOST|Address>
+
 
 FileName=${1:-wget.txt}
 ThreadNum=${2:-10}
 LoopNum=${3:-20}
+ServerHost="$4"
+
+
 UserAgent="Mozilla/5.0"
 
+FileMode=0
+HostMode=0
+
 if [ -f "${FileName}" ]; then
-	Mode=0
-else
-	Mode=1
+	FileMode=1
+fi
+
+echo "${ServerHost}" |grep -q "|"
+if [ $? -eq 0 ]; then
+	ServerName=`echo "${ServerHost}" |cut -d'|' -f1 |sed 's/[[:space:]]//g'`
+	ServerAddr=`echo "${ServerHost}" |cut -d'|' -f2 |sed 's/[[:space:]]//g'`
+	[ -n "$ServerName" ] && [ -n "$ServerAddr" ] && HostMode=1	
 fi
 
 PIPE=$(mktemp -u)
@@ -23,12 +35,19 @@ for((i=0; i<$ThreadNum; i=i+1)); do
 done
 
 function Task() {
-	[ -n "$1" ] && wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" "$1" >/dev/null 2>&1
+	if [ -n "$1" ]; then
+		if [ $HostMode -eq 0 ]; then
+	 		wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" "$1" >/dev/null 2>&1
+		else
+			_URL=`echo "$1" |sed "s/$ServerName/$ServerAddr/"`
+			wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" --header="Host: $ServerName" "$_URL" >/dev/null 2>&1
+		fi
+	fi
 	echo >&777
 }
 
 for((i=0; i<$LoopNum; i=i+1)); do
-	if [ $Mode -eq 0 ]; then
+	if [ $FileMode -eq 1 ]; then
   	for line in `cat ${FileName}`; do
 			read -u777
 			_LINE=`echo -ne "$line" |sed 's/\r//g' |sed 's/\n//g'`
