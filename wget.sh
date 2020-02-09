@@ -37,10 +37,10 @@ done
 function Task() {
 	if [ -n "$1" ]; then
 		if [ $HostMode -eq 0 ]; then
-	 		wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" "$1" >/dev/null 2>&1
+	 		wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" -O /dev/null "$1" >/dev/null 2>&1
 		else
 			_URL=`echo "$1" |sed "s/$ServerName/$ServerAddr/"`
-			wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" --header="Host: $ServerName" "$_URL" >/dev/null 2>&1
+			wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" --header="Host: $ServerName" -O /dev/null "$_URL" >/dev/null 2>&1
 		fi
 	fi
 	echo >&777
