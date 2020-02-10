@@ -5,7 +5,7 @@ bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/Navicat/
 ```
 - Install.
 - Disconnect Network.
-- Generate a self-signed code-sign certificate and always trust it.
+- [Generate a self-signed code-sign certificate](https://support.apple.com/zh-cn/guide/keychain-access/kyca8916/mac) and always trust it.
 - Run Command.
 ```
 ./navicat-patcher "/Applications/Navicat Premium.app"
