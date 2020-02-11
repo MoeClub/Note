@@ -11,5 +11,6 @@ curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/SecureCRT.Secur
 
 ## SecureCRT.lic
 ```
+find "$HOME/Library/Application Support/VanDyke/SecureCRT/Config/" -name "*.lic" -delete
 curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/SecureCRT.SecureFX/Config/SecureCRT/SecureCRT.lic" > "$HOME/Library/Application Support/VanDyke/SecureCRT/Config/SecureCRT.lic"
 ```
