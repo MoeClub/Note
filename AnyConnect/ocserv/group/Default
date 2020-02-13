@@ -1,0 +1,10 @@
+## Config for group
+# cert-group-oid = 2.5.4.11
+# config-per-group = /etc/ocserv/group/
+# default-group-config = /etc/ocserv/group/Default
+# default-select-group = Default
+# auto-select-group = false
+
+## All Route List
+route = 0.0.0.0/128.0.0.0
+route = 128.0.0.0/128.0.0.0
