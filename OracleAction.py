@@ -4,6 +4,7 @@
 
 # pip3 install rsa
 # python3 OracleAction.py -c "config/defaults.json" -i "ocid1.instance." -a "action" -n "name"
+
 # defaults.json
 # {
 #   "compartmentId": "ocid1.tenancy...",
