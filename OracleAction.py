@@ -174,13 +174,14 @@ class action:
         print("PublicIP:", NewPublic["ipAddress"])
         return NewPublic
 
-    def showPublicIP(self):
+    def showPublicIP(self, showLog=True):
         self.getPrivateIP()
         PUBLIC = self.getPublicIP()
         publicIp = "NULL"
         if PUBLIC:
             publicIp = PUBLIC["ipAddress"]
-        print("PublicIP: %s" % publicIp)
+        if showLog:
+            print("PublicIP: %s" % publicIp)
         return PUBLIC
 
     def changePubilcIP(self):
@@ -209,6 +210,21 @@ class action:
         response_json = json.loads(response.read().decode())
         response_json["status_code"] = str(response.code)
         print(json.dumps(response_json, indent=4))
+
+    def getInstances(self):
+        url = self.apiDict["URL"] + "instances?compartmentId=" + self.apiDict["compartmentId"]
+        response = oracle.api("GET", url, keyID=self.apiKey, privateKey=self.privateKey)
+        response_json = json.loads(response.read().decode())
+        InstancesItem = []
+        for item in response_json:
+            itemItem = {}
+            itemItem["displayName"] = item["displayName"]
+            itemItem["shape"] = item["shape"]
+            itemItem["lifecycleState"] = item["lifecycleState"]
+            itemItem["id"] = item["id"]
+            itemItem["timeCreated"] = item["timeCreated"]
+            InstancesItem.append(itemItem)
+        return InstancesItem
 
     def createInstancesPre(self, Name=None):
         self.instancesDict = {
@@ -298,20 +314,20 @@ if __name__ == "__main__":
     parser.add_argument('-i', type=str, default="", help="Instances Id or Instances Config Path")
     parser.add_argument('-n', type=str, default="", help="New Instances Name")
     parser.add_argument('-p', type=str, default="", help="IP Address Prefix")
-    parser.add_argument('-a', type=str, default="", help="Action [show, change, rename, create, target]")
+    parser.add_argument('-a', type=str, default="", help="Action [show, change, rename, create, target, list, listaddr]")
     args = parser.parse_args()
     configPath = str(args.c).strip()
     configAction = str(args.a).strip().lower()
     configInstancesId = str(args.i).strip()
     configInstancesName = str(args.n).strip()
     configAddress = str(args.p).strip()
-    configActionList = ["show", "change", "rename", "create", "target"]
+    configActionList = ["show", "change", "rename", "create", "target", "list", "listaddr"]
 
     if not configPath:
         Exit(1, "Require Config Path.")
     if not configAction or configAction not in configActionList:
         Exit(1, "Invalid Action.")
-    if not configInstancesId:
+    if not configAction.startswith("list") and not configInstancesId:
         Exit(1, "Require Instances Id or Instances Config Path.")
 
     if configAction == "loop" and not configAddress:
@@ -344,5 +360,28 @@ if __name__ == "__main__":
             else:
                 del NewPublic
                 time.sleep(3)
+    elif configAction == "list":
+        Action = action(apiDict=oracle.load_Config(configPath))
+        Item = Action.getInstances()
+        print(json.dumps(Item, indent=4))
+    elif configAction == "listaddr":
+        Action = action(apiDict=oracle.load_Config(configPath))
+        Item = Action.getInstances()
+        ItemWithAddress = []
+        try:
+            for item in Item.copy():
+                Action.instancesId = item["id"]
+                Action.PRIVATE = None
+                Action.VNIC = None
+                Action.getPrivateIP()
+                PUBLIC = Action.getPublicIP()
+                item["ipAddress"] = "NULL"
+                if PUBLIC:
+                    item["ipAddress"] = PUBLIC["ipAddress"]
+                ItemWithAddress.append(item)
+        except:
+            print(json.dumps(Item, indent=4))
+            Exit(0)
+        print(json.dumps(ItemWithAddress, indent=4))
 
     Exit(0)
