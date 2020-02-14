@@ -4,6 +4,7 @@
 
 # pip3 install rsa
 # python3 OracleAction.py -c "config/defaults.json" -i "ocid1.instance...|create/defaults.json" -a "<action>" -n "name"
+# https://docs.cloud.oracle.com/en-us/iaas/tools/public_ip_ranges.json
 
 # config/defaults.json
 # {
@@ -213,7 +214,7 @@ class action:
         self.instancesDict = {
             'displayName': str(str(self.configDict["availabilityDomain"]).split(":", 1)[-1].split("-")[1]),
             'shape': self.configDict["shape"],
-            'compartmentId': self.configDict["compartmentId"],
+            'compartmentId': self.apiDict["compartmentId"],
             'availabilityDomain': self.configDict["availabilityDomain"],
             'sourceDetails': {
                 'sourceType': 'image',
@@ -296,13 +297,15 @@ if __name__ == "__main__":
     parser.add_argument('-c', type=str, default="", help="Config Path")
     parser.add_argument('-i', type=str, default="", help="Instances Id or Instances Config Path")
     parser.add_argument('-n', type=str, default="", help="New Instances Name")
-    parser.add_argument('-a', type=str, default="", help="Action [show, change, rename, create]")
+    parser.add_argument('-p', type=str, default="", help="IP Address Prefix")
+    parser.add_argument('-a', type=str, default="", help="Action [show, change, rename, create, target]")
     args = parser.parse_args()
     configPath = str(args.c).strip()
     configAction = str(args.a).strip().lower()
     configInstancesId = str(args.i).strip()
     configInstancesName = str(args.n).strip()
-    configActionList = ["show", "change", "rename", "create"]
+    configAddress = str(args.p).strip()
+    configActionList = ["show", "change", "rename", "create", "target"]
 
     if not configPath:
         Exit(1, "Require Config Path.")
@@ -310,6 +313,9 @@ if __name__ == "__main__":
         Exit(1, "Invalid Action.")
     if not configInstancesId:
         Exit(1, "Require Instances Id or Instances Config Path.")
+
+    if configAction == "loop" and not configAddress:
+        configAction = "change"
 
     if configAction == "show":
         Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
@@ -329,5 +335,14 @@ if __name__ == "__main__":
             configInstancesName = str(configInstancesName).strip()
         Action = action(apiDict=oracle.load_Config(configPath), configDict=oracle.load_Config(configInstancesId))
         Action.createInstances(configInstancesName)
+    elif configAction == "target":
+        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        while True:
+            NewPublic = Action.changePubilcIP()
+            if str(NewPublic["ipAddress"]).startswith(configAddress):
+                break
+            else:
+                del NewPublic
+                time.sleep(3)
 
     Exit(0)
