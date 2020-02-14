@@ -3,15 +3,24 @@
 # Author:  MoeClub.org
 
 # pip3 install rsa
-# python3 OracleAction.py -c "config/defaults.json" -i "ocid1.instance." -a "action" -n "name"
+# python3 OracleAction.py -c "config/defaults.json" -i "ocid1.instance...|create/defaults.json" -a "<action>" -n "name"
 
-# defaults.json
+# config/defaults.json
 # {
 #   "compartmentId": "ocid1.tenancy...",
 #   "userId": "ocid1.user...",
-#   "URL": "https://iaas.xxxxx.oraclecloud.com/20160918/",
+#   "URL": "https://iaas.xxx.oraclecloud.com/20160918/",
 #   "certFinger": "ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff",
 #   "certKey": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
+# }
+
+# create/defaults.json
+# {
+#   "shape": "VM.Standard.E2.1.Micro",
+#   "availabilityDomain": "xx:XX",
+#   "subnetId": "ocid1.subnet...",
+#   "imageId": "BASE64...",
+#   "ssh_authorized_keys": "ssh-rsa ...",
 # }
 
 
@@ -19,6 +28,7 @@ import hashlib
 import datetime
 import base64
 import json
+import time
 import rsa
 from urllib import request, error, parse
 
@@ -98,11 +108,13 @@ class oracle:
 
 
 class action:
-    def __init__(self, apiDict, instancesId=None):
+    def __init__(self, apiDict, instancesId=None, configDict=None):
         self.apiDict = apiDict
-        self.privateKey = apiDict["certKey"]
+        self.privateKey = self.apiDict["certKey"]
+        self.apiKey = "/".join([self.apiDict["compartmentId"], self.apiDict["userId"], self.apiDict["certFinger"]])
+        self.configDict = configDict
         self.instancesId = instancesId
-        self.apiKey = "/".join([apiDict["compartmentId"], apiDict["userId"], apiDict["certFinger"]])
+        self.instancesDict = None
         self.VNIC = None
         self.PRIVATE = None
 
@@ -197,6 +209,81 @@ class action:
         response_json["status_code"] = str(response.code)
         print(json.dumps(response_json, indent=4))
 
+    def createInstancesPre(self, Name=None):
+        self.instancesDict = {
+            'displayName': str(str(self.configDict["availabilityDomain"]).split(":", 1)[-1].split("-")[1]),
+            'shape': self.configDict["shape"],
+            'compartmentId': self.configDict["compartmentId"],
+            'availabilityDomain': self.configDict["availabilityDomain"],
+            'sourceDetails': {
+                'sourceType': 'image',
+                'imageId': self.configDict['imageId'],
+            },
+            'createVnicDetails': {
+                'subnetId': self.configDict['subnetId'],
+                'assignPublicIp': True
+            },
+            'metadata': {
+                'user_data': self.configDict['user_data'],
+                'ssh_authorized_keys': self.configDict['ssh_authorized_keys'],
+            },
+            'agentConfig': {
+                'isMonitoringDisabled': False,
+                'isManagementDisabled': False
+            },
+        }
+        if Name and str(Name).strip():
+            self.instancesDict['displayName'] = str(Name).strip()
+
+    def createInstances(self, Name=None, Full=True, WaitResource=True):
+        url = self.apiDict["URL"] + "instances"
+        if not self.instancesDict or Name is not None:
+            self.createInstancesPre(Name=Name)
+        body = json.dumps(self.instancesDict, ensure_ascii=False)
+        while True:
+            FLAG = False
+            try:
+                try:
+                    response = oracle.api("POST", url, keyID=self.apiKey, privateKey=self.privateKey, data=body)
+                    response_json = json.loads(response.read().decode())
+                    response_json["status_code"] = str(response.code)
+                except Exception as e:
+                    print(e)
+                    response_json = {"code": "InternalError", "message": "Timeout.", "status_code": "555"}
+                if str(response_json["status_code"]).startswith("4"):
+                    FLAG = True
+                    if str(response_json["status_code"]) == "401":
+                        response_json["message"] = "Not Authenticated."
+                    elif str(response_json["status_code"]) == "400":
+                        if str(response_json["code"]) == "LimitExceeded":
+                            response_json["message"] = "Limit Exceeded."
+                        if str(response_json["code"]) == "QuotaExceeded":
+                            response_json["message"] = "Quota Exceeded."
+                    elif str(response_json["status_code"]) == "429":
+                        FLAG = False
+                    elif str(response_json["status_code"]) == "404":
+                        if WaitResource and str(response_json["code"]) == "NotAuthorizedOrNotFound":
+                            FLAG = False
+                if int(response_json["status_code"]) < 300:
+                    vm_ocid = str(str(response_json["id"]).split(".")[-1])
+                    print(str("{} [{}] {}").format(time.strftime("[%Y/%m/%d %H:%M:%S]", time.localtime()), response_json["status_code"], str(vm_ocid[:5] + "..." + vm_ocid[-7:])))
+                else:
+                    print(str("{} [{}] {}").format(time.strftime("[%Y/%m/%d %H:%M:%S]", time.localtime()), response_json["status_code"], response_json["message"]))
+                if Full is False and str(response_json["status_code"]) == "200":
+                    FLAG = True
+                if not FLAG:
+                    if str(response_json["status_code"]) == "429":
+                        time.sleep(60)
+                    elif str(response_json["status_code"]) == "404":
+                        time.sleep(30)
+                    else:
+                        time.sleep(5)
+            except Exception as e:
+                FLAG = True
+                print(e)
+            if FLAG:
+                break
+
 
 if __name__ == "__main__":
     def Exit(code=0, msg=None):
@@ -206,34 +293,41 @@ if __name__ == "__main__":
 
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', type=str, default="", help="Config path")
-    parser.add_argument('-i', type=str, default="", help="Instances Id")
+    parser.add_argument('-c', type=str, default="", help="Config Path")
+    parser.add_argument('-i', type=str, default="", help="Instances Id or Instances Config Path")
     parser.add_argument('-n', type=str, default="", help="New Instances Name")
-    parser.add_argument('-a', type=str, default="", help="Action [show, change, rename]")
+    parser.add_argument('-a', type=str, default="", help="Action [show, change, rename, create]")
     args = parser.parse_args()
     configPath = str(args.c).strip()
     configAction = str(args.a).strip().lower()
     configInstancesId = str(args.i).strip()
     configInstancesName = str(args.n).strip()
-    configActionList = ["show", "change", "rename"]
+    configActionList = ["show", "change", "rename", "create"]
 
     if not configPath:
         Exit(1, "Require Config Path.")
     if not configAction or configAction not in configActionList:
-        Exit(1, "Invalid action.")
+        Exit(1, "Invalid Action.")
     if not configInstancesId:
-        Exit(1, "Require Instances Id.")
+        Exit(1, "Require Instances Id or Instances Config Path.")
 
     if configAction == "show":
-        Action = action(oracle.load_Config(configPath), configInstancesId)
+        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.showPublicIP()
     elif configAction == "change":
-        Action = action(oracle.load_Config(configPath), configInstancesId)
+        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.changePubilcIP()
     elif configAction == "rename":
         if not configInstancesName:
             Exit(1, "Require Instances Name.")
-        Action = action(oracle.load_Config(configPath), configInstancesId)
+        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.rename(configInstancesName)
+    elif configAction == "create":
+        if not configInstancesName:
+            configInstancesName = None
+        else:
+            configInstancesName = str(configInstancesName).strip()
+        Action = action(apiDict=oracle.load_Config(configPath), configDict=oracle.load_Config(configInstancesId))
+        Action.createInstances(configInstancesName)
 
     Exit(0)
