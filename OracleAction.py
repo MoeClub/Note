@@ -2,8 +2,18 @@
 # -*- encoding: utf-8 -*-
 # Author:  MoeClub.org
 
-# python3 OracleAction.py -c "config/defaults.json" -i "ocid1.instance." -a "action" -n "name"
 # pip3 install rsa
+# python3 OracleAction.py -c "config/defaults.json" -i "ocid1.instance." -a "action" -n "name"
+# defaults.json
+# {
+#   "compartmentId": "ocid1.tenancy...",
+#   "userId": "ocid1.user...",
+#   "URL": "https://iaas.xxxxx.oraclecloud.com/20160918/",
+#   "certFinger": "ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff",
+#   "certKey": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
+# }
+
+
 
 import hashlib
 import datetime
