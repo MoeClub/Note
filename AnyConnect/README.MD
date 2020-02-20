@@ -26,7 +26,7 @@ iptables -t nat -A POSTROUTING -d <远程地址> -p tcp --dport <远程端口> -
 # iptables -t nat -I POSTROUTING -o <网卡名称> -j MASQUERADE
 ```
 
-# ocserv.sh
+# ocserv.sh (推荐Debian9)
 ```
 bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
 ```
