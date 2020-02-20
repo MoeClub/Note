@@ -1,4 +1,5 @@
 #!/bin/bash
+# Script by MoeClub.org
 
 [ $EUID -ne 0 ] && echo "Error:This script must be run as root!" && exit 1
 
