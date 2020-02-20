@@ -35,6 +35,6 @@ bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConne
 sed -i "s/^#\?Port .*/Port 9527/g" /etc/ssh/sshd_config;
 # 修改 ocserv 端口(TCP 改为 23443)
 sed -i "s/^#\?tcp-port .*/tcp-port 23443/g" /etc/ocserv/ocserv.conf;
-# 生产用户证书(根据CA证书验证,如果部署多个.请保证CA证书相同)
+# 生成用户证书(根据CA证书验证,如果部署多个.请保证CA证书相同)
 bash /etc/ocserv/template/client.sh <证书密码,苹果设备不能为空>
 ```
