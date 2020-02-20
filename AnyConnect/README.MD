@@ -26,7 +26,7 @@ iptables -t nat -A POSTROUTING -d <远程地址> -p tcp --dport <远程端口> -
 # iptables -t nat -I POSTROUTING -o <网卡名称> -j MASQUERADE
 ```
 
-# ocserv.sh (推荐Debian9)
+# ocserv.sh (Debian 9)
 ```
 bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
 ```
@@ -38,6 +38,7 @@ bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConne
 用户密码格式: `<用户名>:<用户组>:<用户密码密文>`       
 用户密码密文: `openssl passwd Moeclub` (`Moeclub`为密码)       
 ```
+## 非必要步骤
 # 修改 SSH 端口 (改为 9527)
 sed -i "s/^#\?Port .*/Port 9527/g" /etc/ssh/sshd_config;
 # 修改 ocserv 端口(TCP 改为 23443)
