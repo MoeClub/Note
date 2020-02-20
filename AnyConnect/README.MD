@@ -30,10 +30,13 @@ iptables -t nat -A POSTROUTING -d <远程地址> -p tcp --dport <远程端口> -
 ```
 bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
 ```
-## 安装后需要的一些工作([域名证书可点此查看申请步骤](https://github.com/MoeClub/AlphaSSL))
+## 安装后需要的一些工作(没有域名证书可[点此查看申请步骤](https://github.com/MoeClub/AlphaSSL))
 - 将域名证书上传至 `/etc/ocserv/server.cert.pem`
 - 将域名证书私钥上传至 `/etc/ocserv/server.key.pem`
 - 如果有多组服务器, 备份保存CA证书 `/etc/ocserv/template/ca-cert.pem` 和 `/etc/ocserv/template/ca-key.pem`.
+- 预设账户`MoeClub`预设密码为`MoeClub`.(可自行更改`/etc/ocserv/ocpasswd`)      
+用户密码格式: `<用户名>:<用户组>:<用户密码密文>`       
+用户密码密文: `openssl passwd Moeclub` (`Moeclub`为密码)       
 ```
 # 修改 SSH 端口 (改为 9527)
 sed -i "s/^#\?Port .*/Port 9527/g" /etc/ssh/sshd_config;
