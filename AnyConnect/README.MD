@@ -28,7 +28,7 @@ iptables -t nat -A POSTROUTING -d <远程地址> -p tcp --dport <远程端口> -
 
 # ocserv.sh (Debian 9)
 ```
-bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
+bash <(wget --no-check-certificate -qO- "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
 ```
 ## 安装后需要的一些工作([域名证书可点此查看申请步骤](https://github.com/MoeClub/AlphaSSL))
 - 将域名证书上传至 `/etc/ocserv/server.cert.pem`
