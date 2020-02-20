@@ -25,3 +25,14 @@ iptables -t nat -A POSTROUTING -d <远程地址> -p tcp --dport <远程端口> -
 # iptables -t nat -A PREROUTING -p tcp -i <网卡名称> --dport <本机端口> -j DNAT --to-destination <远程地址>:<远程端口> 
 # iptables -t nat -I POSTROUTING -o <网卡名称> -j MASQUERADE
 ```
+
+# ocserv.sh
+```
+bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
+```
+```
+# 修改 SSH 端口 (改为 9527)
+sed -i "s/^#\?Port .*/Port 9527/g" /etc/ssh/sshd_config;
+# 修改 ocserv 端口(TCP 改为 23443)
+sed -i "s/^#\?tcp-port .*/tcp-port 23443/g" /etc/ocserv/ocserv.conf;
+```
