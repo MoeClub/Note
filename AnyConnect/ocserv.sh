@@ -17,8 +17,7 @@ fi
 
 if [ "$deb_ver" == "9" ]; then
   bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/BBR/master/install.sh')
-  wget --no-check-certificate -qO /etc/sysctl.conf 'https://moeclub.org/attachment/MyFiles/sysctl.conf'
-  wget --no-check-certificate -qO '/tmp/tcp_bbr.ko' 'https://moeclub.org/attachment/MyFiles/tcp_bbr.ko'
+  wget --no-check-certificate -qO '/tmp/tcp_bbr.ko' 'https://moeclub.org/attachment/LinuxSoftware/bbr/tcp_bbr.ko'
   cp -rf /tmp/tcp_bbr.ko /lib/modules/4.14.153/kernel/net/ipv4
 fi
 
