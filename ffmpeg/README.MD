@@ -16,12 +16,12 @@ ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:no
 # 视频文件切片
 ```
 # 平均码率转换
-ffmpeg -threads 2 -i <File> -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -b:v 2000k -bufsize 2000k -maxrate 2250k output.mp4
+ffmpeg -i <File> -threads 2 -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -b:v 2000k -bufsize 2000k -maxrate 2250k output.mp4
 # 切片
-ffmpeg -threads 2 -i output.mp4 -vcodec copy -acodec copy -map 0 -f segment -segment_list output.m3u8 -segment_time 20 output_%03d.ts
+ffmpeg -i output.mp4 -threads 2 -thread_type slice -vcodec copy -acodec copy -map 0 -f segment -segment_list output.m3u8 -segment_time 20 output_%03d.ts
 ```
 
 # 视频文件直接切片
 ```
-ffmpeg -i <File> -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list output.m3u8 -segment_time 10 output_%03d.ts
+ffmpeg -i <File> -threads 2 -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list output.m3u8 -segment_time 10 output_%03d.ts
 ```
