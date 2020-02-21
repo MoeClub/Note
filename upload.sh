@@ -35,7 +35,7 @@ function Upload() {
     -F "file=@${Name}" \
     -X POST "https://kfupload.alibaba.com/mupload"`
   [ $DebugMode == 1 ] && echo "$OUTPUT";
-  URL=`echo "$OUTPUT" |grep -o 'https://[^"]*'`;
+  URL=`echo "$OUTPUT" |grep -io 'https://[^"]*'`;
   if [ -n "${URL}" ]; then
     if [ $ShowFileName == 1 ]; then
       echo "${Name}; ${URL}";
@@ -43,7 +43,7 @@ function Upload() {
       echo "${URL}";
     fi
   else
-    StatusCode=`echo "$OUTPUT" |grep -o '"code":"[0-9]*"' |grep -o '[0-9]\+'`
+    StatusCode=`echo "$OUTPUT" |grep -io '"code":"[0-9]*"' |grep -o '[0-9]\+'`
     echo "${Name}; NULL_${StatusCode}";
   fi
   echo >&777;
