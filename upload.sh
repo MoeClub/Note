@@ -14,7 +14,6 @@ FileName=${1:-}
 ThreadNum=${2:-10}
 [ -n "$FileName" ] && [ -e "$FileName" ] || exit 1
 
-
 PIPE=$(mktemp -u)
 mkfifo $PIPE
 exec 777<>$PIPE
@@ -53,6 +52,7 @@ if [ -d "${FileName}" ]; then
     Upload "${item}" &
   done
 elif [ -f "${FileName}" ]; then
+  # ShowFileName=0
   Upload "${FileName}" &
 else
   exit 1
