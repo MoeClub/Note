@@ -12,6 +12,8 @@ ShowFileName=1
 # Main
 FileName=${1:-}
 ThreadNum=${2:-10}
+command -v curl >>/dev/null 2>&1
+[ $? -eq 0 ] || exit 1
 [ -n "$FileName" ] && [ -e "$FileName" ] || exit 1
 
 PIPE=$(mktemp -u)
