@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Max file size: 5M
-# bash upload.sh <FileName|FolderName> <ThreadNum>
-#       by MoeClub.org
+# bash upload.sh <FileName|FolderName> <ThreadNum> |tee -a "log.txt"
+#           by MoeClub.org
 
 # Config
 DebugMode=0
