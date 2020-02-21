@@ -3,7 +3,7 @@
 # bash upload_yuque.sh <FileName|FolderName> <ThreadNum> |tee -a "log.txt"
 #           by MoeClub.org
 
-# User cookies
+# User Cookies
 ctoken=""
 session=""
 
