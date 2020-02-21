@@ -13,14 +13,6 @@ ffprobe -v error -show_entries format=size -of default=noprint_wrappers=1:nokey=
 ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 <File>
 ```
 
-# 视频文件切片
-```
-# 平均码率转换
-ffmpeg -i <File> -threads 2 -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -b:v 2000k -bufsize 2000k -maxrate 2250k output.mp4
-# 切片
-ffmpeg -i output.mp4 -threads 2 -thread_type slice -vcodec copy -acodec copy -map 0 -f segment -segment_list output.m3u8 -segment_time 20 output_%03d.ts
-```
-
 # 视频文件直接切片
 ```
 ffmpeg -i <File> -threads 2 -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list output.m3u8 -segment_time 10 output_%03d.ts
