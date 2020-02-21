@@ -32,7 +32,7 @@ function Upload() {
     -H "origin: https://photobank.alibaba.com" \
     -F "scene=aeMessageCenterV2ImageRule" \
     -F "name=_.jpg" \
-    -F "file=@${Name}" \
+    -F "file=@${Name};type=image/jpeg" \
     -X POST "https://kfupload.alibaba.com/mupload"`
   [ $DebugMode == 1 ] && echo "$OUTPUT";
   URL=`echo "$OUTPUT" |grep -io 'https://[^"]*'`;
