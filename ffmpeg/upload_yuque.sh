@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# bash upload.sh <FileName|FolderName> <ThreadNum> |tee -a "log.txt"
+# bash upload_yuque.sh <FileName|FolderName> <ThreadNum> |tee -a "log.txt"
 #           by MoeClub.org
 
 # User cookies
@@ -45,7 +45,7 @@ function Upload() {
       echo "${URL}";
     fi
   else
-    StatusCode=`echo "$OUTPUT" |cut -d'"' -f4 |sed 's/\ /-/g'`
+    StatusCode=`echo "$OUTPUT" |cut -d'"' -f4 |sed 's/[[:space:]]/-/g'`
     echo "${Name}; NULL_${StatusCode}";
   fi
   echo >&777;
