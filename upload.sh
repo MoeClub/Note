@@ -43,7 +43,8 @@ function Upload() {
       echo "${URL}";
     fi
   else
-    echo "${Name}; NULL";
+    StatusCode=`echo "$OUTPUT" |grep -o '"code":"[0-9]*"' |grep -o '[0-9]\+'`
+    echo "${Name}; NULL_${StatusCode}";
   fi
   echo >&777;
 }
