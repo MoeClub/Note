@@ -21,7 +21,7 @@ while read line; do
   SrcName=`echo "$line" |cut -d';' -f1 |sed 's/^[[:space:]]*//' |sed 's/[[:space:]]*$//'`
   URL=`echo "$line" |cut -d';' -f2 |sed 's/^[[:space:]]*//' |sed 's/[[:space:]]*$//'`
   echo "$URL" |grep -q '^NULL'
-  [ $? -eq 0 ] && countinue
+  [ $? -eq 0 ] && continue
   Name=`basename "$SrcName"`
   echo "$Name --> $URL"
   sed -i "s|$Name|$URL|" "${M3u8File}"
