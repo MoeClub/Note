@@ -80,7 +80,10 @@ player.ready(function () {
     enableModifiersForNumbers: false
   });
 });
-</script>
 
+player.on('play', function (e) {
+  document.querySelector('h1').style.display = 'none';
+});
+</script>
 </body>
 </html>
