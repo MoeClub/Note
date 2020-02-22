@@ -4,6 +4,8 @@ Media="$1"
 Uploader="upload_yuque.sh"
 M3u8mod="m3u8.sh"
 Thread=2
+MaxSize=20
+BitRadio="1.25"
 
 # Main
 if [ -n "${Media}" ] && [ -f "${Media}" ]; then
@@ -26,7 +28,10 @@ rm -rf "${MediaFolder}"
 mkdir -p "${MediaFolder}"
 
 ## m3u8
-ffmpeg -i "${Media}" -threads ${Thread} -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list ${OutPutM3u8} -segment_time 20 "${MediaFolder}/output_%04d.ts"
+BitRate=`ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 "${Media}"`
+VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024)/( '${bitrate}' * '${BitRadio}' / 8) }' |cut -d'.' -f1`
+[ -n "$VideoTime" ] || exit 1
+ffmpeg -i "${Media}" -threads ${Thread} -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list ${OutPutM3u8} -segment_time ${VideoTime} "${MediaFolder}/output_%04d.ts"
 
 ## upload
 if [ -f "${ScriptDir}/${Uploader}" ]; then
