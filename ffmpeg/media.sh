@@ -15,23 +15,22 @@ fi
 
 MediaName=`basename "${Media}" |cut -d'.' -f1`
 ScriptDir=`dirname $0`
-OutPutM3u8="${MediaName}.m3u8"
-OutPutLog="${MediaName}.log"
-MediaFloder="${MediaName}.output"
+CurrentDir=`pwd`
+OutPutM3u8="${CurrentDir}/${MediaName}.m3u8"
+OutPutLog="${CurrentDir}/${MediaName}.log"
+MediaFolder="${CurrentDir}/${MediaName}.output"
 
 # cache
 rm -rf "${OutPutLog}"
-rm -rf "${MediaFloder}"
-mkdir -p "${MediaFloder}"
+rm -rf "${MediaFolder}"
+mkdir -p "${MediaFolder}"
 
 ## m3u8
-cd "${MediaFloder}"
-ffmpeg -i ../${Media} -threads ${Thread} -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list ../${OutPutM3u8} -segment_time 20 output_%04d.ts
+ffmpeg -i "${Media}" -threads ${Thread} -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list ${OutPutM3u8} -segment_time 20 "${MediaFolder}/output_%04d.ts"
 
 ## upload
-cd ..
 if [ -f "${ScriptDir}/${Uploader}" ]; then
-  bash "${ScriptDir}/${Uploader}" "${MediaFloder}" |tee -a "${OutPutLog}"
+  bash "${ScriptDir}/${Uploader}" "${MediaFolder}" |tee -a "${OutPutLog}"
   ## mod m3u8
   if [ -f "${ScriptDir}/${M3u8mod}" ]; then
     bash "${ScriptDir}/${M3u8mod}" "${OutPutLog}" "${OutPutM3u8}"
