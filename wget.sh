@@ -20,46 +20,45 @@ fi
 
 echo "${ServerHost}" |grep -q "|"
 if [ $? -eq 0 ]; then
-	ServerName=`echo "${ServerHost}" |cut -d'|' -f1 |sed 's/[[:space:]]//g'`
-	ServerAddr=`echo "${ServerHost}" |cut -d'|' -f2 |sed 's/[[:space:]]//g'`
-	[ -n "$ServerName" ] && [ -n "$ServerAddr" ] && HostMode=1	
+  ServerName=`echo "${ServerHost}" |cut -d'|' -f1 |sed 's/[[:space:]]//g'`
+  ServerAddr=`echo "${ServerHost}" |cut -d'|' -f2 |sed 's/[[:space:]]//g'`
+  [ -n "$ServerName" ] && [ -n "$ServerAddr" ] && HostMode=1	
 fi
 
 PIPE=$(mktemp -u)
 mkfifo $PIPE
-exec 777<>$PIPE
-trap "exec 777>&-;exec 777<&-;rm $PIPE;exit 0" 2
+exec 77<>$PIPE
+trap "exec 77>&-;exec 77<&-;rm $PIPE;exit 0" 2
 
-for((i=0; i<$ThreadNum; i=i+1)); do
-	echo >&777
-done
+for((i=0; i<$ThreadNum; i=i+1)); do echo >&77; done
 
 function Task() {
-	if [ -n "$1" ]; then
-		if [ $HostMode -eq 0 ]; then
-	 		wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" -O /dev/null "$1" >/dev/null 2>&1
-		else
-			_URL=`echo "$1" |sed "s/$ServerName/$ServerAddr/"`
-			wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" --header="Host: $ServerName" -O /dev/null "$_URL" >/dev/null 2>&1
-		fi
-	fi
-	echo >&777
+  if [ -n "$1" ]; then
+    if [ $HostMode -eq 0 ]; then
+      wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" -O /dev/null "$1" >/dev/null 2>&1
+    else
+      _URL=`echo "$1" |sed "s/$ServerName/$ServerAddr/"`
+      wget --no-check-certificate --header="User-Agent: ${UserAgent}" --header="Referer: $1" --header="Host: $ServerName" -O /dev/null "$_URL" >/dev/null 2>&1
+    fi
+  fi
+  echo >&77
 }
 
 for((i=0; i<$LoopNum; i=i+1)); do
-	if [ $FileMode -eq 1 ]; then
-  	for line in `cat ${FileName}`; do
-			read -u777
-			_LINE=`echo -ne "$line" |sed 's/\r//g' |sed 's/\n//g'`
-			echo "URL: $_LINE"
-			Task "$_LINE" &
-  	done
+  if [ $FileMode -eq 1 ]; then
+    for line in `cat ${FileName}`; do
+      read -u77
+      _LINE=`echo -ne "$line" |sed 's/\r//g' |sed 's/\n//g'`
+      echo "URL: $_LINE"
+      Task "$_LINE" &
+    done
   else
-  	read -u777
-  	_LINE=`echo -ne "${FileName}" |sed 's/\r//g' |sed 's/\n//g'`
-		echo "URL: $_LINE"
-		Task "$_LINE" &
+    read -u77
+    _LINE=`echo -ne "${FileName}" |sed 's/\r//g' |sed 's/\n//g'`
+    echo "URL: $_LINE"
+    Task "$_LINE" &
   fi
 done
 
+wait
 exit 0
