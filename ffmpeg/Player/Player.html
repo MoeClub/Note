@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>{{ escape(PageTitle) }}</title>
   <meta name="referrer" content="no-referrer">
-  <link rel="stylesheet" type="text/css" href="static/css/video-js.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ escape(SubPath) }}{{ static_url("css/video-js.min.css") }}">
   <style type="text/css">
     * {
   		margin: 0;
@@ -60,8 +60,8 @@
 	</video>
 </div>
 
-<script src="static/js/video.min.js"></script>
-<script src="static/js/videojs.hotkeys.min.js"></script>
+<script src="{{ escape(SubPath) }}{{ static_url("js/video.min.js") }}"></script>
+<script src="{{ escape(SubPath) }}{{ static_url("js/videojs.hotkeys.min.js") }}"></script>
 <script>
 var player = videojs('player');
 
