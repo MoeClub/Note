@@ -108,6 +108,7 @@ class MainHandler(tornado.web.RequestHandler):
                 self.write(self.WriteString(data))
                 self.finish()
                 return
+            print(Item)
             if str(Item).strip().lstrip("/").startswith("static/"):
                 StaticPath = os.path.join(RootPath, Item)
                 if os.path.exists(StaticPath):
@@ -127,7 +128,7 @@ class MainHandler(tornado.web.RequestHandler):
                 Item = str(Item).strip() + ".m3u8"
             ItemPath = os.path.join(DataPath, Item)
             if os.path.exists(ItemPath):
-                self.render("Player.html", PageTitle=str(Item).rstrip(".m3u8"), PageData=Utils.b64(ItemPath))
+                self.render("Player.html", PageTitle=str(Item).rstrip(".m3u8"), SubPath=str("/%s" % SubPath), PageData=Utils.b64(ItemPath))
             else:
                 self.set_status(404)
                 self.write("Not Found")
@@ -162,7 +163,7 @@ class Web:
         tornado.options.define("host", default='127.0.0.1', help="Host", type=str)
         tornado.options.define("port", default=5866, help="Port", type=int)
         tornado.options.parse_command_line()
-        application = tornado.web.Application([(r"/%s/(?P<Item>.+)" % SubPath, MainHandler)],)
+        application = tornado.web.Application([(r"/%s/(?P<Item>.+)" % SubPath, MainHandler)], static_path=os.path.join(RootPath, "static"))
         http_server = tornado.httpserver.HTTPServer(application)
         http_server.listen(tornado.options.options.port)
         tornado.ioloop.IOLoop.instance().start()
