@@ -18,8 +18,8 @@ ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:no
 ffmpeg -i <File> -threads 2 -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list output.m3u8 -segment_time 10 output_%03d.ts
 ```
 
-# 分片时长计算(大约)
+# 分片时长计算(VBR, 大约)
 ```
 分片时间 = (文件限制大小[M] * 1024 * 1024) / (媒体文件比特率[b] * 突发码率比率 / 8)
-突发码率视情况取值: 一般取值 1.25 
+突发码率比率: 1.25 (视情况取值, 大于等于1) 
 ```
