@@ -26,3 +26,5 @@ while read line; do
   echo "$Name --> $URL"
   sed -i "s|$Name|$URL|" "${M3u8File}"
 done < "${LogFile}";
+
+exit 0
