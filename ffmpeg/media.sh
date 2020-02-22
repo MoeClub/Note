@@ -29,7 +29,7 @@ cd "${MediaFloder}"
 ffmpeg -i ../${Media} -threads ${Thread} -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list ../${OutPutM3u8} -segment_time 20 output_%04d.ts
 
 ## upload
-cd..
+cd ..
 if [ -f "${ScriptDir}/${Uploader}" ]; then
   bash "${ScriptDir}/${Uploader}" "${MediaFloder}" |tee -a "${OutPutLog}"
   ## mod m3u8
