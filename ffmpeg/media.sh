@@ -29,7 +29,7 @@ mkdir -p "${MediaFolder}"
 
 ## m3u8
 BitRate=`ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 "${Media}"`
-VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024) / ( '${BitRate}' * '${BitRadio}' / 8) }' |cut -d'.' -f1`
+VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024) / ('${BitRate}' * '${BitRadio}' / 8) }' |cut -d'.' -f1`
 [ -n "$VideoTime" ] || exit 1
 ffmpeg -i "${Media}" -threads ${Thread} -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list ${OutPutM3u8} -segment_time ${VideoTime} "${MediaFolder}/output_%04d.ts"
 
