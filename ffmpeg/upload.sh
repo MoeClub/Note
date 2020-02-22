@@ -26,7 +26,7 @@ function Upload() {
   Name=`echo "$1" |sed 's/[[:space:]]//g'`;
   [ -n "${Name}" ] && [ -f "${Name}" ] || { echo >&77; return; }
   [ $ShowTask == 1 ] && echo "Upload Task: ${Name}";
-  OUTPUT=`curl -sSL \
+  OUTPUT=`curl -sSL --connect-timeout 5 --retry-delay 3 --retry 3 \
     -H "User-Agent: iAliexpress/6.22.1 (iPhone; iOS 12.1.2; Scale/2.00)" \
     -H "Referer: https://photobank.alibaba.com/photobank/uploader_dialog/index.htm" \
     -H "origin: https://photobank.alibaba.com" \
