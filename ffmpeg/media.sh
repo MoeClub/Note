@@ -5,7 +5,7 @@ Uploader="upload_yuque.sh"
 M3u8mod="m3u8.sh"
 Thread=2
 MaxSize=20
-BitRadio="1.25"
+BitRadio="1.35"
 
 # Main
 if [ -n "${Media}" ] && [ -f "${Media}" ]; then
