@@ -24,7 +24,7 @@ while read line; do
   [ $? -eq 0 ] && continue
   Name=`basename "$SrcName"`
   echo "$Name --> $URL"
-  sed -i "s|$Name|$URL|" "${M3u8File}"
+  sed -i "s|^.*${Name}$|$URL|" "${M3u8File}"
 done < "${LogFile}";
 
 exit 0
