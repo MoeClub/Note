@@ -30,7 +30,7 @@ function Upload() {
   Name=`echo "$1" |sed 's/[[:space:]]//g'`;
   [ -n "${Name}" ] && [ -f "${Name}" ] || { echo >&77; return; }
   [ $ShowTask == 1 ] && echo "Upload Task: ${Name}";
-  OUTPUT=`curl -sSL \
+  OUTPUT=`curl -sSL --connect-timeout 5 --retry-delay 3 --retry 3 \
     -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0) Gecko/20100101 Firefox/68.0" \
     -H "Referer: https://www.yuque.com/yuque/topics/new" \
     -H "Cookie: ctoken=${ctoken}; _yuque_session=${session}" \
