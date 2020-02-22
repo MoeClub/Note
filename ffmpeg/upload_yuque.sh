@@ -22,13 +22,13 @@ command -v curl >>/dev/null 2>&1
 
 PIPE=$(mktemp -u)
 mkfifo $PIPE
-exec 777<>$PIPE
-trap "exec 777>&-;exec 777<&-;rm $PIPE;exit 0" 2
-for((i=0; i<$ThreadNum; i=i+1)); do echo >&777; done
+exec 77<>$PIPE
+trap "exec 77>&-;exec 77<&-;rm $PIPE;exit 0" 2
+for((i=0; i<$ThreadNum; i=i+1)); do echo >&77; done
 
 function Upload() {
   Name=`echo "$1" |sed 's/[[:space:]]//g'`;
-  [ -n "${Name}" ] && [ -f "${Name}" ] || { echo >&777; return; }
+  [ -n "${Name}" ] && [ -f "${Name}" ] || { echo >&77; return; }
   [ $ShowTask == 1 ] && echo "Upload Task: ${Name}";
   OUTPUT=`curl -sSL \
     -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0) Gecko/20100101 Firefox/68.0" \
@@ -48,12 +48,12 @@ function Upload() {
     StatusCode=`echo "$OUTPUT" |cut -d'"' -f4 |sed 's/[[:space:]]/-/g'`
     echo "${Name}; NULL_${StatusCode}";
   fi
-  echo >&777;
+  echo >&77;
 }
 
 if [ -d "${FileName}" ]; then
   for item in `find "${FileName}" -type f ! -name ".*"`; do
-    read -u777
+    read -u77
     Upload "${item}" &
   done
 elif [ -f "${FileName}" ]; then
