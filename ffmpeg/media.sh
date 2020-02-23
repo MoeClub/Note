@@ -7,7 +7,7 @@ M3u8mod="m3u8.sh"
 MaxSize=20
 MaxCheck=10
 BitRadio="1.35"
-ForceRadio="1.125"
+ForceRadio="1.20"
 ForceRate="2000000"
 
 # Main
