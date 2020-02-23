@@ -18,6 +18,11 @@ ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:no
 ffmpeg -i <File> -threads 2 -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list output.m3u8 -segment_time 10 output_%03d.ts
 ```
 
+# M3U8合成视频文件
+```
+ffmpeg -allowed_extensions ALL -i "meida.m3u8" -c copy "media.mp4"
+```
+
 # 分片时长计算(VBR, 大约)
 ```
 分片时间 = (文件限制大小[M] * 1024 * 1024) / (媒体文件比特率[b] * 突发码率比率 / 8)
