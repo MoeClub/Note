@@ -35,7 +35,7 @@ mkdir -p "${MediaFolder}"
 BitRate=`ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 "${Media}"`
 echo "media bitrate: ${BitRate}"
 if [ "$ForceH264" -eq 0 ]; then
-  ForceH264=`awk 'BEGIN{print '${BitRate}' / (2 * '${ForceRate}')}' |cut -d'.' -f1`
+  ForceH264=`awk 'BEGIN{print '${BitRate}' / ('${ForceBitRadio}' * '${ForceRate}')}' |cut -d'.' -f1`
 fi
 if [ "$ForceH264" -ne 0 ]; then
   ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
