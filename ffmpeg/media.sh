@@ -39,8 +39,7 @@ if [ "$ForceH264" -eq 0 ]; then
 fi
 if [ "$ForceH264" -ne 0 ]; then
   ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
-  ForceBuf=`awk 'BEGIN{print '${ForceRate}' * '${ForceBitRadio}'}' |cut -d'.' -f1`
-  VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
+  VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceMaxRate}"
   VideoCode="h264"
   if [ "$BitRate" -gt "3500000" ]; then
     BitRadio='${ForceBitRadio}'
@@ -66,8 +65,7 @@ else
     fi
     echo "media bitrate(new): ${BitRate}"
     ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
-    ForceBuf=`awk 'BEGIN{print '${ForceRate}' * '${ForceBitRadio}'}' |cut -d'.' -f1`
-    VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
+    VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceMaxRate}"
   fi
 fi
 VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024 * 8) / ('${BitRate}' * '${BitRadio}') }' |cut -d'.' -f1`
