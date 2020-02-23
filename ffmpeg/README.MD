@@ -13,7 +13,7 @@ ffprobe -v error -show_entries format=size -of default=noprint_wrappers=1:nokey=
 ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 <File>
 ```
 
-# 获取媒体文件编码
+# 获取视频文件编码
 ```
 ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 <File>
 ```
