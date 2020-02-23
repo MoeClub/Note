@@ -57,12 +57,11 @@ else
     if [ "$BitRate" -gt "3500000" ]; then
       BitRadio='${ForceBitRadio}'
       BitRate=3000000
-      echo "media bitrate(new): ${BitRate}"
     else
       ForceRate="${BitRate}"
-      BitRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceBitRadio}'}' |cut -d'.' -f1`
-      echo "media bitrate(new): ${BitRate}"
+      BitRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceBitRadio}'}' |cut -d'.' -f1`      
     fi
+    echo "media bitrate(new): ${BitRate}"
     ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
     ForceBuf=`awk 'BEGIN{print '${ForceRate}' * 2}' |cut -d'.' -f1`
     VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
