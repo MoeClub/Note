@@ -76,7 +76,6 @@ class Utils:
 
 
 class MainHandler(tornado.web.RequestHandler):
-    StringList = [chr(item) for item in range(65, 90 + 1)] + [chr(item) for item in range(48, 57 + 1)] + [chr(item) for item in range(97, 122 + 1)] + ["-", "_", ".", "@"]
     StaticFile = {}
 
     def check_argument(self, key):
