@@ -9,7 +9,7 @@ MaxCheck=10
 BitRadio="1.35"
 ForceBitRadio="1.55"
 ForceMaxRadio="1.20"
-ForceRate="2000000"
+ForceRate="2400000"
 
 # Main
 if [ -n "${Media}" ] && [ -f "${Media}" ]; then
@@ -34,6 +34,9 @@ mkdir -p "${MediaFolder}"
 ## m3u8
 BitRate=`ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 "${Media}"`
 echo "media bitrate: ${BitRate}"
+if [ "$ForceH264" -eq 0 ]; then
+  ForceH264=`awk 'BEGIN{print 2 * '${ForceRate}' / '${BitRate}'}' |cut -d'.' -f1`
+fi
 if [ "$ForceH264" -ne 0 ]; then
   ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
   ForceBuf=`awk 'BEGIN{print '${ForceRate}' * '${ForceBitRadio}'}' |cut -d'.' -f1`
