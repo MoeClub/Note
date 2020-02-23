@@ -20,7 +20,7 @@ ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default
 
 # 视频文件直接切片
 ```
-ffmpeg -i <File> -threads 2 -thread_type slice -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list output.m3u8 -segment_time 10 output_%03d.ts
+ffmpeg -i <File> -vcodec copy -acodec aac -bsf:v h264_mp4toannexb -map 0 -f segment -segment_list output.m3u8 -segment_time 10 output_%03d.ts
 ```
 
 # M3U8合成视频文件
