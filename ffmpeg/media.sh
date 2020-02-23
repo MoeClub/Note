@@ -7,7 +7,8 @@ M3u8mod="m3u8.sh"
 MaxSize=20
 MaxCheck=10
 BitRadio="1.35"
-ForceRadio="1.20"
+ForceBitRadio="1.55"
+ForceMaxRadio="1.20"
 ForceRate="2000000"
 
 # Main
@@ -34,12 +35,12 @@ mkdir -p "${MediaFolder}"
 BitRate=`ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 "${Media}"`
 echo "media bitrate: ${BitRate}"
 if [ "$ForceH264" -ne 0 ]; then
-  ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceRadio}'}' |cut -d'.' -f1`
+  ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
   ForceBuf=`awk 'BEGIN{print '${ForceRate}' * 2}' |cut -d'.' -f1`
   VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
   VideoCode="h264"
   if [ "$BitRate" -gt "3500000" ]; then
-    BitRadio="1.55"
+    BitRadio='${ForceBitRadio}'
   fi
   BitRate=3000000
   echo "media bitrate(new): ${BitRate}"
@@ -54,14 +55,16 @@ else
     VideoAddon="-bsf:v h264_mp4toannexb"
   else
     if [ "$BitRate" -gt "2000000" ]; then
-      ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceRadio}'}' |cut -d'.' -f1`
-      ForceBuf=`awk 'BEGIN{print '${ForceRate}' * 2}' |cut -d'.' -f1`
-      VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
       BitRate=3000000
       echo "media bitrate(new): ${BitRate}"
     else
-      VideoAddon=""
+      ForceRate="${BitRate}"
+      BitRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceBitRadio}'}' |cut -d'.' -f1`
+      echo "media bitrate(new): ${BitRate}"
     fi
+    ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
+    ForceBuf=`awk 'BEGIN{print '${ForceRate}' * 2}' |cut -d'.' -f1`
+    VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
   fi
 fi
 VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024 * 8) / ('${BitRate}' * '${BitRadio}') }' |cut -d'.' -f1`
