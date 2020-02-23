@@ -77,7 +77,13 @@
 <script src="{{ escape(SubPath) }}{{ static_url("js/video.min.js") }}"></script>
 <script src="{{ escape(SubPath) }}{{ static_url("js/videojs.hotkeys.min.js") }}"></script>
 <script>
-var player = videojs('player');
+var player = videojs('player', {
+  html5: {
+    hls: {
+      overrideNative: !videojs.browser.IS_SAFARI,
+    }
+  }
+});
 
 videojs.Hls.xhr.beforeRequest = function(options) {
   if (options.headers) {
