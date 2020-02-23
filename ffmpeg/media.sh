@@ -1,6 +1,7 @@
 #!/bin/bash
 
 Media="$1"
+ForceH264="${2:-0}"
 Uploader="upload_yuque.sh"
 M3u8mod="m3u8.sh"
 Thread=2
@@ -31,21 +32,31 @@ mkdir -p "${MediaFolder}"
 ## m3u8
 BitRate=`ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 "${Media}"`
 echo "media bitrate: ${BitRate}"
-MediaCode=`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "${Media}" |sort |uniq`
-if [ "$MediaCode" == "h264" ]; then
-  VideoCode="copy"
-else
+if [ "$ForceH264" -ne 0 ]; then
   VideoCode="h264"
-fi
-if [ "$VideoCode" == "copy" ]; then
-  VideoAddon="-bsf:v h264_mp4toannexb"
+  VideoAddon="-b:v 2000k -maxrate 2250k -bufsize 2000k"
+  if [ "$BitRate" -gt "3500000" ]; then
+    BitRadio="1.55"
+  fi
+  BitRate=3000000
+  echo "media bitrate(new): ${BitRate}"
 else
-  if [ "$BitRate" -ge "2000000" ]; then
-    VideoAddon="-b:v 2000k -maxrate 2250k -bufsize 2000k"
-    BitRate=3000000
-    echo "media bitrate(new): ${BitRate}"
+  MediaCode=`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "${Media}" |sort |uniq`
+  if [ "$MediaCode" == "h264" ]; then
+    VideoCode="copy"
   else
-    VideoAddon=""
+    VideoCode="h264"
+  fi
+  if [ "$VideoCode" == "copy" ]; then
+    VideoAddon="-bsf:v h264_mp4toannexb"
+  else
+    if [ "$BitRate" -gt "2000000" ]; then
+      VideoAddon="-b:v 2000k -maxrate 2250k -bufsize 2000k"
+      BitRate=3000000
+      echo "media bitrate(new): ${BitRate}"
+    else
+      VideoAddon=""
+    fi
   fi
 fi
 VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024) / ('${BitRate}' * '${BitRadio}' / 8) }' |cut -d'.' -f1`
