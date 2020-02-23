@@ -36,7 +36,7 @@ BitRate=`ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrap
 echo "media bitrate: ${BitRate}"
 if [ "$ForceH264" -ne 0 ]; then
   ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
-  ForceBuf=`awk 'BEGIN{print '${ForceRate}' * 2}' |cut -d'.' -f1`
+  ForceBuf=`awk 'BEGIN{print '${ForceRate}' * '${ForceBitRadio}'}' |cut -d'.' -f1`
   VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
   VideoCode="h264"
   if [ "$BitRate" -gt "3500000" ]; then
@@ -63,7 +63,7 @@ else
     fi
     echo "media bitrate(new): ${BitRate}"
     ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
-    ForceBuf=`awk 'BEGIN{print '${ForceRate}' * 2}' |cut -d'.' -f1`
+    ForceBuf=`awk 'BEGIN{print '${ForceRate}' * '${ForceBitRadio}'}' |cut -d'.' -f1`
     VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
   fi
 fi
