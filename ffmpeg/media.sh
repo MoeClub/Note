@@ -74,6 +74,7 @@ ffmpeg -v info -i "${Media}" -vcodec ${VideoCode} -acodec aac ${VideoAddon} -map
 [ $? -eq 0 ] || exit 1
 
 ## upload
+echo "start upload..."
 if [ -f "${ScriptDir}/${Uploader}" ]; then
   bash "${ScriptDir}/${Uploader}" "${MediaFolder}" |tee -a "${OutPutLog}"
   ## mod m3u8
