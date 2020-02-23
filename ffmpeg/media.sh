@@ -43,7 +43,7 @@ if [ "$ForceH264" -ne 0 ]; then
   VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
   VideoCode="h264"
   if [ "$BitRate" -gt "3500000" ]; then
-    BitRadio='${ForceBitRadio}'
+    BitRadio="${ForceBitRadio}"
   fi
   BitRate=3000000
   echo "media bitrate(new): ${BitRate}"
@@ -58,7 +58,7 @@ else
     VideoAddon="-bsf:v h264_mp4toannexb"
   else
     if [ "$BitRate" -gt "3500000" ]; then
-      BitRadio='${ForceBitRadio}'
+      BitRadio="${ForceBitRadio}"
       BitRate=3000000
     else
       ForceRate="${BitRate}"
