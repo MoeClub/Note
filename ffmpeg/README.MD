@@ -15,7 +15,7 @@ ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:no
 
 # 获取媒体文件编码
 ```
-ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 <File> |sort |uniq
+ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 <File>
 ```
 
 # 视频文件直接切片
