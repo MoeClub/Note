@@ -54,7 +54,8 @@ else
   if [ "$VideoCode" == "copy" ]; then
     VideoAddon="-bsf:v h264_mp4toannexb"
   else
-    if [ "$BitRate" -gt "2000000" ]; then
+    if [ "$BitRate" -gt "3500000" ]; then
+      BitRadio='${ForceBitRadio}'
       BitRate=3000000
       echo "media bitrate(new): ${BitRate}"
     else
