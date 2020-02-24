@@ -70,7 +70,7 @@
 
 <div class="wrapper">
 	<video id=player width=960 height=540 class="video-js vjs-default-skin vjs-big-play-centered" controls>
-	  <source src="data:application/vnd.apple.mpegurl;base64,{{ escape(PageData) }}" type="application/x-mpegURL">
+	  <source src="data:application/vnd.apple.mpegurl;base64,{{ escape(PageData) }}" type="application/vnd.apple.mpegurl">
 	</video>
 </div>
 
@@ -83,6 +83,7 @@ var player = videojs('player', {
       overrideNative: !videojs.browser.IS_SAFARI,
     }
   }
+  playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2]
 });
 
 videojs.Hls.xhr.beforeRequest = function(options) {
