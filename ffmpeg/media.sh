@@ -73,7 +73,7 @@ fi
 VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024 * 8) / ('${BitRate}' * '${BitRadio}') }' |cut -d'.' -f1`
 [ -n "$VideoTime" ] || exit 1
 echo "media segment time: ${VideoTime}"
-ffmpeg -v info -i "${Media}" -vcodec ${VideoCode} -acodec aac ${VideoAddon} -scodec mov_text -map 0:v:0 -map 0:a? -map 0:s? -f segment -segment_list ${OutPutM3u8} -segment_time ${VideoTime} "${MediaFolder}/output_%04d.ts"
+ffmpeg -v info -i "${Media}" -vcodec ${VideoCode} -acodec aac ${VideoAddon} -map 0:v:0 -map 0:a? -f segment -segment_list ${OutPutM3u8} -segment_time ${VideoTime} "${MediaFolder}/output_%04d.ts"
 [ $? -eq 0 ] || exit 1
 
 ## upload
