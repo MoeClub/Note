@@ -5,6 +5,7 @@ ForceH264="${2:-0}"
 Uploader="upload_yuque.sh"
 M3u8mod="m3u8.sh"
 MaxSize=20
+MaxTime=30
 MaxCheck=10
 BitRadio="1.35"
 ForceBitRadio="1.55"
@@ -19,7 +20,7 @@ else
   exit 1
 fi
 
-MediaName=`basename "${Media}" |cut -d'.' -f1`
+MediaName=`basename "${Media}" |cut -d'.' -f1 |sed 's/[[:space:]]/_/g'`
 ScriptDir=`dirname $0`
 CurrentDir=`pwd`
 OutPutM3u8="${CurrentDir}/${MediaName}.m3u8"
@@ -71,9 +72,15 @@ else
   fi
 fi
 VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024 * 8) / ('${BitRate}' * '${BitRadio}') }' |cut -d'.' -f1`
-[ -n "$VideoTime" ] || exit 1
+if [ -n "$VideoTime" ]; then
+  if [ "$VideoTime" -gt "$MaxTime" ]; then
+    VideoTime="$MaxTime"
+  fi
+else
+  exit 1
+fi
 echo "media segment time: ${VideoTime}"
-ffmpeg -v info -i "${Media}" -vcodec ${VideoCode} -acodec aac ${VideoAddon} -map 0:v:0 -map 0:a? -f segment -segment_list ${OutPutM3u8} -segment_time ${VideoTime} "${MediaFolder}/output_%04d.ts"
+ffmpeg -v info -i "${Media}" -vcodec ${VideoCode} -acodec aac ${VideoAddon} -map 0:v:0 -map 0:a? -f segment -segment_list "${OutPutM3u8}" -segment_time ${VideoTime} "${MediaFolder}/output_%04d.ts"
 [ $? -eq 0 ] || exit 1
 
 ## upload
@@ -87,6 +94,7 @@ if [ -f "${ScriptDir}/${Uploader}" ]; then
 fi
 
 # check
+echo "check upload..."
 for((i=0; i<$MaxCheck; i++)); do
   BadCheck=`grep -v "^#\|^https\?://" "${OutPutM3u8}"`
   [ -n "$BadCheck" ] || break
