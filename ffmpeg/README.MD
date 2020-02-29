@@ -33,3 +33,5 @@ ffmpeg -allowed_extensions ALL -i "meida.m3u8" -c copy "media.mp4"
 分片时间 = (文件限制大小[M] * 1024 * 1024) / (媒体文件比特率[b] * 突发码率比率 / 8)
 突发码率比率: 1.35 (视情况取值, 大于等于1) 
 ```
+
+# 字幕格式转换([webvtt.org](https://www.webvtt.org/))
