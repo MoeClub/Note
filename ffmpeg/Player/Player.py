@@ -43,39 +43,37 @@ class Utils:
             return ""
         if int(time.time()) - second >= cls.treetime:
             cls.treelist = []
-            cls.tree(dirname=dirname)
+            cls.tree(dirname=dirname, FileType="m3u8")
             cls.treetime = int(time.time())
         return "\n".join(cls.treelist)
 
     @classmethod
-    def tree(cls, dirname, padding="    ", Print=False):
-        PRINTITEM1 = padding[:-1] + '+-' + os.path.basename(os.path.abspath(dirname)) + '/'
-        cls.treelist.append(PRINTITEM1)
+    def tree(cls, dirname, padding="    ", Print=False, FileType=None):
+        PRINTITEM = padding[:-1] + '+-' + os.path.basename(os.path.abspath(dirname)) + '/'
+        cls.treelist.append(PRINTITEM)
         if Print:
-            print(PRINTITEM1)
+            print(PRINTITEM)
         padding = padding + ' '
         files = os.listdir(dirname)
         count = 0
         for file in files:
             count += 1
-            PRINTITEM2 = padding + '|'
-            cls.treelist.append(PRINTITEM2)
-            if Print:
-                print(PRINTITEM2)
             path = dirname + os.sep + file
             if os.path.isdir(path):
                 if count == len(files):
-                    cls.tree(path, padding + ' ', Print)
+                    cls.tree(path, padding + ' ', Print, FileType)
                 else:
-                    cls.tree(path, padding + '|', Print)
+                    cls.tree(path, padding + '|', Print, FileType)
             else:
-                PRINTITEM3 = padding + '+-' + file
-                cls.treelist.append(PRINTITEM3)
-                if Print:
-                    print(PRINTITEM3)
+                if FileType is None or str(path).lower().endswith("." + str(FileType).lower()):
+                    PRINTITEM = padding + '+-' + file
+                    cls.treelist.append(PRINTITEM)
+                    if Print:
+                        print(PRINTITEM)
 
 
 class MainHandler(tornado.web.RequestHandler):
+    StringList = [chr(item) for item in range(65, 90 + 1)] + [chr(item) for item in range(48, 57 + 1)] + [chr(item) for item in range(97, 122 + 1)] + ["-", "_", ".", "@"]
     StaticFile = {}
 
     def check_argument(self, key):
@@ -107,7 +105,6 @@ class MainHandler(tornado.web.RequestHandler):
                 self.write(self.WriteString(data))
                 self.finish()
                 return
-            print(Item)
             if str(Item).strip().lstrip("/").startswith("static/"):
                 StaticPath = os.path.join(RootPath, Item)
                 if os.path.exists(StaticPath):
@@ -115,6 +112,8 @@ class MainHandler(tornado.web.RequestHandler):
                         self.set_header("Content-Type", "application/javascript; charset=utf-8")
                     elif str(StaticPath).endswith(".css"):
                         self.set_header("Content-Type", "text/css")
+                    else:
+                        self.set_header("Content-Type", "application/octet-stream")
                     if StaticPath not in self.StaticFile:
                         self.StaticFile[StaticPath] = Utils.load(StaticPath, "rb")
                     self.finish(self.StaticFile[StaticPath])
@@ -123,9 +122,22 @@ class MainHandler(tornado.web.RequestHandler):
                     self.set_status(404)
                     self.finish()
                 return
-            if not str(Item).strip().endswith(".m3u8"):
-                Item = str(Item).strip() + ".m3u8"
-            ItemPath = os.path.join(DataPath, Item)
+            if str(Item).strip().lower().endswith(".vtt"):
+                ItemPath = os.path.join(DataPath, Item)
+                if os.path.exists(ItemPath):
+                    self.set_header("Content-Type", "application/octet-stream")
+                    if ItemPath not in self.StaticFile:
+                        self.StaticFile[ItemPath] = Utils.load(ItemPath, "rb")
+                    self.finish(self.StaticFile[ItemPath])
+                    self.flush()
+                else:
+                    self.set_status(404)
+                    self.finish()
+                return
+            if str(Item).strip().lower().endswith(".m3u8"):
+                ItemPath = os.path.join(DataPath, Item)
+            else:
+                ItemPath = os.path.join(DataPath, Item + ".m3u8")
             if os.path.exists(ItemPath):
                 self.render("Player.html", PageTitle=str(Item).rstrip(".m3u8"), SubPath=str("/%s" % SubPath), PageData=Utils.b64(ItemPath))
             else:
@@ -170,4 +182,3 @@ class Web:
 
 if __name__ == "__main__":
     Web.main()
-
