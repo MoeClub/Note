@@ -7,8 +7,8 @@
   <link rel="stylesheet" type="text/css" href="{{ escape(SubPath) }}{{ static_url("css/video-js.min.css") }}">
   <style type="text/css">
     * {margin: 0; padding: 0;}
-  	html, body {height: 100%; overflow: hidden;}
-  	body {text-align: center; background: black;}
+    html, body {height: 100%; overflow: hidden;}
+    body {text-align: center; background: black;}
     video:focus {outline: none;}
     .wrapper {width: 100%; margin: auto; height: 100%; text-align: center;}
     .video-js {width: 100% !important; height: 100% !important; position: relative !important;}
@@ -51,7 +51,7 @@ player.ready(function () {
     volumeStep: 0.1,
     enableModifiersForNumbers: false
   });
-  if (checkExists(vtt)) {
+  if (checkExists(webvtt)) {
 	  player.addRemoteTextTrack({kind: "captions", label: "subtitles on", mode: "showing", src: webvtt});
     textSetting = player.textTrackSettings.getValues();
     textSetting.backgroundOpacity = "0";
