@@ -4,11 +4,12 @@ Media="$1"
 ForceH264="${2:-0}"
 Uploader="upload_yuque.sh"
 M3u8mod="m3u8.sh"
+Publish="publish.sh"
 MaxSize=20
-MaxTime=30
 MaxCheck=10
-BitRadio="1.35"
-ForceBitRadio="1.55"
+MaxTime=15
+BitRadio="1.55"
+ForceBitRadio="1.75"
 ForceMaxRadio="1.20"
 ForceRate="2400000"
 
@@ -73,6 +74,11 @@ else
 fi
 VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024 * 8) / ('${BitRate}' * '${BitRadio}') }' |cut -d'.' -f1`
 if [ -n "$VideoTime" ]; then
+  if [ "${BitRate}" -gt 3500000 ]; then
+    MaxTime=5
+  elif [ "${BitRate}" -gt 3000000 ]; then
+    MaxTime=10
+  fi
   if [ "$VideoTime" -gt "$MaxTime" ]; then
     VideoTime="$MaxTime"
   fi
@@ -80,8 +86,10 @@ else
   exit 1
 fi
 echo "media segment time: ${VideoTime}"
-ffmpeg -v info -i "${Media}" -vcodec ${VideoCode} -acodec aac ${VideoAddon} -map 0:v:0 -map 0:a? -f segment -segment_list "${OutPutM3u8}" -segment_time ${VideoTime} "${MediaFolder}/output_%04d.ts"
-[ $? -eq 0 ] || exit 1
+ffmpeg -v info -i "${Media}" -vcodec ${VideoCode} -acodec aac -strict experimental ${VideoAddon} -map 0:v:0 -map 0:a? -f segment -segment_list "${OutPutM3u8}" -segment_time ${VideoTime} "${MediaFolder}/output_%04d.ts"
+if [ $? -ne 0 ]; then
+  exit 1
+fi
 
 ## upload
 echo "start upload..."
@@ -108,3 +116,8 @@ for((i=0; i<$MaxCheck; i++)); do
   done
 done
 
+# publish
+if [ -f "${ScriptDir}/${Publish}" ]; then
+  echo "publish ..."
+  bash "${ScriptDir}/${Publish}" "${OutPutM3u8}"
+fi
