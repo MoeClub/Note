@@ -22,7 +22,7 @@ else
   for SubDomain in "${SubDomainList[@]}"; do 
     BaseURL=`echo "$URL" |sed 's/.*\([hHfF][tT][tT]*[pP][^:]*:\/\/\(\([^\.]*\)[^/]*\).*\).*/\1/'`
     HostName=`echo "$BaseURL" |sed 's/.*\([hHfF][tT][tT]*[pP][^:]*:\/\/\(\([^\.]*\)[^/]*\).*\).*/\2/'`
-    NewHostName=`echo "$HostName" |sed "s/([^\.]*)/${SubDomain}/"`
+    NewHostName=`echo "$HostName" |sed "s/\([^\.]*\)/${SubDomain}/"`
     NewURL=`echo "$BaseURL" |sed "s/${HostName}/${NewHostName}/"`;
     CheckURL "$NewURL"
   done
