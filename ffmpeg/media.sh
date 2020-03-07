@@ -121,7 +121,7 @@ for((i=0; i<$MaxCheck; i++)); do
   for Item in `echo "$BadCheck"`; do
     if [ -f "${Item}" ]; then
       BadItem="${Item}"
-    elif [ -f "${Item}" ]; then
+    elif [ -f "${MediaFolder}/${Item}" ]; then
       BadItem="${MediaFolder}/${Item}"
     else
       echo "Error: not found '${Item}'."
