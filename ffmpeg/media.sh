@@ -2,7 +2,7 @@
 
 Media="$1"
 ForceH264="${2:-0}"
-Uploader="upload_yuque.sh"
+Uploader="upload.sh"
 M3u8mod="m3u8.sh"
 Publish="publish.sh"
 MaxSize=20
@@ -37,9 +37,19 @@ mkdir -p "${MediaFolder}"
 BitRate=`ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 "${Media}"`
 echo "media bitrate: ${BitRate}"
 if [ "$ForceH264" -eq 0 ]; then
-  ForceH264=`awk 'BEGIN{print '${BitRate}' / ('${ForceBitRadio}' * '${ForceRate}')}' |cut -d'.' -f1`
+  _ForceH264=`awk 'BEGIN{print '${BitRate}' / ('${ForceBitRadio}' * '${ForceRate}')}' |cut -d'.' -f1`
+  [ "$_ForceH264" -ne 0 ] && ForceH264=1
 fi
-if [ "$ForceH264" -ne 0 ]; then
+if [ "$ForceH264" -ge 2 ]; then
+  MediaCode=`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "${Media}" |sort |uniq`
+  if [ "$MediaCode" != "h264" ]; then
+    echo "Error: This media file code '${MediaCode}', must 'h264' in this mode."
+    exit 1
+  fi
+  VideoCode="copy"
+  VideoAddon="-bsf:v h264_mp4toannexb"
+  [ "$ForceH264" -le 3 ] && VideoTime="3" || VideoTime="$ForceH264"
+elif [ "$ForceH264" -eq 1 ]; then
   ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
   ForceBuf=`awk 'BEGIN{print '${ForceRate}' / '${ForceMaxRadio}'}' |cut -d'.' -f1`
   VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
@@ -72,18 +82,20 @@ else
     VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
   fi
 fi
-VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024 * 8) / ('${BitRate}' * '${BitRadio}') }' |cut -d'.' -f1`
-if [ -n "$VideoTime" ]; then
-  if [ "${BitRate}" -gt 3500000 ]; then
-    MaxTime=5
-  elif [ "${BitRate}" -gt 3000000 ]; then
-    MaxTime=10
+if [ "$ForceH264" -le 1 ]; then
+  VideoTime=`awk 'BEGIN{print ('${MaxSize}' * 1024 * 1024 * 8) / ('${BitRate}' * '${BitRadio}') }' |cut -d'.' -f1`
+  if [ -n "$VideoTime" ]; then
+    if [ "${BitRate}" -gt 3500000 ]; then
+      MaxTime=5
+    elif [ "${BitRate}" -gt 3000000 ]; then
+      MaxTime=10
+    fi
+    if [ "$VideoTime" -gt "$MaxTime" ]; then
+      VideoTime="$MaxTime"
+    fi
+  else
+    exit 1
   fi
-  if [ "$VideoTime" -gt "$MaxTime" ]; then
-    VideoTime="$MaxTime"
-  fi
-else
-  exit 1
 fi
 echo "media segment time: ${VideoTime}"
 ffmpeg -v info -i "${Media}" -vcodec ${VideoCode} -acodec aac -strict experimental ${VideoAddon} -map 0:v:0 -map 0:a? -f segment -segment_list "${OutPutM3u8}" -segment_time ${VideoTime} "${MediaFolder}/output_%04d.ts"
@@ -93,7 +105,7 @@ fi
 
 ## upload
 echo "start upload..."
-if [ -f "${ScriptDir}/${Uploader}" ]; then
+if [ -e "${ScriptDir}/${Uploader}" ]; then
   bash "${ScriptDir}/${Uploader}" "${MediaFolder}" |tee -a "${OutPutLog}"
   ## mod m3u8
   if [ -f "${ScriptDir}/${M3u8mod}" ]; then
@@ -107,7 +119,15 @@ for((i=0; i<$MaxCheck; i++)); do
   BadCheck=`grep -v "^#\|^https\?://" "${OutPutM3u8}"`
   [ -n "$BadCheck" ] || break
   for Item in `echo "$BadCheck"`; do
-    bash "${ScriptDir}/${Uploader}" "${Item}" |tee -a "${OutPutLog}"
+    if [ -f "${Item}" ]; then
+      BadItem="${Item}"
+    elif [ -f "${Item}" ]; then
+      BadItem="${MediaFolder}/${Item}"
+    else
+      echo "Error: not found '${Item}'."
+      exit 1
+    fi
+    bash "${ScriptDir}/${Uploader}" "${BadItem}" |tee -a "${OutPutLog}"
     sed -i '/;\ NULL_/d' "${OutPutLog}"
     ## mod m3u8
     if [ -f "${ScriptDir}/${M3u8mod}" ]; then
