@@ -25,13 +25,13 @@ csrutil disable
 sudo mount -uw /
 
 # Do something
-sudo rm -rf /System/Applications/TV.app
-sudo rm -rf /System/Applications/Home.app
-sudo rm -rf /System/Applications/Books.app
-sudo rm -rf /System/Applications/Chess.app
-sudo rm -rf /System/Applications/Podcasts.app
-sudo rm -rf /System/Applications/Stocks.app
-sudo rm -rf /System/Applications/Music.app
+sudo rm -rf /Applications/TV.app
+sudo rm -rf /Applications/Home.app
+sudo rm -rf /Applications/Books.app
+sudo rm -rf /Applications/Chess.app
+sudo rm -rf /Applications/Podcasts.app
+sudo rm -rf /Applications/Stocks.app
+sudo rm -rf /Applications/Music.app
 
 # Enable SIP
 csrutil enable
