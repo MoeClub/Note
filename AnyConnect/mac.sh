@@ -35,7 +35,7 @@ cat >"${USER_Home}/.anyconnect"<<EOF
 </AnyConnectPreferences>
 EOF
 
-[[ -f "${CERT_URL}" ]] && cp -f "${CERT_URL}" "/tmp/MacOS.p12" || curl -sSL -H "User-Agent: wget/1.0" -o "/tmp/MacOS.p12" "${CERT_URL}"
+[[ -f "${CERT_URL}" ]] && cp -f "${CERT_URL}" "/tmp/MacOS.p12" || curl -ksSL -H "User-Agent: wget/1.0" -o "/tmp/MacOS.p12" "${CERT_URL}"
 if [[ -f "/tmp/MacOS.p12" ]]; then
   if [[ "$Mode" == "0" ]]; then
     security import "/tmp/MacOS.p12" -P "${CERT_PWD}"
