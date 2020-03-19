@@ -195,6 +195,26 @@ class action:
         PUBLIC = self.newPublicIP()
         return PUBLIC
 
+    def reboot(self):
+        if not self.instancesId:
+            print("Require instancesId.")
+            exit(1)
+        url = self.apiDict["URL"] + "instances/" + self.instancesId + "?action=RESET"
+        response = oracle.api("POST", url, keyID=self.apiKey, privateKey=self.privateKey, data=None)
+        response_json = json.loads(response.read().decode())
+        response_json["status_code"] = str(response.code)
+        if response_json["status_code"] == "200":
+            itemItem = {}
+            itemItem["displayName"] = response_json["displayName"]
+            itemItem["shape"] = response_json["shape"]
+            itemItem["lifecycleState"] = response_json["lifecycleState"]
+            itemItem["id"] = response_json["id"]
+            itemItem["timeCreated"] = response_json["timeCreated"]
+            itemItem["actionStatus"] = "SUCCESS"
+        else:
+            itemItem = response_json
+        print(json.dumps(itemItem, indent=4))
+
     def rename(self, newName, DisableMonitoring=True):
         if not self.instancesId:
             print("Require instancesId.")
@@ -314,14 +334,14 @@ if __name__ == "__main__":
     parser.add_argument('-i', type=str, default="", help="Instances Id or Instances Config Path")
     parser.add_argument('-n', type=str, default="", help="New Instances Name")
     parser.add_argument('-p', type=str, default="", help="IP Address Prefix")
-    parser.add_argument('-a', type=str, default="", help="Action [show, change, rename, create, target, list, listaddr]")
+    parser.add_argument('-a', type=str, default="", help="Action [show, change, rename, create, reboot, target, list, listaddr]")
     args = parser.parse_args()
     configPath = str(args.c).strip()
     configAction = str(args.a).strip().lower()
     configInstancesId = str(args.i).strip()
     configInstancesName = str(args.n).strip()
     configAddress = str(args.p).strip()
-    configActionList = ["show", "change", "rename", "create", "target", "list", "listaddr"]
+    configActionList = ["show", "change", "rename", "create", "reboot", "target", "list", "listaddr"]
 
     if not configPath:
         Exit(1, "Require Config Path.")
@@ -344,6 +364,9 @@ if __name__ == "__main__":
             Exit(1, "Require Instances Name.")
         Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.rename(configInstancesName)
+    elif configAction == "reboot":
+        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        Action.reboot()
     elif configAction == "create":
         if not configInstancesName:
             configInstancesName = None
