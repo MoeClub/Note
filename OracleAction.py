@@ -20,7 +20,8 @@
 #   "shape": "VM.Standard.E2.1.Micro",
 #   "availabilityDomain": "xx:XX",
 #   "subnetId": "ocid1.subnet...",
-#   "imageId": "BASE64...",
+#   "imageId": "ocid1.image...",
+#   "user_data": "BASE64...",
 #   "ssh_authorized_keys": "ssh-rsa ...",
 # }
 
