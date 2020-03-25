@@ -25,7 +25,7 @@ csrutil disable
 sudo mount -uw /
 
 # Do something
-# cd /Volumes/SSD
+sudo cd "/Volumes/$(ls -1 /Volumes|head -n1)"
 sudo rm -rf /System/Applications/TV.app
 sudo rm -rf /System/Applications/News.app
 sudo rm -rf /System/Applications/Home.app
