@@ -19,11 +19,11 @@ IsQuick=0
 
 # Main
 if [ -n "${Media}" ] && [ -f "${Media}" ]; then
-  echo "media file: '${Media}'."
   echo "$ForceH264" |grep -q "^-"
   [ "$?" -eq 0 ] && QuickMode=0
   ForceH264=`echo "$ForceH264" |grep -o "[0-9]\{1,\}"`
   [ -n "$ForceH264" ] || ForceH264=0
+  echo "media file: '${Media}'."
 else
   [ -n "${Media}" ] && echo "Not found '${Media}'." || echo "Please input a media file."
   exit 1
@@ -120,7 +120,6 @@ if [ "$IsQuick" != 1 ]; then
 else
   cp -rf "${OutPutM3u8Bak}" "${OutPutM3u8}"
 fi
-exit 1
 
 ## upload
 echo "start upload..."
