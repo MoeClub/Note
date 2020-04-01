@@ -137,7 +137,7 @@ function ForceVBR(){
   fsName="$1"
   [ -f "${fsName}" ] || return
   [ `du -s -k "${fsName}" |cut -f1` -le `awk 'BEGIN{print '${MaxSize}' * 1024}' |cut -d'.' -f1` ] && return
-  NewFsName="New_${fsName}"
+  NewFsName="${fsName}_New.ts"
   cp -rf "${fsName}" "${NewFsName}"
   ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
   ForceBuf=`awk 'BEGIN{print '${ForceRate}' / '${ForceMaxRadio}'}' |cut -d'.' -f1`
