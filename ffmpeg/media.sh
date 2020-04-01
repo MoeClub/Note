@@ -147,7 +147,7 @@ function ForceVBR(){
   NewForceMaxRate=`awk 'BEGIN{print '${NewForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
   NewForceBuf=`awk 'BEGIN{print '${NewForceRate}' / '${ForceMaxRadio}'}' |cut -d'.' -f1`
   VideoAddon="-b:v ${NewForceRate} -maxrate ${NewForceMaxRate} -bufsize ${NewForceBuf}"
-  ffmpeg -y -v info -i "${NewFsName}" -vcodec h264 -acodec copy -strict experimental -bsf:v h264_mp4toannexb ${VideoAddon} -f mpegts "${fsName}"
+  ffmpeg -y -v info -i "${NewFsName}" -copyts -vsync 0 -muxdelay 0 -vcodec h264 -acodec copy -strict experimental -bsf:v h264_mp4toannexb ${VideoAddon} -f mpegts "${fsName}"
   [ -f "${NewFsName}" ] && [ -f "${fsName}" ] && rm -rf "${NewFsName}"
 }
 
