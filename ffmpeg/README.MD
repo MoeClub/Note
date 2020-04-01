@@ -3,6 +3,7 @@
 # 安装 ffmpeg .
 # 上传: 修改 upload_xxxx.sh 文件并保存, 然后将文件重命名为 upload.sh 
 # 发布: 修改 publish.sh 文件并保存.
+# 限制: 修改 media.sh 文件头部 'MaxSize=N' (N 为单文件最大限制, 默认为: 5).
 # 将 upload.sh, publish.sh, m3u8.sh, media.sh 放入同一个文件夹中.
 
 # 用法 (相关文件设置好后,可以一键切片并发布到网站上.)
