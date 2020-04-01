@@ -14,7 +14,6 @@ MaxCheck=10
 MaxTime=10
 AutoClear=0
 QuickMode=1
-IsQuick=0
 
 
 # Main
@@ -38,15 +37,15 @@ OutPutLog="${CurrentDir}/${MediaName}.log"
 MediaFolder="${CurrentDir}/${MediaName}.output"
 
 # cache
-[ "$QuickMode" == 1 ] && [ -f "${OutPutM3u8Bak}" ] && [ -d "${MediaFolder}" ] && IsQuick=1
-if [ "$IsQuick" != 1 ]; then
+[ "$QuickMode" == 1 ] && [ -f "${OutPutM3u8Bak}" ] && [ -d "${MediaFolder}" ] || QuickMode=0
+if [ "$QuickMode" != 1 ]; then
   rm -rf "${OutPutLog}"
   rm -rf "${MediaFolder}"
   mkdir -p "${MediaFolder}"
 fi
 
 ## m3u8
-if [ "$IsQuick" != 1 ]; then
+if [ "$QuickMode" != 1 ]; then
   BitRate=`ffprobe -v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 "${Media}"`
   echo "media bitrate: ${BitRate}"
   if [ "$ForceH264" -eq 0 ]; then
@@ -133,6 +132,20 @@ fi
 
 # check
 echo "check upload..."
+
+function ForceVBR(){
+  fsName="$1"
+  [ -f "${fsName}" ] || return
+  [ `du -s -k "${fsName}" |cut -f1` -le `awk 'BEGIN{print '${MaxSize}' * 1024}' |cut -d'.' -f1` ] && return
+  NewFsName="New_${fsName}"
+  cp -rf "${fsName}" "${NewFsName}"
+  ForceMaxRate=`awk 'BEGIN{print '${ForceRate}' * '${ForceMaxRadio}'}' |cut -d'.' -f1`
+  ForceBuf=`awk 'BEGIN{print '${ForceRate}' / '${ForceMaxRadio}'}' |cut -d'.' -f1`
+  VideoAddon="-b:v ${ForceRate} -maxrate ${ForceMaxRate} -bufsize ${ForceBuf}"
+  ffmpeg -y -v info -i "${NewFsName}" -vcodec h264 -acodec copy -strict experimental -bsf:v h264_mp4toannexb ${VideoAddon} -f mpegts "${fsName}"
+  [ -f "${NewFsName}" ] && [ -f "${fsName}" ] && rm "${NewFsName}"
+}
+
 for((i=0; i<$MaxCheck; i++)); do
   BadCheck=`grep -v "^#\|^https\?://" "${OutPutM3u8}"`
   [ -n "$BadCheck" ] || break
@@ -145,6 +158,7 @@ for((i=0; i<$MaxCheck; i++)); do
       echo "Error: not found '${Item}'."
       exit 1
     fi
+    ForceVBR "${BadItem}"
     bash "${ScriptDir}/${Uploader}" "${BadItem}" |tee -a "${OutPutLog}"
   done
   sed -i '/;\ NULL_/d' "${OutPutLog}"
