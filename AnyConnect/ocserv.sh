@@ -161,12 +161,12 @@ fi
 [ -f /etc/ssh/sshd_config ] && sed -i "s/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g" /etc/ssh/sshd_config;
 
 # SSH Ciphers
-[ -f /etc/ssh/sshd_config ] && sed -i "/^KexAlgorithms/d" /etc/ssh/sshd_config;
-echo "KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256" >>/etc/ssh/sshd_config;
-[ -f /etc/ssh/sshd_config ] && sed -i "/^Ciphers/d" /etc/ssh/sshd_config;
-echo "Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com" >>/etc/ssh/sshd_config;
-[ -f /etc/ssh/sshd_config ] && sed -i "/^MACs/d" /etc/ssh/sshd_config;
-echo "MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com" >>/etc/ssh/sshd_config;
+#[ -f /etc/ssh/sshd_config ] && sed -i "/^KexAlgorithms/d" /etc/ssh/sshd_config;
+#echo "KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256" >>/etc/ssh/sshd_config;
+#[ -f /etc/ssh/sshd_config ] && sed -i "/^Ciphers/d" /etc/ssh/sshd_config;
+#echo "Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com" >>/etc/ssh/sshd_config;
+#[ -f /etc/ssh/sshd_config ] && sed -i "/^MACs/d" /etc/ssh/sshd_config;
+#echo "MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com" >>/etc/ssh/sshd_config;
 
 
 # Timezone
