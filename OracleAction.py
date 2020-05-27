@@ -158,6 +158,19 @@ class action:
             print("Server Error. [%s]" % response.code)
             exit(1)
 
+    def delPublicIPbyAddress(self):
+        if not self.instancesId:
+            print("Require Address.")
+            exit(1)
+        url = self.apiDict["URL"] + "publicIps/actions/getByIpAddress"
+        BodyOne = json.dumps({"ipAddress": self.instancesId}, ensure_ascii=False)
+        response = oracle.api("POST", url, keyID=self.apiKey, privateKey=self.privateKey, data=BodyOne)
+        response_json = json.loads(response.read().decode())
+        if "id" in response_json:
+            self.delPublicIP(publicIp=response_json["id"])
+        else:
+            print(response_json)
+
     def delPublicIP(self, publicIp):
         url = self.apiDict["URL"] + "publicIps/" + publicIp
         oracle.api("DELETE", url, keyID=self.apiKey, privateKey=self.privateKey)
@@ -195,6 +208,20 @@ class action:
         print("PublicIP[*]: %s" % publicIp)
         PUBLIC = self.newPublicIP()
         return PUBLIC
+
+    def delete(self):
+        if not self.instancesId:
+            print("Require instancesId.")
+            exit(1)
+        url = self.apiDict["URL"] + "instances/" + self.instancesId + "?preserveBootVolume=false"
+        response = oracle.api("DELETE", url, keyID=self.apiKey, privateKey=self.privateKey, data=None)
+        response_json = {}
+        response_json["status_code"] = str(response.code)
+        response_json["data"] = response.read().decode()
+        if response_json["status_code"] == "204":
+            print("Delete success! ")
+        else:
+            print(json.dumps(response_json, indent=4))
 
     def reboot(self):
         if not self.instancesId:
@@ -335,14 +362,14 @@ if __name__ == "__main__":
     parser.add_argument('-i', type=str, default="", help="Instances Id or Instances Config Path")
     parser.add_argument('-n', type=str, default="", help="New Instances Name")
     parser.add_argument('-p', type=str, default="", help="IP Address Prefix")
-    parser.add_argument('-a', type=str, default="", help="Action [show, change, rename, create, reboot, target, list, listaddr]")
+    parser.add_argument('-a', type=str, default="", help="Action [show, change, rename, create, reboot, delete, deladdr, target, list, listaddr]")
     args = parser.parse_args()
     configPath = str(args.c).strip()
     configAction = str(args.a).strip().lower()
     configInstancesId = str(args.i).strip()
     configInstancesName = str(args.n).strip()
     configAddress = str(args.p).strip()
-    configActionList = ["show", "change", "rename", "create", "reboot", "target", "list", "listaddr"]
+    configActionList = ["show", "change", "rename", "create", "reboot", "delete", "deladdr", "target", "list", "listaddr"]
 
     if not configPath:
         Exit(1, "Require Config Path.")
@@ -368,6 +395,12 @@ if __name__ == "__main__":
     elif configAction == "reboot":
         Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.reboot()
+    elif configAction == "delete":
+        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        Action.delete()
+    elif configAction == "deladdr":
+        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        Action.delPublicIPbyAddress()
     elif configAction == "create":
         if not configInstancesName:
             configInstancesName = None
@@ -394,6 +427,8 @@ if __name__ == "__main__":
         ItemWithAddress = []
         try:
             for item in Item.copy():
+                if item["lifecycleState"] == "TERMINATED":
+                    continue
                 Action.instancesId = item["id"]
                 Action.PRIVATE = None
                 Action.VNIC = None
