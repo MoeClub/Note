@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ifname=`cat /proc/net/dev | awk -F: 'function trim(str){sub(/^[ \t]*/,"",str); sub(/[ \t]*$/,"",str); return str } NR>2 {print trim($1)}'  | grep -Ev '^lo|^sit|^stf|^gif|^dummy|^vmnet|^vir|^gre|^ipip|^ppp|^bond|^tun|^tap|^ip6gre|^ip6tnl|^teql|^ocserv' | awk 'NR==1 {print $0}'`
+ifname=`cat /proc/net/dev |grep ":" |cut -d":" -f1| sed "s/[[:space:]]//g" |grep -v '^lo\|^sit\|^stf\|^gif\|^dummy\|^vmnet\|^vir\|^gre\|^ipip\|^ppp\|^bond\|^tun\|^tap\|^ip6gre\|^ip6tnl\|^teql\|^ocserv' |head -n1`
 [ -n "$ifname" ] || exit 1
 DIR=`dirname "$0"`
 TCP=`cat "${DIR}/ocserv.conf" |grep '#\?tcp-port' |cut -d"=" -f2 |sed 's/\s//g'`

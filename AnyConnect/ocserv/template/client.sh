@@ -33,7 +33,7 @@ Check "ca-key.pem"
 Check "user.tmpl"
 Remove "user-key.pem"
 Remove "user-cert.pem"
-GROUP=`sed -n '/^unit/p' user.tmp |cut -d'"' -f2`
+GROUP=`sed -n '/^unit/p' user.tmpl |cut -d'"' -f2`
 [ ! -n "$GROUP" ] && echo "No Group." && exit 1
 certtool --generate-privkey --outfile ./user-key.pem
 certtool --generate-certificate --hash SHA256 --load-privkey ./user-key.pem --load-ca-certificate ./ca-cert.pem --load-ca-privkey ./ca-key.pem --template ./user.tmpl --outfile ./user-cert.pem

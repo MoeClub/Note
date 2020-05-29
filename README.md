@@ -18,14 +18,16 @@ sudo defaults write /Library/Preferences/com.apple.AppStore.plist DisableSoftwar
 
 ### Delete system file
 ```
-# Disbale SIP
+# Disbale SIP (command + r)
 csrutil disable
 
 # Mount '/' as write
 sudo mount -uw /
 
 # Do something
+sudo cd "/Volumes/$(ls -1 /Volumes|head -n1)"
 sudo rm -rf /System/Applications/TV.app
+sudo rm -rf /System/Applications/News.app
 sudo rm -rf /System/Applications/Home.app
 sudo rm -rf /System/Applications/Books.app
 sudo rm -rf /System/Applications/Chess.app

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ escape(PageTitle) }}</title>
+  <meta name="referrer" content="no-referrer">
+  <link rel="stylesheet" type="text/css" href="{{ escape(SubPath) }}{{ static_url("css/video-js.min.css") }}">
+  <style type="text/css">
+    * {margin: 0; padding: 0;}
+    html, body {height: 100%; overflow: hidden;}
+    body {text-align: center; background: black;}
+    video:focus {outline: none;}
+    .wrapper {width: 100%; margin: auto; height: 100%; text-align: center;}
+    .video-js {width: 100% !important; height: 100% !important; position: relative !important;}
+    .vjs-big-play-button {margin-top: -130px !important;}
+    @media (max-width: 1200px) {body{background: #1d1d1d;}}
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+	<video id=player width=960 height=540 class="video-js vjs-default-skin vjs-big-play-centered" controls>
+	  <source src="data:application/vnd.apple.mpegurl;base64,{{ escape(PageData) }}" type="application/vnd.apple.mpegurl">
+	</video>
+</div>
+
+<script src="{{ escape(SubPath) }}{{ static_url("js/video.min.js") }}"></script>
+<script src="{{ escape(SubPath) }}{{ static_url("js/videojs.hotkeys.min.js") }}"></script>
+<script>
+let url = window.location.href, textTracks = document.getElementById('textTracks'), webvtt = url.substring(url, url.lastIndexOf(".")) + '.vtt'
+
+var player = videojs('player', {
+  html5: {
+    hls: {
+      overrideNative: !videojs.browser.IS_SAFARI,
+    }
+  },
+  playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2]
+});
+
+videojs.Hls.xhr.beforeRequest = function(options) {
+  if (options.headers) {
+      delete options.headers.Range;
+  }
+  return options;
+}
+
+player.ready(function () {
+  this.hotkeys({
+    seekStep: 5,
+    volumeStep: 0.1,
+    enableModifiersForNumbers: false
+  });
+  if (checkExists(webvtt)) {
+	  player.addRemoteTextTrack({kind: "captions", label: "subtitles on", mode: "showing", src: webvtt});
+    textSetting = player.textTrackSettings.getValues();
+    textSetting.backgroundOpacity = "0";
+    textSetting.windowOpacity = "0";
+    textSetting.textOpacity = "1";
+    player.textTrackSettings.setValues(textSetting);
+  };
+});
+
+function checkExists(url) {
+        let http = new XMLHttpRequest()
+        http.open("GET", url, false);
+        http.send();
+        if (http.readyState == 4) {
+            if (http.status == 200){
+                return true
+            }else{
+                return false
+            }
+        }else{
+            return false
+        }
+    }
+</script>
+</body>
+</html>
