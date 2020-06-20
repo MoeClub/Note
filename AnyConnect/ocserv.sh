@@ -82,8 +82,8 @@ EOF
 }
 
 if [ "$deb_ver" != "9" ]; then
-  wget --no-check-certificate -qO "/tmp/libradcli4_1.2.6-3~bpo8+1_${os_ver}.deb" "https://moeclub.org/attachment/DebianPackage/ocserv/libradcli4_1.2.6-3~bpo8+1_${os_ver}.deb"
-  wget --no-check-certificate -qO "/tmp/ocserv_0.11.6-1~bpo8+2_${os_ver}.deb" "https://moeclub.org/attachment/DebianPackage/ocserv/ocserv_0.11.6-1~bpo8+2_${os_ver}.deb"
+  wget --no-check-certificate -qO "/tmp/libradcli4_1.2.6-3~bpo8+1_${os_ver}.deb" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/deb/libradcli4_1.2.6-3~bpo8+1_${os_ver}.deb"
+  wget --no-check-certificate -qO "/tmp/ocserv_0.11.6-1~bpo8+2_${os_ver}.deb" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/deb/ocserv_0.11.6-1~bpo8+2_${os_ver}.deb"
   dpkg -i /tmp/libradcli4_*.deb
   dpkg -i /tmp/ocserv_*.deb
 fi
