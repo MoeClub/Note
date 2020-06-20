@@ -17,13 +17,7 @@ else
 fi
 
 if [ "$deb_ver" == "9" ]; then
-  bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/BBR/master/install.sh')
-  wget --no-check-certificate -qO '/tmp/tcp_bbr.ko' 'https://moeclub.org/attachment/LinuxSoftware/bbr/tcp_bbr.ko'
-  cp -rf /tmp/tcp_bbr.ko /lib/modules/4.14.153/kernel/net/ipv4
-  sed -i '/^net\.core\.default_qdisc/d' /etc/sysctl.conf
-  sed -i '/^net\.ipv4\.tcp_congestion_control/d' /etc/sysctl.conf
-  while [ -z "$(sed -n '$p' /etc/sysctl.conf)" ]; do sed -i '$d' /etc/sysctl.conf; done
-  sed -i '$a\net.core.default_qdisc=fq\nnet.ipv4.tcp_congestion_control=bbr\n\n' /etc/sysctl.conf
+  bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0
 fi
 
 echo "deb http://${url}/debian ${ver} main" >/etc/apt/sources.list
@@ -82,7 +76,7 @@ no-resolv
 no-hosts
 no-poll
 cache-size=10000
-server=208.67.220.220#5353
+server=8.8.4.4#53
 
 EOF
 }
