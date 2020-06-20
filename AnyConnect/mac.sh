@@ -31,7 +31,8 @@ cat >"${USER_Home}/.anyconnect"<<EOF
 <ControllablePreferences>
 <AutoConnectOnStart>true</AutoConnectOnStart>
 <LocalLanAccess>true</LocalLanAccess>
-<BlockUntrustedServers>false</BlockUntrustedServers></ControllablePreferences>
+<BlockUntrustedServers>false</BlockUntrustedServers>
+<DisableCaptivePortalDetection>true</DisableCaptivePortalDetection></ControllablePreferences>
 </AnyConnectPreferences>
 EOF
 
