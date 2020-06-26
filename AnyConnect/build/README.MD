@@ -27,6 +27,7 @@ tar -zxvf ocserv.tar.gz -C /usr
 
 # Config
 mkdir -p /etc/ocserv
+chmod -R 755 /etc/ocserv
 
 # Debug
 /usr/sbin/ocserv -c /etc/ocserv/ocserv.conf -f -d 9 
@@ -37,7 +38,7 @@ while [ -z "$(sed -n '$p' /etc/sysctl.conf)" ]; do sed -i '$d' /etc/sysctl.conf;
 sed -i '$a\net.ipv4.ip_forward = 1\n\n' /etc/sysctl.conf
 
 # Iptables
-bash iptables.rule
+bash /etc/ocserv/iptables.rule
 
 ```
 
