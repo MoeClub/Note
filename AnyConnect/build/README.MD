@@ -20,10 +20,18 @@ make && make check && make install
 
 # Install Debian 9+
 ```
-apt-get install -y libgnutls30 libev4
+DEBIAN_FRONTEND=noninteractive apt-get install -y libgnutls30 libev4
 
 wget --no-check-certificate -qO ocserv.tar.gz ''
 tar -zxvf ocserv.tar.gz -C /
+
+# Sysctl
+sed -i '/^net\.ipv4\.ip_forward/d' /etc/sysctl.conf
+while [ -z "$(sed -n '$p' /etc/sysctl.conf)" ]; do sed -i '$d' /etc/sysctl.conf; done
+sed -i '$a\net.ipv4.ip_forward = 1\n\n' /etc/sysctl.conf
+
+# Iptables
+bash iptables.rule
 
 ```
 
