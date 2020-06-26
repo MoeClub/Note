@@ -23,7 +23,7 @@ make && make check && make install
 DEBIAN_FRONTEND=noninteractive apt-get install -y libgnutls30 libev4
 
 wget --no-check-certificate -qO ocserv.tar.gz ''
-tar -zxvf ocserv.tar.gz -C /
+tar -zxvf ocserv.tar.gz -C /usr
 
 # Sysctl
 sed -i '/^net\.ipv4\.ip_forward/d' /etc/sysctl.conf
@@ -32,6 +32,9 @@ sed -i '$a\net.ipv4.ip_forward = 1\n\n' /etc/sysctl.conf
 
 # Iptables
 bash iptables.rule
+
+# Debug
+/usr/sbin/ocserv -c /etc/ocserv/ocserv.conf -f -d 9 
 
 ```
 
