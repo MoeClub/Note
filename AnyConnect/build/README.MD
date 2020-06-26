@@ -1,25 +1,30 @@
-# Build On Debian 9
+# Build Debian 9
 
 ```
 apt-get update
-apt-get install -y gcc make autoconf
+apt-get install -y gcc make autoconf pkg-config xz-utils
 apt-get install -y libgnutls28-dev libev-dev
 apt-get install -y libwrap0-dev libpam0g-dev liblz4-dev libseccomp-dev libreadline-dev libnl-route-3-dev libkrb5-dev
 apt-get install -y libradcli-dev
 
-# Download
-wget ftp://ftp.infradead.org/pub/ocserv/ocserv-1.1.0.tar.xz
+wget --no-check-certificate -qO ocserv-1.1.0.tar.xz ftp://ftp.infradead.org/pub/ocserv/ocserv-1.1.0.tar.xz
 
 rm -rf ocserv-1.1.0
 tar -xvf ocserv-1.1.0.tar.xz
 cd ocserv-1.1.0
 
-
-# Build
-./configure --disable-rpath --without-root-tests --without-docker-tests --without-maxmind --without-geoip --without-liboath --without-pam --without-radius --without-utmp --without-libwrap --without-lz4 --without-http-parser  --without-lz4 --without-gssapi --without-pcl-lib
+./configure --disable-rpath --without-protobuf --without-root-tests --without-docker-tests --without-nuttcp-tests --without-maxmind --without-geoip --without-liboath --without-pam --without-radius --without-utmp --without-libwrap --without-lz4 --without-http-parser  --without-lz4 --without-gssapi --without-pcl-lib --with-local-talloc
 
 make && make check && make install
 ```
 
+# Install Debian 9+
+```
+apt-get install -y libgnutls30 libev4
+
+wget --no-check-certificate -qO ocserv.tar.gz ''
+tar -zxvf ocserv.tar.gz -C /
+
+```
 
 
