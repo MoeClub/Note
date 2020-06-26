@@ -38,7 +38,7 @@ while [ -z "$(sed -n '$p' /etc/sysctl.conf)" ]; do sed -i '$d' /etc/sysctl.conf;
 sed -i '$a\net.ipv4.ip_forward = 1\n\n' /etc/sysctl.conf
 
 # Iptables
-bash /etc/ocserv/iptables.rule
+bash /etc/ocserv/iptables.rules
 
 ```
 
