@@ -18,11 +18,11 @@ cd ocserv-1.1.0
 make && make check && make install
 ```
 
-# Install Debian 9+
+# Install Debian 9+ (ocserv v1.1.0)
 ```
 DEBIAN_FRONTEND=noninteractive apt-get install -y libgnutls30 libev4
 
-wget --no-check-certificate -qO ocserv.tar.gz ''
+wget --no-check-certificate -qO ocserv.tar.gz 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv.tar.gz'
 tar -zxvf ocserv.tar.gz -C /usr
 
 # Config
@@ -36,6 +36,7 @@ chmod -R 755 /etc/ocserv
 sed -i '/^net\.ipv4\.ip_forward/d' /etc/sysctl.conf
 while [ -z "$(sed -n '$p' /etc/sysctl.conf)" ]; do sed -i '$d' /etc/sysctl.conf; done
 sed -i '$a\net.ipv4.ip_forward = 1\n\n' /etc/sysctl.conf
+sysctl -p
 
 # Iptables
 bash /etc/ocserv/iptables.rules
