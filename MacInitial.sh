@@ -63,9 +63,9 @@ RENAME(){
       [ $? -eq 0 ] && continue 
       echo "${item} --> ${item}.bak"
       if [ -f "/usr/bin/sudo" ]; then
-        sudo mv "$item" "${item}.bak"
+        sudo mv "${item}" "${item}.bak"
       else
-        mv "$item" "${item}.bak"
+        mv "${item}" "${item}.bak"
       fi
     done
 }
@@ -81,6 +81,21 @@ RENAMEBIN(){
   fi
 }
 
+RENAMERESTORE(){
+  for item in `find . -type f -maxdepth 1 -name "*.bak"`
+    do
+      echo "$item" |grep -q "\.bak$"
+      [ $? -eq 0 ] || continue 
+      newItem=`echo "${item}" |sed "s/.\bak$//"`
+      echo "${item} --> ${newItem}"
+      if [ -f "/usr/bin/sudo" ]; then
+        sudo mv "${item}" "${newItem}"
+      else
+        mv "${item}" "${newItem}"
+      fi
+    done
+}
+
 RMAPP(){
   [ -n "$1" ] && [ -d "$1" ] || return
   echo "RM '$1'" && rm -rf "$1"
@@ -90,16 +105,18 @@ RMAPP(){
 echo "Unload System Agents ..."
 cd "/Volumes/$(ls -1 /Volumes|head -n1)/System/Library/LaunchAgents"
 
+# Restore all .bak file
+# RENAMERESTORE
+
 # Disable AddressBook and Calendar
 RENAME "com.apple.AddressBook*"
 RENAME "com.apple.CalendarAgent.plist"
 
 
-# iCloud-related
-#RENAME "com.apple.iCloudUserNotifications.plist"
-#RENAME "com.apple.icbaccountsd.plist"
-#RENAME "com.apple.icloud.fmfd.plist"
-#RENAME "com.apple.cloud*"
+# iCloud
+RENAME "com.apple.iCloudUserNotifications.plist"
+RENAME "com.apple.icloud.fmfd.plist"
+RENAME "com.apple.cloud*"
 
 
 # Disable imclient (Facetime) and smth else
@@ -121,15 +138,12 @@ RENAME "com.apple.SafariCloudHistoryPushAgent.plist"
 # Explain these
 RENAME "com.apple.AirPlayUIAgent.plist"
 RENAME "com.apple.AirPortBaseStationAgent.plist"
-RENAME "com.apple.bird.plist"
-RENAME "com.apple.findmymacmessenger.plist"
 RENAME "com.apple.gamed.plist"
 RENAME "com.apple.parentalcontrols.check.plist"
 RENAME "com.apple.soagent.plist"
 RENAME "com.apple.SocialPushAgent.plist"
 RENAME "com.apple.DictationIM.plist"
 RENAME "com.apple.Maps.pushdaemon.plist"
-RENAME "com.apple.locationmenu.plist"
 RENAME "com.apple.java.updateSharing.plist"
 RENAME "com.apple.appstoreupdateagent.plist"
 RENAME "com.apple.softwareupdate_notify_agent.plist"
@@ -148,7 +162,4 @@ RMAPP "Chess.app"
 RMAPP "Podcasts.app"
 RMAPP "Stocks.app"
 RMAPP "Music.app"
-
-
-
 
