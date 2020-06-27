@@ -4,6 +4,9 @@ if [ -f "/usr/bin/sudo" ]; then
   #Unload System Daemons
   echo "Unload System Daemons ..."
   [ "$(sudo whoami)" == "root" ] || return
+  # System setting
+  sudo defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
+  sudo defaults write com.apple.loginwindow SHOWOTHERUSERS_MANAGED -bool FALSE
 
   cd "/Volumes/$(ls -1 /Volumes|head -n1)/System/Library/LaunchDaemons"
 
@@ -145,4 +148,7 @@ RMAPP "Chess.app"
 RMAPP "Podcasts.app"
 RMAPP "Stocks.app"
 RMAPP "Music.app"
+
+
+
 
