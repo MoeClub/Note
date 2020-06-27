@@ -1,63 +1,34 @@
 #!/bin/bash
 
 if [ -f "/usr/bin/sudo" ]; then
-  #Unload System Daemons
-  echo "Unload System Daemons ..."
   [ "$(sudo whoami)" == "root" ] || return
   # System setting
+  echo -e "\n# System setting ..."
   sudo defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
   sudo defaults write com.apple.loginwindow SHOWOTHERUSERS_MANAGED -bool FALSE
-
-  cd "/Volumes/$(ls -1 /Volumes|head -n1)/System/Library/LaunchDaemons"
-
-  # I don't have Apple TV so disable AirPlay
-  sudo launchctl unload -wF com.apple.AirPlayXPCHelper.plist
-
-
-  # Disable apple software updates
-  sudo launchctl unload -wF com.apple.softwareupdate*
-
-
-  # Disable DVD
-  sudo launchctl unload -wF com.apple.dvdplayback.setregion.plist
-
-
-  # Disable feedback
-  sudo launchctl unload -wF com.apple.SubmitDiagInfo.plist 
-  sudo launchctl unload -wF com.apple.CrashReporterSupportHelper.plist 
-  sudo launchctl unload -wF com.apple.ReportCrash.Root.plist 
-  sudo launchctl unload -wF com.apple.GameController.gamecontrollerd.plist
-
-
-  # Disable FTP
-  sudo launchctl unload -wF com.apple.ftp-proxy.plist
-
-
-  # Disable spindump
-  sudo launchctl unload -wF com.apple.spindump.plist
-  sudo launchctl unload -wF com.apple.metadata.mds.spindump.plist
 fi
 
-status=`csrutil status |cut -d":" -f2 |grep -io "enable\|disable"`
-[ "$status" != "disable" ] && "Please disable SIP. (csrutil disable)" && exit 1
 
+# Check SIP
+[ -f "/usr/bin/sudo" ] && [ "$(csrutil status |cut -d':' -f2 |grep -io 'enable\|disable')" != "disable" ] && echo "Please disable SIP. (csrutil disable)" && exit 1
 
+# Mount
 if [ -f "/usr/bin/sudo" ]; then
   sudo mount -uw /
-  [ $? -ne 0 ] && echo "Mount / fail." && exit 1
 else
   mount -uw /
-  [ $? -ne 0 ] && echo "Mount / fail." && exit 1
 fi
+[ $? -ne 0 ] && echo "Mount root fail." && exit 1
 
-RENAME(){
-  [ -n "$1" ] || return
-  for item in `find . -type f -maxdepth 1 -name "$1"`
+
+DISABLE(){
+  [ -n "$1" ] && [ -n "$2" ] && [ -d "$1" ] || return
+  for item in `find "$1" -type f -maxdepth 1 -name "${2}*"`
     do
       [ -n "$item" ] || continue
-      echo "$item" |grep -q "\.bak$"
-      [ $? -eq 0 ] && continue 
-      echo "${item} --> ${item}.bak"
+      echo "$item" |grep -q "\.plist$"
+      [ $? -eq 0 ] || continue
+      echo "Disable: ${item}"
       if [ -f "/usr/bin/sudo" ]; then
         sudo mv "${item}" "${item}.bak"
       else
@@ -65,6 +36,24 @@ RENAME(){
       fi
     done
 }
+
+ENABLEALL(){
+  [ -n "$1" ] && [ -d "$1" ] || return
+  for item in `find "$1" -type f -maxdepth 1 -name "*.bak"`
+    do
+      [ -n "$item" ] || continue
+      echo "$item" |grep -q "\.bak$"
+      [ $? -eq 0 ] || continue
+      newItem=`echo "${item}" |sed "s/.\bak$//"`
+      echo "Enable: ${newItem}"
+      if [ -f "/usr/bin/sudo" ]; then
+        sudo mv "${item}" "${newItem}"
+      else
+        mv "${item}" "${newItem}"
+      fi
+    done
+}
+
 
 RENAMEBIN(){
   [ -f "/usr/bin/sudo" ] && [ -n "$1" ] && [ -f "$1" ] || return
@@ -77,85 +66,147 @@ RENAMEBIN(){
   fi
 }
 
-RENAMERESTORE(){
-  for item in `find . -type f -maxdepth 1 -name "*.bak"`
+RMAPP(){
+  [ -n "$1" ] &&  [ -n "$2" ] && [ -d "$1" ] && [ -d "$2" ] || return
+  for item in `find "$1" -type d -maxdepth 1 -name "${2}"`
     do
-      echo "$item" |grep -q "\.bak$"
-      [ $? -eq 0 ] || continue 
-      newItem=`echo "${item}" |sed "s/.\bak$//"`
-      echo "${item} --> ${newItem}"
+      [ -n "$item" ] || continue
+      echo "RM APP'$2'"
       if [ -f "/usr/bin/sudo" ]; then
-        sudo mv "${item}" "${newItem}"
+        rm -rf "${item}"
       else
-        mv "${item}" "${newItem}"
+        rm -rf "${item}"
       fi
     done
 }
 
-RMAPP(){
-  [ -n "$1" ] && [ -d "$1" ] || return
-  echo "RM '$1'" && rm -rf "$1"
-}
 
-## Unload System Agents
-echo "Unload System Agents ..."
-cd "/Volumes/$(ls -1 /Volumes|head -n1)/System/Library/LaunchAgents"
-
-# Restore all .bak file
-# RENAMERESTORE
-
-# Disable AddressBook and Calendar
-RENAME "com.apple.AddressBook*"
-RENAME "com.apple.CalendarAgent.plist"
-
-
-# iCloud
-RENAME "com.apple.iCloudUserNotifications.plist"
-RENAME "com.apple.icloud.fmfd.plist"
-RENAME "com.apple.cloud*"
-
-
-# Disable imclient (Facetime) and smth else
-RENAME "com.apple.imagent.plist"
-RENAME "com.apple.IMLoggingAgent.plist"
-
-
-# spindump (see also code below)
-RENAME "com.apple.spindump_agent.plist"
-RENAMEBIN "/usr/sbin/spindump"
-
-# Safari is not the only browser in the world
-RENAME "com.apple.safaridavclient.plist"
-RENAME "com.apple.SafariNotificationAgent.plist"
-# in future versions of OS X
-RENAME "com.apple.SafariCloudHistoryPushAgent.plist"
+DEAMONS=()
+# Disable Analytic
+DEAMONS+=("com.apple.analyticsd.plist")
+# Disable AirPlay
+DEAMONS+=("com.apple.AirPlayXPCHelper.plist")
+# Disable Updates
+DEAMONS+=("com.apple.softwareupdate.plist")
+# Disable DVD
+DEAMONS+=("com.apple.dvdplayback.setregion.plist")
+# Disable Feedback
+DEAMONS+=("com.apple.SubmitDiagInfo.plist" \
+          "com.apple.CrashReporterSupportHelper.plist" \
+          "com.apple.ReportCrash.Root.plist"\
+          "com.apple.GameController.gamecontrollerd.plist")
+# Disable FTP
+DEAMONS+=("com.apple.ftp-proxy.plist")
+# Disable APSD
+# DEAMONS+=("com.apple.apsd")
+# Disable spindump
+DEAMONS+=("com.apple.spindump.plist")
+# Disable systemstats
+DEAMONS+=("com.apple.systemstats.daily.plist" \
+          "com.apple.systemstats.analysis.plist" \
+          "com.apple.systemstats.microstackshot_periodic.plist")
 
 
-# Explain these
-RENAME "com.apple.AirPlayUIAgent.plist"
-RENAME "com.apple.AirPortBaseStationAgent.plist"
-RENAME "com.apple.gamed.plist"
-RENAME "com.apple.parentalcontrols.check.plist"
-RENAME "com.apple.soagent.plist"
-RENAME "com.apple.SocialPushAgent.plist"
-RENAME "com.apple.DictationIM.plist"
-RENAME "com.apple.Maps.pushdaemon.plist"
-RENAME "com.apple.java.updateSharing.plist"
-RENAME "com.apple.appstoreupdateagent.plist"
-RENAME "com.apple.softwareupdate_notify_agent.plist"
-RENAME "com.apple.ScreenReaderUIServer.plist"
-RENAME "com.apple.speech.*"
+AGENTS=()
+# Disable iCloud
+AGENTS+=("com.apple.cloud" \
+         "com.apple.icloud.fmfd.plist" \
+         "com.apple.iCloudUserNotifications.plist")
+# Disable AddressBook
+AGENTS+=("com.apple.AddressBook")
+# Disable Safari
+AGENTS+=("com.apple.safaridavclient.plist" \
+         "com.apple.SafariNotificationAgent.plist" \
+         "com.apple.SafariCloudHistoryPushAgent.plist")
+# Disable Facetime
+AGENTS+=("com.apple.imagent.plist" \
+         "com.apple.IMLoggingAgent.plist")
+# Quicklook
+AGENTS+=("com.apple.quicklook.ui.helper.plist" \
+         "com.apple.quicklook.ThumbnailsAgent.plist" \
+         "com.apple.quicklook.plist")
+# Disable Game Center / Apple TV / Homekit
+AGENTS+=("com.apple.gamed.plist" \
+         "com.apple.videosubscriptionsd.plist" \
+         "com.apple.homed.plist"
+         "com.apple.AMPArtworkAgent.plist")
+# Disable Siri
+AGENTS+=("com.apple.siriknowledged.plist" \
+         "com.apple.assistant_service.plist" \
+         "com.apple.assistantd.plist" \
+         "com.apple.Siri.agent.plist")
+# Disable Sidecar
+AGENTS+=("com.apple.sidecar-hid-relay.plist" \
+         "com.apple.sidecar-relay.plist")
+# Disable Ad
+AGENTS+=("com.apple.ap.adprivacyd.plist" \
+         "com.apple.ap.adservicesd.plist")
+# Disable Debug
+AGENTS+=("com.apple.spindump_agent.plist" \
+         "com.apple.ReportCrash.plist" \
+         "com.apple.ReportGPURestart.plist" \
+         "com.apple.ReportPanic.plist")
+# Disable Others
+AGENTS+=("com.apple.AirPlayUIAgent.plist" \
+         "com.apple.AirPortBaseStationAgent.plist" \
+         "com.apple.photoanalysisd.plist" \
+         "com.apple.familycircled.plist" \
+         "com.apple.familycontrols.useragent.plist" \
+         "com.apple.familynotificationd.plist" \
+         "com.apple.parentalcontrols.check.plist" \
+         "com.apple.podcasts.PodcastContentService.plist" \
+         "com.apple.macos.studentd.plist" \
+         "com.apple.suggestd.plist" \
+         "com.apple.facebook.xpc.plist" \
+         "com.apple.linkedin.xpc.plist" \
+         "com.apple.twitter.xpc.plist" \
+         "com.apple.soagent.plist" \
+         "com.apple.SocialPushAgent.plist" \
+         "com.apple.Maps.pushdaemon.plist" \
+         "com.apple.DictationIM.plist" \
+         "com.apple.java.updateSharing.plist" \
+         "com.apple.softwareupdate_notify_agent.plist")
 
+
+APPS=()
+APPS+=("TV.app" \
+       "News.app" \
+       "Home.app" \
+       "Books.app" \
+       "Chess.app" \
+       "Podcasts.app" \
+       "Stocks.app" \
+       "Music.app")
+
+
+
+# Volume
+cd "/Volumes/$(ls -1 /Volumes|head -n1)"
+
+# Enable /System/Library/LaunchDaemons
+ENABLEALL "./System/Library/LaunchDaemons"
+
+# Enable /System/Library/LaunchAgents
+ENABLEALL "./System/Library/LaunchAgents"
+
+# Enable and Exit
+# exit 0
+
+# Disable /System/Library/LaunchDaemons
+echo -e "\n# Disable Daemons ..."
+for deamon in "${DEAMONS[@]}"; do DISABLE "./System/Library/LaunchDaemons" "$deamon"; done
+
+# Disable /System/Library/LaunchAgents
+echo -e "\n# Disable Agents ..."
+for agent in "${AGENTS[@]}"; do DISABLE "./System/Library/LaunchAgents" "$agent"; done
 
 # Remove System APP
-echo "Remove System APP ..."
-cd "/Volumes/$(ls -1 /Volumes|head -n1)/System/Applications"
-RMAPP "TV.app"
-RMAPP "News.app"
-RMAPP "Home.app"
-RMAPP "Books.app"
-RMAPP "Chess.app"
-RMAPP "Podcasts.app"
-RMAPP "Stocks.app"
-RMAPP "Music.app"
+echo -e "\n# Remove System APP ..."
+for app in "${APPS[@]}"; do RMAPP "./System/Applications" "$app"; done
 
+# Replace spindump
+echo -e "\n# Replace spindump ..."
+RENAMEBIN "/usr/sbin/spindump"
+
+# Finish
+echo -e "\n# Finish! \n"
