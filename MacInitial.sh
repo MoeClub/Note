@@ -14,10 +14,6 @@ if [ -f "/usr/bin/sudo" ]; then
   sudo launchctl unload -wF com.apple.AirPlayXPCHelper.plist
 
 
-  # Disable Apple push notification
-  sudo launchctl unload -wF com.apple.apsd.plist
-
-
   # Disable apple software updates
   sudo launchctl unload -wF com.apple.softwareupdate*
 
