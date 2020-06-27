@@ -6,6 +6,11 @@
 defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
 ```
 
+### Diasble other account
+```
+defaults write com.apple.loginwindow SHOWOTHERUSERS_MANAGED -bool FALSE
+```
+
 ### Disable system update
 ```
 defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
