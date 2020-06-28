@@ -4,3 +4,4 @@
 - [Login Office365 Global Admin Account](https://portal.office.com)
 - [Get RMS licenses](https://signup.microsoft.com/signup?sku=rms)
 - [Manage RMS](https://account.activedirectory.windowsazure.com/RmsOnline/Manage.aspx)
+- [Enterprise State Roaming](https://aad.portal.azure.com/#blade/Microsoft_AAD_Devices/DevicesMenuBlade/RoamingSettings/menuId/)
