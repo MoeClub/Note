@@ -2,5 +2,5 @@
 - [Download Microsoft EDGE](https://www.microsoft.com/en-us/edge/business/download)
 # Microsoft Egde Business (Office365 Account)
 - [Login Office365 Global Admin Account](https://portal.office.com)
-- [Get RMS license](https://signup.microsoft.com/signup?sku=rms)
+- [Get RMS licenses](https://signup.microsoft.com/signup?sku=rms)
 - [Manage RMS](https://account.activedirectory.windowsazure.com/RmsOnline/Manage.aspx)
