@@ -17,7 +17,7 @@ else
 fi
 
 if [ "$deb_ver" == "9" ]; then
-  bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0
+  bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0 0
 fi
 
 echo "deb http://${url}/debian ${ver} main" >/etc/apt/sources.list
