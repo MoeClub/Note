@@ -67,6 +67,7 @@ user_pref("datareporting.policy.dataSubmissionEnabled", false);
 user_pref("devtools.onboarding.telemetry.logged", true);
 user_pref("devtools.selfxss.count", 5);
 user_pref("distribution.iniFile.exists.value", false);
+user_pref("extensions.langpacks.signatures.required", false);
 user_pref("extensions.blocklist.enabled", false);
 user_pref("extensions.blocklist.pingCountVersion", 0);
 user_pref("extensions.databaseSchema", 31);
