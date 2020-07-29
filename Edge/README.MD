@@ -11,3 +11,6 @@
 - [MicrosoftEdgeEnterpriseX86.msi](http://dl.delivery.mp.microsoft.com/filestreamingservice/files/ee4a0a94-c037-42d3-af62-67f4e720a337/MicrosoftEdgeEnterpriseX86.msi)
 - [MicrosoftEdgeEnterpriseARM64.msi](http://dl.delivery.mp.microsoft.com/filestreamingservice/files/712b9dcb-80a6-45a0-a3dc-d9785b9a8823/MicrosoftEdgeEnterpriseARM64.msi)
 - [MicrosoftEdge.pkg](https://officecdn-microsoft-com.akamaized.net/pr/C1297A47-86C4-4C1F-97FA-950631F94777/MacAutoupdate/MicrosoftEdge-80.0.361.111.pkg)
+
+# Extensions
+- [Google Translate](https://chrome.google.com/webstore/detail/google-translate/aapbdbdomjkkjkaonfhkkikfgjllcleb?hl=zh-CN)
