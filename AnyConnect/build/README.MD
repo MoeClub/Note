@@ -15,6 +15,7 @@ cd ocserv-1.1.0
 
 ./configure \
 --disable-rpath \
+--disable-compression \
 --without-protobuf \
 --without-root-tests \
 --without-docker-tests \
