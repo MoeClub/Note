@@ -124,6 +124,7 @@ LDFLAGS="-L$instprefix/lib -static -s" \
 LIBNETTLE_LIBS="-lnettle -lhogweed" LIBREADLINE_LIBS=-lreadline \
 ./configure --prefix=/ \
 	--without-{protobuf,pam,radius,http-parser,lz4,gssapi,pcl-lib}
+	--with-libev-prefix="$instprefix"
 make -j$cores
 make DESTDIR=$PWD/../output install
 cd ..
