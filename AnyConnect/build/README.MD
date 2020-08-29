@@ -12,15 +12,16 @@ wget --no-check-certificate -qO ocserv-1.1.0.tar.xz ftp://ftp.infradead.org/pub/
 rm -rf ocserv-1.1.0
 tar -xvf ocserv-1.1.0.tar.xz
 cd ocserv-1.1.0
+mkdir build
+cd build
 
-./configure \
+../configure \
 --disable-rpath \
 --disable-compression \
 --without-protobuf \
 --without-root-tests \
 --without-docker-tests \
 --without-nuttcp-tests \
---without-libnl \
 --without-maxmind \
 --without-geoip \
 --without-liboath \
@@ -29,10 +30,10 @@ cd ocserv-1.1.0
 --without-utmp \
 --without-lz4 \
 --without-http-parser \
---without-lz4 \
 --without-gssapi \
 --without-pcl-lib \
---with-local-talloc
+--with-local-talloc \
+CFLAGS=-Bstatic
 
 make && make check && make install
 ```
