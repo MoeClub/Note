@@ -13,7 +13,25 @@ rm -rf ocserv-1.1.0
 tar -xvf ocserv-1.1.0.tar.xz
 cd ocserv-1.1.0
 
-./configure --disable-rpath --without-protobuf --without-root-tests --without-docker-tests --without-nuttcp-tests --without-maxmind --without-geoip --without-liboath --without-pam --without-radius --without-utmp --without-libwrap --without-lz4 --without-http-parser  --without-lz4 --without-gssapi --without-pcl-lib --with-local-talloc
+./configure \
+--disable-rpath \
+--without-protobuf \
+--without-root-tests \
+--without-docker-tests \
+--without-nuttcp-tests \
+--without-maxmind \
+--without-geoip \
+--without-liboath \
+--without-pam \
+--without-radius \
+--without-utmp \
+--without-libwrap \
+--without-lz4 \
+--without-http-parser \
+--without-lz4 \
+--without-gssapi \
+--without-pcl-lib \
+--with-local-talloc
 
 make && make check && make install
 ```
