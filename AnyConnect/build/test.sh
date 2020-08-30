@@ -120,11 +120,13 @@ wget ftp://ftp.infradead.org/pub/ocserv/ocserv-${ver_ocserv}.tar.xz -O ocserv.ta
 mkdir ocserv; tar -xJ -f ocserv.tar.xz -C ocserv --strip-components=1;
 cd ocserv
 CFLAGS="-I$instprefix/include" \
-LDFLAGS="-L$instprefix/lib -static -s" \
-LIBNETTLE_LIBS="-lnettle -lhogweed" LIBREADLINE_LIBS=-lreadline \
-./configure --prefix=/ \
-	--without-{protobuf,pam,radius,http-parser,lz4,gssapi,pcl-lib}
-	--with-libev-prefix="$instprefix"
+LDFLAGS="-L$instprefix/lib -static -pthread -lpthread" \
+LIBNETTLE_LIBS="-lnettle -lhogweed" LIBREADLINE_LIBS="-lreadline" \
+LIBS="-lm" \
+./configure --prefix=/usr \
+	--with-local-talloc \
+	--without-{root-tests,docker-tests,nuttcp-tests} \
+	--without-{protobuf,maxmind,geoip,liboath,pam,radius,utmp,lz4,http-parser,gssapi,pcl-lib}
 make -j$cores
 make DESTDIR=$PWD/../output install
 cd ..
