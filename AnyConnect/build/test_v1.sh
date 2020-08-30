@@ -5,6 +5,8 @@ cd /tmp
 mkdir ocserv; tar -xJ -f ocserv.tar.xz -C ocserv --strip-components=1;
 cd ocserv
 
+# autoreconf -fvi
+
 LIBGNUTLS_LIBS="-llibgnutls" \
 CFLAGS="-I." \
 LDFLAGS="-L. -static" \
