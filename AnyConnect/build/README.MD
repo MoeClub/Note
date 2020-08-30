@@ -7,17 +7,16 @@ apt-get install -y libgnutls28-dev libev-dev
 apt-get install -y libwrap0-dev libpam0g-dev liblz4-dev libseccomp-dev libreadline-dev libnl-route-3-dev libkrb5-dev
 apt-get install -y libradcli-dev
 
-wget --no-check-certificate -qO ocserv-1.1.0.tar.xz ftp://ftp.infradead.org/pub/ocserv/ocserv-1.1.0.tar.xz
+version=1.1.0
+wget --no-check-certificate -qO ocserv.tar.xz ftp://ftp.infradead.org/pub/ocserv/ocserv-${version}.tar.xz
 
-rm -rf ocserv-1.1.0
-tar -xvf ocserv-1.1.0.tar.xz
-cd ocserv-1.1.0
+rm -rf ocserv
+tar -xvf ocserv.tar.xz
+cd ocserv
 autoreconf -fvi
-mkdir build
-cd build
 
 CFLAGS="-fPIC -I." LDFLAGS="-L." \
-../configure \
+./configure \
 --prefix=/usr \
 --disable-rpath \
 --without-protobuf \
