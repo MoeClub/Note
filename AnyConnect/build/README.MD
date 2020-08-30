@@ -11,7 +11,8 @@ version=1.1.0
 wget --no-check-certificate -qO ocserv.tar.xz ftp://ftp.infradead.org/pub/ocserv/ocserv-${version}.tar.xz
 
 rm -rf ocserv
-tar -xvf ocserv.tar.xz
+mkdir -p ocserv
+tar --strip-components=1 -xvf ocserv.tar.xz -c ocserv
 cd ocserv
 autoreconf -fvi
 
