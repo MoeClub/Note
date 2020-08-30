@@ -106,8 +106,9 @@ ar rcs $instPrefix/lib/libreadline.a readline.o
 rm -rf readline.o
 
 # OpenConnect server
-mkdir -p ./ocserv-bin
-wget --no-check-certificate -4 ftp://ftp.infradead.org/pub/ocserv/ocserv-${ver_ocserv}.tar.xz -O ocserv.tar.xz
+rm -rf $HOME/ocserv-bin
+mkdir -p $HOME/ocserv-bin
+wget --no-check-certificate -4 -O ocserv.tar.xz ftp://ftp.infradead.org/pub/ocserv/ocserv-${ver_ocserv}.tar.xz
 [ -d ocserv ] && rm -rf ocserv
 mkdir -p ocserv; tar -xJ -f ocserv.tar.xz -C ocserv --strip-components=1;
 cd ocserv
@@ -123,6 +124,6 @@ LIBS="-lm" \
 	--without-{root-tests,docker-tests,nuttcp-tests} \
 	--without-{protobuf,maxmind,geoip,liboath,pam,radius,utmp,lz4,http-parser,gssapi,pcl-lib}
 make -j$cores
-make DESTDIR=./ocserv-bin install
+make DESTDIR=$HOME/ocserv-bin install
 cd ..
 
