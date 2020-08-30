@@ -16,7 +16,7 @@ autoreconf -fvi
 mkdir build
 cd build
 
-CFLAGS="-I." LDFLAGS="-L." \
+CFLAGS="-fPIC -I." LDFLAGS="-L." \
 ../configure \
 --prefix=/usr \
 --disable-rpath \
