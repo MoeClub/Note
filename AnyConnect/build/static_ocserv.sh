@@ -32,7 +32,7 @@ cd nettle
 ./configure \
 	--enable-mini-gmp --enable-x86-aesni \
 	--disable-{documentation,shared}
-sed -i's|cnd-copy\.c |&cnd-memcpy.c |' Makefile
+sed -i 's/cnd-copy\.c /&cnd-memcpy.c /' Makefile
 make -j$cores
 make DESTDIR=$instPrefix install
 cd ..
@@ -106,11 +106,12 @@ ar rcs $instPrefix/lib/libreadline.a readline.o
 rm -rf readline.o
 
 # OpenConnect server
-mkdir -p ./ocserv
-wget --no-check-certificate -4 -O ocserv.tar.xz ftp://ftp.infradead.org/pub/ocserv/ocserv-${ver_ocserv}.tar.xz
+mkdir -p ./ocserv-bin
+wget --no-check-certificate -4 ftp://ftp.infradead.org/pub/ocserv/ocserv-${ver_ocserv}.tar.xz -O ocserv.tar.xz
 [ -d ocserv ] && rm -rf ocserv
 mkdir -p ocserv; tar -xJ -f ocserv.tar.xz -C ocserv --strip-components=1;
 cd ocserv
+autoreconf -fvi
 sed -i 's/\$LIBS \$LIBEV/\$LIBEV \$LIBS/g' configure
 CFLAGS="-I$instPrefix/include" \
 LDFLAGS="-L$instPrefix/lib -fPIC -static -pthread -lpthread" \
@@ -122,6 +123,6 @@ LIBS="-lm" \
 	--without-{root-tests,docker-tests,nuttcp-tests} \
 	--without-{protobuf,maxmind,geoip,liboath,pam,radius,utmp,lz4,http-parser,gssapi,pcl-lib}
 make -j$cores
-make DESTDIR=./ocserv install
+make DESTDIR=./ocserv-bin install
 cd ..
 
