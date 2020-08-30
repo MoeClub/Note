@@ -12,12 +12,14 @@ wget --no-check-certificate -qO ocserv-1.1.0.tar.xz ftp://ftp.infradead.org/pub/
 rm -rf ocserv-1.1.0
 tar -xvf ocserv-1.1.0.tar.xz
 cd ocserv-1.1.0
+autoreconf -fvi
 mkdir build
 cd build
 
+CFLAGS="-I." LDFLAGS="-L." \
 ../configure \
+--prefix=/user \
 --disable-rpath \
---disable-compression \
 --without-protobuf \
 --without-root-tests \
 --without-docker-tests \
@@ -32,10 +34,9 @@ cd build
 --without-http-parser \
 --without-gssapi \
 --without-pcl-lib \
---with-local-talloc \
-CFLAGS=-Bstatic
+--with-local-talloc
 
-make && make check && make install
+make && make DESTDIR=/tmp install
 ```
 
 # Install Debian 9+ (ocserv v1.1.0)
