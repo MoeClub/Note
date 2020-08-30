@@ -3,8 +3,7 @@
 MyPath="$(dirname `readlink -f "$0"`)"
 MyPort="$(cat ${MyPath}/ocserv.conf |grep '^tcp-port' |grep -o '[0-9]*')"
 MyStartUp="/etc/init.d/ocserv"
-command -v nc >>/dev/null 2>&1
-[ $? -ne 0 ] && exit 1
+[ -e "$(which nc)" ] || exit 1
 [ -e ${MyStartUp} ] || exit 1
 
 PORT_STATUS(){
@@ -16,7 +15,8 @@ SCAN(){
   if [[ "$(PORT_STATUS)" == "0" ]]; then
     sleep 300;
   else
-    bash ${MyStartUp} restart
+    kill -9 <(ps -C ocserv -o pid=) 1>/dev/null 2>&1
+    bash ${MyStartUp} restart 1>/dev/null 2>&1 &
     sleep 10;
   fi
 }
