@@ -18,7 +18,7 @@ cd build
 
 CFLAGS="-I." LDFLAGS="-L." \
 ../configure \
---prefix=/user \
+--prefix=/usr \
 --disable-rpath \
 --without-protobuf \
 --without-root-tests \
