@@ -107,7 +107,7 @@ rm -rf readline.o
 
 # OpenConnect server
 mkdir -p ./ocserv
-wget --no-check-certificate -4 ftp://ftp.infradead.org/pub/ocserv/ocserv-${ver_ocserv}.tar.xz -O ocserv.tar.xz
+wget --no-check-certificate -4 -O ocserv.tar.xz ftp://ftp.infradead.org/pub/ocserv/ocserv-${ver_ocserv}.tar.xz
 [ -d ocserv ] && rm -rf ocserv
 mkdir -p ocserv; tar -xJ -f ocserv.tar.xz -C ocserv --strip-components=1;
 cd ocserv
@@ -117,6 +117,7 @@ LDFLAGS="-L$instPrefix/lib -fPIC -static -pthread -lpthread" \
 LIBNETTLE_LIBS="-lnettle -lhogweed" LIBREADLINE_LIBS="-lreadline" \
 LIBS="-lm" \
 ./configure --prefix=/usr \
+	--disable-rpath \
 	--with-local-talloc \
 	--without-{root-tests,docker-tests,nuttcp-tests} \
 	--without-{protobuf,maxmind,geoip,liboath,pam,radius,utmp,lz4,http-parser,gssapi,pcl-lib}
