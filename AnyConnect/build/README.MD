@@ -12,7 +12,7 @@ wget --no-check-certificate -qO ocserv.tar.xz ftp://ftp.infradead.org/pub/ocserv
 
 rm -rf ocserv
 mkdir -p ocserv
-tar --strip-components=1 -xvf ocserv.tar.xz -c ocserv
+tar -xvf ocserv.tar.xz -c ocserv --strip-components=1
 cd ocserv
 autoreconf -fvi
 
