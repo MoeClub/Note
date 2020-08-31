@@ -26,10 +26,8 @@ if [ "$deb_ver" == "9" ]; then
   bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0 0
 fi
 
-
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get install -y unzip p7zip-full gawk curl dnsmasq nload dnsutils iftop netcat openssl gnutls-bin
-
 
 mkdir -p /tmp
 ifname=`cat /proc/net/dev |grep ":" |cut -d":" -f1| sed "s/[[:space:]]//g" |grep -v '^lo\|^sit\|^stf\|^gif\|^dummy\|^vmnet\|^vir\|^gre\|^ipip\|^ppp\|^bond\|^tun\|^tap\|^ip6gre\|^ip6tnl\|^teql\|^ocserv' |head -n1`
@@ -77,7 +75,6 @@ server=8.8.4.4#53
 EOF
 }
 
-
 wget --no-check-certificate -qO /tmp/ocserv.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.6.tar'
 tar --overwrite -xvf /tmp/ocserv.tar -C /
 
@@ -106,8 +103,10 @@ certtool --generate-self-signed --hash SHA256 --load-privkey /etc/ocserv/templat
 cp -rf /etc/ocserv/template/ca-cert.pem /etc/ocserv/ca.cert.pem
 
 # Server
-# server cert file: /etc/ocserv/server.cert.pem
 # server cert key file: /etc/ocserv/server.key.pem
+openssl genrsa -out /etc/ocserv/server.key.pem 1024
+# server cert file: /etc/ocserv/server.cert.pem
+openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=mykey/CN="
 
 # Default User
 ## openssl passwd Moeclub
