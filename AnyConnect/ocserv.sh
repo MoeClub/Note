@@ -12,6 +12,10 @@ elif [ "$deb_ver" == "8" ]; then
   ver='jessie' && url='archive.debian.org' && urls='deb.debian.org'
 elif [ "$deb_ver" == "9" ]; then
   ver='stretch' && url='deb.debian.org' && urls='deb.debian.org'
+elif [ "$deb_ver" == "10" ]; then
+  ver='buster' && url='deb.debian.org' && urls='deb.debian.org'
+elif [ "$deb_ver" == "11" ]; then
+  ver='bullseye' && url='deb.debian.org' && urls='deb.debian.org'
 else
   exit 1
 fi
