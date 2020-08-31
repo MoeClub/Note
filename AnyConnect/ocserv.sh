@@ -23,7 +23,7 @@ echo "deb-src http://${urls}/debian-security ${ver}/updates main" >>/etc/apt/sou
 
 
 if [ "$deb_ver" == "9" ]; then
-  bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0 0
+  bash <(wget --no-check-certificate -4 -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0 0
 fi
 
 apt-get update
@@ -32,7 +32,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y unzip p7zip-full gawk curl dns
 mkdir -p /tmp
 ifname=`cat /proc/net/dev |grep ":" |cut -d":" -f1| sed "s/[[:space:]]//g" |grep -v '^lo\|^sit\|^stf\|^gif\|^dummy\|^vmnet\|^vir\|^gre\|^ipip\|^ppp\|^bond\|^tun\|^tap\|^ip6gre\|^ip6tnl\|^teql\|^ocserv' |head -n1`
 [ -z "$ifname" ] && echo "Not found interface." && exit 1
-PublicIP="$(wget --no-check-certificate -qO- http://checkip.amazonaws.com)"
+PublicIP="$(wget --no-check-certificate -4 -qO- http://checkip.amazonaws.com)"
 
 command -v iftop >>/dev/null 2>&1
 [[ $? -eq '0' ]] && {
@@ -75,7 +75,7 @@ server=8.8.4.4#53
 EOF
 }
 
-wget --no-check-certificate -qO /tmp/ocserv.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.6.tar'
+wget --no-check-certificate -4 -qO /tmp/ocserv.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.6.tar'
 tar --overwrite -xvf /tmp/ocserv.tar -C /
 
 rm -rf /etc/ocserv
@@ -83,16 +83,16 @@ mkdir -p /etc/ocserv
 mkdir -p /etc/ocserv/group
 mkdir -p /etc/ocserv/template
 
-wget --no-check-certificate -qO "/etc/ocserv/group/Default" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/group/Default"
-wget --no-check-certificate -qO "/etc/ocserv/group/NoRoute" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/group/NoRoute"
-wget --no-check-certificate -qO "/etc/ocserv/group/Route" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/group/Route"
-wget --no-check-certificate -qO "/etc//ocserv/template/ca.tmpl" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/template/ca.tmpl"
-wget --no-check-certificate -qO "/etc/ocserv/template/user.tmpl" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/template/user.tmpl"
-wget --no-check-certificate -qO "/etc/ocserv/template/client.sh" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/template/client.sh"
-wget --no-check-certificate -qO "/etc/ocserv/iptables.rules" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/iptables.rules"
-wget --no-check-certificate -qO "/etc/ocserv/ocserv.conf" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/ocserv.conf"
-wget --no-check-certificate -qO "/etc/ocserv/ocserv.d" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/ocserv.d"
-wget --no-check-certificate -qO "/etc/ocserv/profile.xml" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/profile.xml"
+wget --no-check-certificate -4 -qO "/etc/ocserv/group/Default" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/group/Default"
+wget --no-check-certificate -4 -qO "/etc/ocserv/group/NoRoute" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/group/NoRoute"
+wget --no-check-certificate -4 -qO "/etc/ocserv/group/Route" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/group/Route"
+wget --no-check-certificate -4 -qO "/etc//ocserv/template/ca.tmpl" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/template/ca.tmpl"
+wget --no-check-certificate -4 -qO "/etc/ocserv/template/user.tmpl" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/template/user.tmpl"
+wget --no-check-certificate -4 -qO "/etc/ocserv/template/client.sh" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/template/client.sh"
+wget --no-check-certificate -4 -qO "/etc/ocserv/iptables.rules" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/iptables.rules"
+wget --no-check-certificate -4 -qO "/etc/ocserv/ocserv.conf" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/ocserv.conf"
+wget --no-check-certificate -4 -qO "/etc/ocserv/ocserv.d" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/ocserv.d"
+wget --no-check-certificate -4 -qO "/etc/ocserv/profile.xml" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv/profile.xml"
 
 # Diffie-Hellman
 certtool --generate-dh-params --outfile /etc/ocserv/dh.pem
