@@ -27,7 +27,7 @@ if [ "$deb_ver" == "9" ]; then
 fi
 
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y unzip p7zip-full gawk curl dnsmasq nload dnsutils iftop netcat openssl gnutls-bin
+DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes unzip p7zip-full gawk curl dnsmasq nload dnsutils iftop netcat openssl gnutls-bin
 
 mkdir -p /tmp
 ifname=`cat /proc/net/dev |grep ":" |cut -d":" -f1| sed "s/[[:space:]]//g" |grep -v '^lo\|^sit\|^stf\|^gif\|^dummy\|^vmnet\|^vir\|^gre\|^ipip\|^ppp\|^bond\|^tun\|^tap\|^ip6gre\|^ip6tnl\|^teql\|^ocserv' |head -n1`
