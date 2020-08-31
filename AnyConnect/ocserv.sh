@@ -106,7 +106,7 @@ cp -rf /etc/ocserv/template/ca-cert.pem /etc/ocserv/ca.cert.pem
 # server cert key file: /etc/ocserv/server.key.pem
 openssl genrsa -out /etc/ocserv/server.key.pem 1024
 # server cert file: /etc/ocserv/server.cert.pem
-openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=mykey/CN="
+openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=/CN="
 
 # Default User
 ## openssl passwd Moeclub
@@ -118,7 +118,7 @@ chmod -R 755 /etc/ocserv
 [[ -f /etc/crontab ]] && [[ -f /etc/ocserv/iptables.rules ]] && {
   sed -i '/\/etc\/ocserv/d' /etc/crontab
   while [ -z "$(sed -n '$p' /etc/crontab)" ]; do sed -i '$d' /etc/crontab; done
-  sed -i "\$a\@reboot root bash /etc/ocserv/iptables.rules\n" /etc/crontab
+  sed -i "\$a\@reboot root bash /etc/ocserv/iptables.rules" /etc/crontab
   sed -i "\$a\@reboot root bash /etc/ocserv/ocserv.d >>/dev/null 2>&1 &\n\n\n" /etc/crontab
 }
 [[ -f /etc/init.d/ocserv ]] && {
