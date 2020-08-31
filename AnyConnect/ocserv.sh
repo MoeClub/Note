@@ -106,7 +106,7 @@ cp -rf /etc/ocserv/template/ca-cert.pem /etc/ocserv/ca.cert.pem
 # server cert key file: /etc/ocserv/server.key.pem
 openssl genrsa -out /etc/ocserv/server.key.pem 1024
 # server cert file: /etc/ocserv/server.cert.pem
-openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=/CN="
+openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=/CN=${PublicIP}"
 
 # Default User
 ## openssl passwd Moeclub
