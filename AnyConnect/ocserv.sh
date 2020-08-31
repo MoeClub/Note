@@ -28,7 +28,7 @@ fi
 
 
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y unzip p7zip-full gawk curl dnsmasq nload dnsutils iftop netcat openssl
+DEBIAN_FRONTEND=noninteractive apt-get install -y unzip p7zip-full gawk curl dnsmasq nload dnsutils iftop netcat openssl gnutls-bin
 
 
 mkdir -p /tmp
