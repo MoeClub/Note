@@ -41,7 +41,7 @@ make && make DESTDIR=/tmp install
 
 # Install ocserv v0.12.6
 ```
-wget --no-check-certificate -qO ocserv.tar.gz 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.6.tar'
+wget --no-check-certificate -qO ocserv.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.6.tar'
 tar --overwrite -xvf ocserv.tar -C /
 
 # Config
