@@ -19,7 +19,7 @@ iptables -t nat -A PREROUTING -d <本机地址> -p tcp --dport <本机端口> -j
 iptables -t nat -I POSTROUTING -d <远程地址> -p tcp --dport <远程端口> -j MASQUERADE
 ```
 
-# ocserv.sh (Debian 9)
+# ocserv.sh (Debian x64 8/9/10+)
 ```
 bash <(wget --no-check-certificate -qO- "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
 ```
