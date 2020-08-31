@@ -39,12 +39,10 @@ CFLAGS="-fPIC -I." LDFLAGS="-L." \
 make && make DESTDIR=/tmp install
 ```
 
-# Install Debian 9+ (ocserv v1.1.0)
+# Install ocserv v0.12.6
 ```
-DEBIAN_FRONTEND=noninteractive apt-get install -y libgnutls30 libev4
-
 wget --no-check-certificate -qO ocserv.tar.gz 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv.tar.gz'
-tar -zxvf ocserv.tar.gz -C /usr
+tar --overwrite -xvf ocserv.tar -C /
 
 # Config
 mkdir -p /etc/ocserv
