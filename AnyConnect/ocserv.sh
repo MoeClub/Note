@@ -16,25 +16,20 @@ else
   exit 1
 fi
 
-if [ "$deb_ver" == "9" ]; then
-  bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0 0
-fi
-
 echo "deb http://${url}/debian ${ver} main" >/etc/apt/sources.list
 echo "deb-src http://${url}/debian ${ver} main" >>/etc/apt/sources.list
 echo "deb http://${urls}/debian-security ${ver}/updates main" >>/etc/apt/sources.list
 echo "deb-src http://${urls}/debian-security ${ver}/updates main" >>/etc/apt/sources.list
 
-apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y unzip p7zip-full gawk curl dnsmasq nload dnsutils iftop netcat
-DEBIAN_FRONTEND=noninteractive apt-get install -y dbus init-system-helpers libc6 libev4  libgssapi-krb5-2 libhttp-parser2.1 liblz4-1 libnl-3-200 libnl-route-3-200 liboath0 libopts25 libpcl1 libprotobuf-c1 libsystemd0 libtalloc2 gnutls-bin ssl-cert 
-DEBIAN_FRONTEND=noninteractive apt-get install -y ethtool
-if [ "$deb_ver" != "9" ]; then
-  DEBIAN_FRONTEND=noninteractive apt-get install -y libgnutls-deb0-28 libnettle4
-else
-  DEBIAN_FRONTEND=noninteractive apt-get install -y ocserv
-  DEBIAN_FRONTEND=noninteractive apt-get --fix-broken install
+
+if [ "$deb_ver" == "9" ]; then
+  bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0 0
 fi
+
+
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -y unzip p7zip-full gawk curl dnsmasq nload dnsutils iftop netcat openssl
+
 
 mkdir -p /tmp
 ifname=`cat /proc/net/dev |grep ":" |cut -d":" -f1| sed "s/[[:space:]]//g" |grep -v '^lo\|^sit\|^stf\|^gif\|^dummy\|^vmnet\|^vir\|^gre\|^ipip\|^ppp\|^bond\|^tun\|^tap\|^ip6gre\|^ip6tnl\|^teql\|^ocserv' |head -n1`
@@ -75,19 +70,18 @@ no-negcache
 no-resolv
 no-hosts
 no-poll
-cache-size=10000
+max-cache-ttl=60
+cache-size=0
 server=8.8.4.4#53
 
 EOF
 }
 
-if [ "$deb_ver" != "9" ]; then
-  wget --no-check-certificate -qO "/tmp/libradcli4_1.2.6-3~bpo8+1_${os_ver}.deb" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/deb/libradcli4_1.2.6-3~bpo8+1_${os_ver}.deb"
-  wget --no-check-certificate -qO "/tmp/ocserv_0.11.6-1~bpo8+2_${os_ver}.deb" "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/deb/ocserv_0.11.6-1~bpo8+2_${os_ver}.deb"
-  dpkg -i /tmp/libradcli4_*.deb
-  dpkg -i /tmp/ocserv_*.deb
-fi
-[ -e /etc/ocserv ] && rm -rf /etc/ocserv
+
+wget --no-check-certificate -qO /tmp/ocserv.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.6.tar'
+tar --overwrite -xvf /tmp/ocserv.tar -C /
+
+rm -rf /etc/ocserv
 mkdir -p /etc/ocserv
 mkdir -p /etc/ocserv/group
 mkdir -p /etc/ocserv/template
@@ -120,7 +114,7 @@ cp -rf /etc/ocserv/template/ca-cert.pem /etc/ocserv/ca.cert.pem
 echo "MoeClub:Default:zeGEF25ZQQfDo" >/etc/ocserv/ocpasswd
 
 chown -R root:root /etc/ocserv
-chmod -R a+x /etc/ocserv
+chmod -R 755 /etc/ocserv
 
 [[ -f /etc/crontab ]] && [[ -f /etc/ocserv/iptables.rules ]] && {
   sed -i '/\/etc\/ocserv/d' /etc/crontab
@@ -153,15 +147,6 @@ fi
 #[ -f /etc/ssh/sshd_config ] && sed -i "s/^#\?Port .*/Port 9527/g" /etc/ssh/sshd_config;
 [ -f /etc/ssh/sshd_config ] && sed -i "s/^#\?PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config;
 [ -f /etc/ssh/sshd_config ] && sed -i "s/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g" /etc/ssh/sshd_config;
-
-# SSH Ciphers
-#[ -f /etc/ssh/sshd_config ] && sed -i "/^KexAlgorithms/d" /etc/ssh/sshd_config;
-#echo "KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256" >>/etc/ssh/sshd_config;
-#[ -f /etc/ssh/sshd_config ] && sed -i "/^Ciphers/d" /etc/ssh/sshd_config;
-#echo "Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com" >>/etc/ssh/sshd_config;
-#[ -f /etc/ssh/sshd_config ] && sed -i "/^MACs/d" /etc/ssh/sshd_config;
-#echo "MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com" >>/etc/ssh/sshd_config;
-
 
 # Timezone
 cp -f /usr/share/zoneinfo/PRC /etc/localtime
