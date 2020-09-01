@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 command -v certtool >>/dev/null 2>&1
 [ $? -ne 0 ] && echo "Not Found `certtool`" && exit 1
 
