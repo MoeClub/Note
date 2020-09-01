@@ -51,7 +51,7 @@ chmod -R 755 /etc/ocserv
 echo "MoeClub:Default:zeGEF25ZQQfDo" >/etc/ocserv/ocpasswd
 
 [[ -f /etc/ocserv/group/NoRoute ]] && sed -i "s/^no-route = .*\/255.255.255.255/no-route = ${PublicIP}\/255.255.255.255/" /etc/ocserv/group/NoRoute
-find /lib/systemd/system -name 'ocserv*' -delete
+[ -d /lib/systemd/system ] && find /lib/systemd/system -name 'ocserv*' -delete
 
 [[ -f /etc/crontab ]] && {
   sed -i '/\/etc\/ocserv/d' /etc/crontab
