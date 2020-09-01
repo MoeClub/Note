@@ -9,4 +9,3 @@ cd dnsmasq
 
 make CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -s"
 make PREFIX="/usr" DESTDIR=.. install
-
