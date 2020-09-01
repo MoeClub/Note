@@ -37,6 +37,9 @@ SCAN(){
 }
 
 command -v nc >>/dev/null 2>&1
-[ $? -ne 0 ] && START; exit 0
+if [ $? -ne 0 ]; then
+  START;
+  exit 0;
+fi
 
 while true; do SCAN; done
