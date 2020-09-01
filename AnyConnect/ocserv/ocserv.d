@@ -36,9 +36,7 @@ SCAN(){
   fi
 }
 
-if [ ! -e "$(which nc)" ]; then
-  START;
-  exit 0
-fi
+command -v nc >>/dev/null 2>&1
+[ $? -ne 0 ] && START; exit 0
 
 while true; do SCAN; done
