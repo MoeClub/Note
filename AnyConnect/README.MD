@@ -19,9 +19,9 @@ iptables -t nat -A PREROUTING -d <本机地址> -p tcp --dport <本机端口> -j
 iptables -t nat -I POSTROUTING -d <远程地址> -p tcp --dport <远程端口> -j MASQUERADE
 ```
 
-# ocserv.sh (Debian 9)
+# ocserv.sh (Debian x64 8/9/10+)
 ```
-bash <(wget --no-check-certificate -qO- "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
+bash <(wget --no-check-certificate --no-cache -4 -qO- "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
 ```
 ## 安装后需要的一些工作([域名证书可点此查看申请步骤](https://github.com/MoeClub/AlphaSSL))
 - 将域名证书上传至 `/etc/ocserv/server.cert.pem`
