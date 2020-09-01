@@ -26,7 +26,7 @@ while [[ $# -ge 1 ]]; do
       shift
       ;;
     *)
-      echo "bash $0 -o <OrgName> -g <GroupName> -p <PASSWORD>"
+      echo -e "Usage:\n\tbash $0 -o <OrgName> -g <GroupName> -p <PASSWORD>\n"
       exit 1;
       ;;
   esac
@@ -37,18 +37,20 @@ done
 
 
 if [ ! -f ./ca.cert.pem -o ! -f ./ca.key.pem ]; then
-  if [ ! -f ./ca.tmpl ]; then
-    echo -e "cn = \"${OrgName} CA\"\norganization = \"${OrgName}\"\nserial = 1\nexpiration_days = 3650\nca\nsigning_key\ncert_signing_key\ncrl_signing_key\n" >./ca.tmpl
+  if [ ! -f ./ca.cfg ]; then
+    echo -e "cn = \"${OrgName} CA\"\norganization = \"${OrgName}\"\nserial = 1\nexpiration_days = 3650\nca\nsigning_key\ncert_signing_key\ncrl_signing_key\n" >./ca.cfg
   fi
   certtool --generate-privkey --outfile ./ca.key.pem
-  certtool --generate-self-signed --template ./ca.tmpl --load-privkey ./ca.key.pem --outfile ./ca.cert.pem
+  certtool --generate-self-signed --template ./ca.cfg --load-privkey ./ca.key.pem --outfile ./ca.cert.pem
   cp -rf ./ca.cert.pem ../ca.cert.pem
+  rm -rf ./ca.cfg
 fi
 
-echo "cn = \"${OrgName}.${GroupName}\"\nunit = \"${GroupName}\"\nexpiration_days = 3650\nsigning_key\ntls_www_client\n" >user.tmpl
+echo -e "cn = \"${OrgName}.${GroupName}\"\nunit = \"${GroupName}\"\nexpiration_days = 3650\nsigning_key\ntls_www_client\n" >./user.cfg
 certtool --generate-privkey --outfile ./user.key.pem
-certtool --generate-certificate --hash SHA256 --load-privkey ./user.key.pem --load-ca-certificate ./ca.cert.pem --load-ca-privkey ./ca.key.pem --template ./user.tmpl --outfile ./user.cert.pem
+certtool --generate-certificate --hash SHA256 --load-privkey ./user.key.pem --load-ca-certificate ./ca.cert.pem --load-ca-privkey ./ca.key.pem --template ./user.cfg --outfile ./user.cert.pem
 cat ./ca.cert.pem >>./user.cert.pem
 certtool --to-p12 --pkcs-cipher 3des-pkcs12 --load-privkey ./user.key.pem --load-certificate ./user.cert.pem --p12-name="${OrgName}.${GroupName}" --outfile "./${GroupName}.p12" --outder --empty-password --password=$PASSWORD;
 
 [ $? -eq '0' ] && echo -e "\nSuccess! \nGROUP\t\tPASSWORD\n${GroupName}\t\t$PASSWORD\n" || echo -e "\nFail! \n";
+rm -rf ./user.cert.pem ./user.key.pem ./user.cfg
