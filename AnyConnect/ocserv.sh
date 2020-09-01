@@ -1,7 +1,6 @@
 #!/bin/bash
 # Script by MoeClub.org
 
-
 [ $EUID -ne 0 ] && echo "Error:This script must be run as root!" && exit 1
 EthName=`cat /proc/net/dev |grep ':' |cut -d':' -f1 |sed 's/\s//g' |grep -iv '^lo\|^sit\|^stf\|^gif\|^dummy\|^vmnet\|^vir\|^gre\|^ipip\|^ppp\|^bond\|^tun\|^tap\|^ip6gre\|^ip6tnl\|^teql\|^ocserv\|^vpn' |sed -n '1p'`
 [ -n "$EthName" ] || exit 1
@@ -15,7 +14,6 @@ fi
 
 for XCMD in `echo -e "wget\ntar\nxz\nnc\nopenssl\ncerttool"`; do command -v "$XCMD" >>/dev/null 2>&1; [ $? -ne 0 ] && echo "Not Found $XCMD."; done
 
-
 osVer="$(dpkg --print-architecture)"
 if [ -n "$osVer" -a "$osVer" == "amd64" ]; then
   debVer="$(cat /etc/issue |grep -io 'Debian.*' |sed -r 's/(.*)/\L\1/' |grep -o '[0-9.]*')"
@@ -27,7 +25,6 @@ fi
 
 mkdir -p /tmp
 PublicIP="$(wget --no-check-certificate -4 -qO- http://checkip.amazonaws.com)"
-
 
 rm -rf /etc/dnsmasq.d
 wget --no-check-certificate -4 -qO /tmp/dnsmasq.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/dnsmasq_v2.82.tar'
