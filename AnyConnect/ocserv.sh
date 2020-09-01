@@ -14,7 +14,7 @@ fi
 
 for XCMD in `echo -e "wget\ntar\nxz\nnc\nopenssl\ncerttool"`; do command -v "$XCMD" >>/dev/null 2>&1; [ $? -ne 0 ] && echo "Not Found $XCMD."; done
 
-osVer="$(dpkg --print-architecture)"
+osVer="$(dpkg --print-architecture 2>/dev/null)"
 if [ -n "$osVer" -a "$osVer" == "amd64" ]; then
   debVer="$(cat /etc/issue |grep -io 'Debian.*' |sed -r 's/(.*)/\L\1/' |grep -o '[0-9.]*')"
   if [ "$debVer" == "9" ]; then
