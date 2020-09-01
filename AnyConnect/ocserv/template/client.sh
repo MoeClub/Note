@@ -46,6 +46,19 @@ if [ ! -f ./ca.cert.pem -o ! -f ./ca.key.pem ]; then
   rm -rf ./ca.cfg
 fi
 
+if [ ! -f ../server.cert.pem -o ! -f ../server.key.pem ]; then
+  if [ ! -f ./server.cfg ]; then
+    echo -e "cn = \"${OrgName} CA\"\norganization = \"${OrgName}\"\nexpiration_days = -1\nsigning_key\nencryption_key\ntls_www_server\n" >./server.cfg
+  fi
+  certtool --generate-privkey --outfile ../server.key.pem
+  certtool --generate-certificate --load-privkey ../server.key.pem --load-ca-certificate ./ca.cert.pem --load-ca-privkey ./ca.key.pem --template ./server.cfg --outfile ../server.cert.pem
+  rm -rf ./server.cfg
+fi
+
+if [ ! -f ../dh.pem ]; then
+  certtool --generate-dh-params --outfile ../dh.pem
+fi
+
 echo -e "cn = \"${OrgName}.${GroupName}\"\nunit = \"${GroupName}\"\nexpiration_days = 3650\nsigning_key\ntls_www_client\n" >./user.cfg
 certtool --generate-privkey --outfile ./user.key.pem
 certtool --generate-certificate --hash SHA256 --load-privkey ./user.key.pem --load-ca-certificate ./ca.cert.pem --load-ca-privkey ./ca.key.pem --template ./user.cfg --outfile ./user.cert.pem
