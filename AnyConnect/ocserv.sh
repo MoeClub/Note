@@ -44,31 +44,23 @@ rm -rf /etc/ocserv
 wget --no-check-certificate -4 -qO /tmp/ocserv.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.6.tar'
 tar --overwrite -xvf /tmp/ocserv.tar -C /
 
+bash /etc/ocserv/template/client.sh
 
-# Server
-# server cert key file: /etc/ocserv/server.key.pem
-openssl genrsa -out /etc/ocserv/server.key.pem 1024
-# server cert file: /etc/ocserv/server.cert.pem
-openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=/CN=${PublicIP}"
-
+chown -R root:root /etc/ocserv
+chmod -R 755 /etc/ocserv
 
 # Default User
 ## openssl passwd Moeclub
 echo "MoeClub:Default:zeGEF25ZQQfDo" >/etc/ocserv/ocpasswd
 
-chown -R root:root /etc/ocserv
-chmod -R 755 /etc/ocserv
+[[ -f /etc/ocserv/group/NoRoute ]] && sed -i "s/^no-route = .*\/255.255.255.255/no-route = ${PublicIP}\/255.255.255.255/" /etc/ocserv/group/NoRoute
+find /lib/systemd/system -name 'ocserv*' -delete
 
 [[ -f /etc/crontab ]] && {
   sed -i '/\/etc\/ocserv/d' /etc/crontab
   while [ -z "$(sed -n '$p' /etc/crontab)" ]; do sed -i '$d' /etc/crontab; done
   sed -i "\$a\@reboot root bash /etc/ocserv/ocserv.d >>/dev/null 2>&1 &\n\n\n" /etc/crontab
 }
-
-[[ -f /etc/ocserv/group/NoRoute ]] && sed -i "s/^no-route = .*\/255.255.255.255/no-route = ${PublicIP}\/255.255.255.255/" /etc/ocserv/group/NoRoute
-find /lib/systemd/system -name 'ocserv*' -delete
-
-bash /etc/ocserv/template/client.sh
 
 # Sysctl
 sed -i '/^net\.ipv4\.ip_forward/d' /etc/sysctl.conf
