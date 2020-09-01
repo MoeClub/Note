@@ -159,6 +159,6 @@ make DESTDIR=$HOME/ocserv-bin install
 cd ..
 
 # cd $HOME/ocserv-bin
-# tar -cvf "../ocserv_v0.12.6.tar" ./
-# tar --overwrite -xvf ocserv_v0.12.6.tar -C /
+# tar -cvf "../ocserv_v0.12.3.tar" ./
+# tar --overwrite -xvf ocserv_v0.12.3.tar -C /
 
