@@ -43,12 +43,17 @@ tar --overwrite -xvf /tmp/ocserv.tar -C /
 
 bash /etc/ocserv/template/client.sh
 
-chown -R root:root /etc/ocserv
-chmod -R 755 /etc/ocserv
+# Server
+# server cert key file: /etc/ocserv/server.key.pem
+openssl genrsa -out /etc/ocserv/server.key.pem 2048
+# server cert file: /etc/ocserv/server.cert.pem
+openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=/CN=${PublicIP}"
 
 # Default User
-## openssl passwd Moeclub
-echo "MoeClub:Default:zeGEF25ZQQfDo" >/etc/ocserv/ocpasswd
+echo "MoeClub:Default:$(openssl passwd Moeclub)" >/etc/ocserv/ocpasswd
+
+chown -R root:root /etc/ocserv
+chmod -R 755 /etc/ocserv
 
 [[ -f /etc/ocserv/group/NoRoute ]] && sed -i "s/^no-route = .*\/255.255.255.255/no-route = ${PublicIP}\/255.255.255.255/" /etc/ocserv/group/NoRoute
 [ -d /lib/systemd/system ] && find /lib/systemd/system -name 'ocserv*' -delete
