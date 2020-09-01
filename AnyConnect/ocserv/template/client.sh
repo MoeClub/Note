@@ -1,7 +1,9 @@
 #!/bin/bash
 
+command -v openssl >>/dev/null 2>&1
+[ $? -ne 0 ] && echo "Not Found openssl" && exit 1
 command -v certtool >>/dev/null 2>&1
-[ $? -ne 0 ] && echo "Not Found `certtool`" && exit 1
+[ $? -ne 0 ] && echo "Not Found certtool" && exit 1
 cd `dirname "$0"`
 
 export OrgName
@@ -41,6 +43,7 @@ if [ ! -f ./ca.cert.pem -o ! -f ./ca.key.pem ]; then
   if [ ! -f ./ca.cfg ]; then
     echo -e "cn = \"${OrgName} CA\"\norganization = \"${OrgName}\"\nserial = 1\nexpiration_days = 3650\nca\nsigning_key\ncert_signing_key\ncrl_signing_key\n" >./ca.cfg
   fi
+  openssl genrsa -out ./ca.key.pem 2048
   certtool --generate-privkey --outfile ./ca.key.pem
   certtool --generate-self-signed --template ./ca.cfg --load-privkey ./ca.key.pem --outfile ./ca.cert.pem
   cp -rf ./ca.cert.pem ../ca.cert.pem
@@ -51,7 +54,7 @@ if [ ! -f ../server.cert.pem -o ! -f ../server.key.pem ]; then
   if [ ! -f ./server.cfg ]; then
     echo -e "cn = \"${OrgName} CA\"\norganization = \"${OrgName}\"\nexpiration_days = -1\nsigning_key\nencryption_key\ntls_www_server\n" >./server.cfg
   fi
-  certtool --generate-privkey --outfile ../server.key.pem
+  openssl genrsa -out ../server.key.pem 2048
   certtool --generate-certificate --load-privkey ../server.key.pem --load-ca-certificate ./ca.cert.pem --load-ca-privkey ./ca.key.pem --template ./server.cfg --outfile ../server.cert.pem
   rm -rf ./server.cfg
 fi
@@ -61,10 +64,10 @@ if [ ! -f ../dh.pem ]; then
 fi
 
 echo -e "cn = \"${OrgName}.${GroupName}\"\nunit = \"${GroupName}\"\nexpiration_days = 3650\nsigning_key\ntls_www_client\n" >./user.cfg
-certtool --generate-privkey --outfile ./user.key.pem
-certtool --generate-certificate --hash SHA256 --load-privkey ./user.key.pem --load-ca-certificate ./ca.cert.pem --load-ca-privkey ./ca.key.pem --template ./user.cfg --outfile ./user.cert.pem
+openssl genrsa -out ./user.key.pem 2048
+certtool --generate-certificate --load-privkey ./user.key.pem --load-ca-certificate ./ca.cert.pem --load-ca-privkey ./ca.key.pem --template ./user.cfg --outfile ./user.cert.pem
 cat ./ca.cert.pem >>./user.cert.pem
-certtool --to-p12 --pkcs-cipher 3des-pkcs12 --load-privkey ./user.key.pem --load-certificate ./user.cert.pem --p12-name="${OrgName}.${GroupName}" --outfile "./${GroupName}.p12" --outder --empty-password --password=$PASSWORD;
+openssl pkcs12 -export -inkey ./user.key.pem -in ./user.cert.pem -name "${OrgName}.${GroupName}" -certfile ./ca.cert.pem -caname "${OrgName} CA" -out "./${GroupName}.p12" -passout pass:$PASSWORD
 
 [ $? -eq '0' ] && echo -e "\nSuccess! \nGROUP\t\tPASSWORD\n${GroupName}\t\t$PASSWORD\n" || echo -e "\nFail! \n";
 rm -rf ./user.cert.pem ./user.key.pem ./user.cfg
