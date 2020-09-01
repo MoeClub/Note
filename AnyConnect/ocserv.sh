@@ -38,7 +38,7 @@ sed -i "s/#\?except-interface=.*/except-interface=${EthName}/" /etc/dnsmasq.conf
 }
 
 rm -rf /etc/ocserv
-wget --no-check-certificate -4 -qO /tmp/ocserv.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/ocserv_v0.12.6.tar'
+wget --no-check-certificate -4 -qO /tmp/ocserv.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/ocserv_v0.12.3.tar'
 tar --overwrite -xvf /tmp/ocserv.tar -C /
 
 bash /etc/ocserv/template/client.sh
