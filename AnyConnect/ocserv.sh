@@ -50,7 +50,7 @@ openssl genrsa -out /etc/ocserv/server.key.pem 2048
 openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=/CN=${PublicIP}"
 
 # Default User
-echo "MoeClub:NoRoute:$(openssl passwd MoeClub)" >/etc/ocserv/ocpasswd
+echo "MoeClub:Default:$(openssl passwd MoeClub)" >/etc/ocserv/ocpasswd
 
 chown -R root:root /etc/ocserv
 chmod -R 755 /etc/ocserv
