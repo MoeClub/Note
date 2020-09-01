@@ -7,7 +7,7 @@ cd /tmp
 ver_nettle=3.3
 ver_gnutls=3.5.8
 ver_libev=4.22
-ver_ocserv=0.12.6
+ver_ocserv=0.12.3
 
 #################
 #################
