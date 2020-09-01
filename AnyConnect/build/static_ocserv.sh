@@ -46,7 +46,7 @@ void mpz_mod_2exp(mpz_t remainder, mpz_t dividend, unsigned long int exponent_of
 	mpz_tdiv_r_2exp(remainder, dividend, exponent_of_2);
 }
 EOF
-CFLAGS="-I$instPrefix/include" LDFLAGS="-L$instPrefix/lib -O2 -fPIC" \
+CFLAGS="-I$instPrefix/include -fPIC -O2" LDFLAGS="-L$instPrefix/lib" \
 ./configure \
 	--enable-mini-gmp --enable-x86-aesni --enable-static \
 	--disable-{documentation,shared,rpath}
@@ -63,7 +63,7 @@ wget --no-check-certificate -4 -O gnutls.tar.xz ftp://ftp.gnutls.org/gcrypt/gnut
 mkdir -p gnutls; tar -xJ -f gnutls.tar.xz -C gnutls --strip-components=1;
 cd gnutls
 sed -i '/gmp\.h/d' lib/nettle/int/dsa-fips.h
-CFLAGS="-I$instPrefix/include" LDFLAGS="-L$instPrefix/lib -O2 -fPIC" \
+CFLAGS="-I$instPrefix/include -fPIC -O2" LDFLAGS="-L$instPrefix/lib" \
 ./configure \
 	--with-nettle-mini --with-included-{libtasn1,unistring} \
 	--without-p11-kit --enable-static \
@@ -79,7 +79,7 @@ wget --no-check-certificate -4 -O libev.tar.gz http://dist.schmorp.de/libev/Atti
 [ -d libev ] && rm -rf libev
 mkdir -p libev; tar -xz -f libev.tar.gz -C libev --strip-components=1;
 cd libev
-CFLAGS="-I$instPrefix/include" LDFLAGS="-L$instPrefix/lib -O2 -fPIC" \
+CFLAGS="-I$instPrefix/include -fPIC -O2" LDFLAGS="-L$instPrefix/lib" \
 ./configure \
   --enable-static \
 	--disable-{shared,rpath} 
@@ -108,7 +108,7 @@ void rl_redisplay(void);
 #endif
 EOF
 # readline.c
-$CC -xc - -c -o readline.o -O2 <<EOF
+$CC -xc - -c -o readline.o -fPIC -O2 <<EOF
 #include <stdio.h>
 #include <string.h>
 char *rl_line_buffer = NULL;
@@ -144,8 +144,8 @@ cd ocserv
 #autoreconf -fvi
 sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
 sed -i 's/\$LIBS \$LIBEV/\$LIBEV \$LIBS/g' configure
-CFLAGS="-I$instPrefix/include" \
-LDFLAGS="-L$instPrefix/lib -O2 -fPIC -static -pthread -lpthread" \
+CFLAGS="-I$instPrefix/include -fPIC -O2" \
+LDFLAGS="-L$instPrefix/lib -static -s -pthread -lpthread" \
 LIBNETTLE_LIBS="-lnettle -lhogweed" LIBREADLINE_LIBS="-lreadline" \
 LIBS="-lm" \
 ./configure --prefix=/usr \
