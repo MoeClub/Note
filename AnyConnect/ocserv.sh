@@ -37,7 +37,7 @@ sed -i "s/#\?except-interface=.*/except-interface=${EthName}/" /etc/dnsmasq.conf
 [[ -f /etc/crontab ]] && {
   sed -i '/dnsmasq/d' /etc/crontab
   while [ -z "$(sed -n '$p' /etc/crontab)" ]; do sed -i '$d' /etc/crontab; done
-  sed -i "\$a\@reboot root dnsmasq >>/dev/null 2>&1 &\n\n\n" /etc/crontab
+  sed -i "\$a\@reboot root /usr/sbin/dnsmasq >>/dev/null 2>&1 &\n\n\n" /etc/crontab
 }
 
 rm -rf /etc/ocserv
