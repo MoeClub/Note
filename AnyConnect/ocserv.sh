@@ -27,7 +27,7 @@ mkdir -p /tmp
 PublicIP="$(wget --no-check-certificate -4 -qO- http://checkip.amazonaws.com)"
 
 rm -rf /etc/dnsmasq.d
-wget --no-check-certificate -4 -qO /tmp/dnsmasq.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/dnsmasq_v2.82.tar'
+wget --no-check-certificate -4 -qO /tmp/dnsmasq.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/dnsmasq_v2.82.tar'
 tar --overwrite -xvf /tmp/dnsmasq.tar -C /
 sed -i "s/#\?except-interface=.*/except-interface=${EthName}/" /etc/dnsmasq.conf
 
@@ -38,7 +38,7 @@ sed -i "s/#\?except-interface=.*/except-interface=${EthName}/" /etc/dnsmasq.conf
 }
 
 rm -rf /etc/ocserv
-wget --no-check-certificate -4 -qO /tmp/ocserv.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.6.tar'
+wget --no-check-certificate -4 -qO /tmp/ocserv.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/ocserv_v0.12.6.tar'
 tar --overwrite -xvf /tmp/ocserv.tar -C /
 
 bash /etc/ocserv/template/client.sh
