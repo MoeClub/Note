@@ -37,11 +37,17 @@ CFLAGS="-fPIC -I." LDFLAGS="-L." \
 --with-local-talloc
 
 make && make DESTDIR=/tmp install
+
 ```
 
-# Install ocserv v0.12.6
+# Build ocserv v0.12.3
 ```
-wget --no-check-certificate -qO ocserv.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.6.tar'
+bash <(wget --no-check-certificate -4 -qO- 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/static_ocserv.sh')
+```
+
+# Install ocserv v0.12.3
+```
+wget --no-check-certificate -qO ocserv.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.3.tar'
 tar --overwrite -xvf ocserv.tar -C /
 
 # Config

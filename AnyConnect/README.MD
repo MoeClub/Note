@@ -19,7 +19,7 @@ iptables -t nat -A PREROUTING -d <本机地址> -p tcp --dport <本机端口> -j
 iptables -t nat -I POSTROUTING -d <远程地址> -p tcp --dport <远程端口> -j MASQUERADE
 ```
 
-# ocserv.sh (Debian x64 8/9/10+)
+# ocserv.sh (Debian x64 8+ / CentOS 6+ / Ubuntu 14+)
 ```
 bash <(wget --no-check-certificate --no-cache -4 -qO- "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
 ```
@@ -37,5 +37,5 @@ sed -i "s/^#\?Port .*/Port 9527/g" /etc/ssh/sshd_config;
 # 修改 ocserv 端口(TCP 改为 23443)
 sed -i "s/^#\?tcp-port .*/tcp-port 23443/g" /etc/ocserv/ocserv.conf;
 # 生成用户证书(根据CA证书验证,如果部署多个.请保证CA证书相同)
-bash /etc/ocserv/template/client.sh <证书密码,苹果设备不能为空>
+bash /etc/ocserv/template/client.sh -g <分组名字> -p <证书密码,苹果设备不能为空>
 ```

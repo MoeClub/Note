@@ -7,7 +7,7 @@ cd /tmp
 ver_nettle=3.3
 ver_gnutls=3.5.8
 ver_libev=4.22
-ver_ocserv=0.12.6
+ver_ocserv=0.12.3
 
 #################
 #################
@@ -46,7 +46,8 @@ void mpz_mod_2exp(mpz_t remainder, mpz_t dividend, unsigned long int exponent_of
 	mpz_tdiv_r_2exp(remainder, dividend, exponent_of_2);
 }
 EOF
-CFLAGS="-I$instPrefix/include -fPIC -O2" LDFLAGS="-L$instPrefix/lib" \
+CFLAGS="-I$instPrefix/include -ffloat-store -O0 --static" \
+LDFLAGS="-L$instPrefix/lib -static-libgcc -static-libstdc++" \
 ./configure \
 	--enable-mini-gmp --enable-x86-aesni --enable-static \
 	--disable-{documentation,shared,rpath}
@@ -63,7 +64,8 @@ wget --no-check-certificate -4 -O gnutls.tar.xz ftp://ftp.gnutls.org/gcrypt/gnut
 mkdir -p gnutls; tar -xJ -f gnutls.tar.xz -C gnutls --strip-components=1;
 cd gnutls
 sed -i '/gmp\.h/d' lib/nettle/int/dsa-fips.h
-CFLAGS="-I$instPrefix/include -fPIC -O2" LDFLAGS="-L$instPrefix/lib" \
+CFLAGS="-I$instPrefix/include -ffloat-store -O0 --static" \
+LDFLAGS="-L$instPrefix/lib -static-libgcc -static-libstdc++" \
 ./configure \
 	--with-nettle-mini --with-included-{libtasn1,unistring} \
 	--without-p11-kit --enable-static \
@@ -79,7 +81,8 @@ wget --no-check-certificate -4 -O libev.tar.gz http://dist.schmorp.de/libev/Atti
 [ -d libev ] && rm -rf libev
 mkdir -p libev; tar -xz -f libev.tar.gz -C libev --strip-components=1;
 cd libev
-CFLAGS="-I$instPrefix/include -fPIC -O2" LDFLAGS="-L$instPrefix/lib" \
+CFLAGS="-I$instPrefix/include -ffloat-store -O0 --static" \
+LDFLAGS="-L$instPrefix/lib -static-libgcc -static-libstdc++" \
 ./configure \
   --enable-static \
 	--disable-{shared,rpath} 
@@ -108,7 +111,7 @@ void rl_redisplay(void);
 #endif
 EOF
 # readline.c
-$CC -xc - -c -o readline.o -fPIC -O2 <<EOF
+$CC -xc - -c -o readline.o -ffloat-store -O0 <<EOF
 #include <stdio.h>
 #include <string.h>
 char *rl_line_buffer = NULL;
@@ -144,8 +147,8 @@ cd ocserv
 #autoreconf -fvi
 sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
 sed -i 's/\$LIBS \$LIBEV/\$LIBEV \$LIBS/g' configure
-CFLAGS="-I$instPrefix/include -fPIC -O2" \
-LDFLAGS="-L$instPrefix/lib -static -s -pthread -lpthread" \
+CFLAGS="-I$instPrefix/include -ffloat-store -O0 --static" \
+LDFLAGS="-L$instPrefix/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 LIBNETTLE_LIBS="-lnettle -lhogweed" LIBREADLINE_LIBS="-lreadline" \
 LIBS="-lm" \
 ./configure --prefix=/usr \
@@ -159,5 +162,6 @@ make DESTDIR=$HOME/ocserv-bin install
 cd ..
 
 # cd $HOME/ocserv-bin
-# tar -cvf "../ocserv_v0.12.6.tar" ./
-# tar --overwrite -xvf ocserv_v0.12.6.tar -C /
+# tar -cvf "../ocserv_v0.12.3.tar" ./
+# tar --overwrite -xvf ocserv_v0.12.3.tar -C /
+
