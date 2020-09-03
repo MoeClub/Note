@@ -39,11 +39,11 @@ wget --no-check-certificate -4 -qO /tmp/dnsmasq.tar 'https://raw.githubuserconte
 tar --overwrite -xvf /tmp/dnsmasq.tar -C /
 sed -i "s/#\?except-interface=.*/except-interface=${EthName}/" /etc/dnsmasq.conf
 
-[[ -f /etc/crontab ]] && {
+if [ -f /etc/crontab ]; then
   sed -i '/dnsmasq/d' /etc/crontab
   while [ -z "$(sed -n '$p' /etc/crontab)" ]; do sed -i '$d' /etc/crontab; done
   sed -i "\$a\@reboot root /usr/sbin/dnsmasq >>/dev/null 2>&1 &\n\n\n" /etc/crontab
-}
+fi
 
 # ocserv
 rm -rf /etc/ocserv
@@ -63,19 +63,20 @@ bash /etc/ocserv/template/client.sh
 chown -R root:root /etc/ocserv
 chmod -R 755 /etc/ocserv
 
-[[ -f /etc/ocserv/group/NoRoute ]] && sed -i "s/^no-route = .*\/255.255.255.255/no-route = ${PublicIP}\/255.255.255.255/" /etc/ocserv/group/NoRoute
 [ -d /lib/systemd/system ] && find /lib/systemd/system -name 'ocserv*' -delete
 
-[[ -f /etc/crontab ]] && {
+if [ -f /etc/crontab ]; then
   sed -i '/\/etc\/ocserv/d' /etc/crontab
   while [ -z "$(sed -n '$p' /etc/crontab)" ]; do sed -i '$d' /etc/crontab; done
   sed -i "\$a\@reboot root bash /etc/ocserv/ocserv.d >>/dev/null 2>&1 &\n\n\n" /etc/crontab
-}
+fi
 
 # Sysctl
-sed -i '/^net\.ipv4\.ip_forward/d' /etc/sysctl.conf
-while [ -z "$(sed -n '$p' /etc/sysctl.conf)" ]; do sed -i '$d' /etc/sysctl.conf; done
-sed -i '$a\net.ipv4.ip_forward = 1\n\n' /etc/sysctl.conf
+if [ -f /etc/sysctl.conf ]; then
+  sed -i '/^net\.ipv4\.ip_forward/d' /etc/sysctl.conf
+  while [ -z "$(sed -n '$p' /etc/sysctl.conf)" ]; do sed -i '$d' /etc/sysctl.conf; done
+  sed -i '$a\net.ipv4.ip_forward = 1\n\n' /etc/sysctl.conf
+fi
 
 # Limit
 if [[ -f /etc/security/limits.conf ]]; then
