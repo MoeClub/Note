@@ -7,7 +7,7 @@ MyPort="1688"
 MyPath="$(dirname `readlink -f "$0"`)"
 MyExec="${MyPath}/vlmcsdmulti"
 
-[ -f "${MyPort}" ] || exit 1
+[ -n "${MyPort}" ] || exit 1
 [ -f "${MyExec}" ] || exit 1
 
 IPTABLES(){
