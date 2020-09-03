@@ -35,7 +35,7 @@ INIT(){
 }
 
 STOP(){
-  DEAMONS=("vlmcsd", "vlmcsdmulti")
+  DEAMONS=("vlmcsd" "vlmcsdmulti")
   for deamon in "${DEAMONS[@]}"; do [ -n "$deamon" ] && kill -9 `ps -C "$deamon" -o pid=` >>/dev/null 2>&1; done
 }
 
