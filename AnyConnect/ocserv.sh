@@ -50,9 +50,6 @@ rm -rf /etc/ocserv
 wget --no-check-certificate -4 -qO /tmp/ocserv.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/ocserv_v0.12.3.tar'
 tar --overwrite -xvf /tmp/ocserv.tar -C /
 
-bash /etc/ocserv/template/client.sh
-
-# Server
 # server cert key file: /etc/ocserv/server.key.pem
 openssl genrsa -out /etc/ocserv/server.key.pem 2048
 # server cert file: /etc/ocserv/server.cert.pem
@@ -60,6 +57,8 @@ openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocse
 
 # Default User
 echo "MoeClub:Default:$(openssl passwd MoeClub)" >/etc/ocserv/ocpasswd
+
+bash /etc/ocserv/template/client.sh
 
 chown -R root:root /etc/ocserv
 chmod -R 755 /etc/ocserv
