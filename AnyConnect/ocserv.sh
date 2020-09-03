@@ -12,7 +12,8 @@ else
   apt-get install -y curl wget netcat openssl gnutls-bin xz-utils
 fi
 
-for XCMD in `echo -e "wget\ntar\nxz\nnc\nopenssl\ncerttool"`; do command -v "$XCMD" >>/dev/null 2>&1; [ $? -ne 0 ] && echo "Not Found $XCMD."; done
+XCMDS=("wget" "tar" "xz" "nc" "openssl" "certtool")
+for XCMD in "${XCMDS[@]}"; do command -v "$XCMD" >>/dev/null 2>&1; [ $? -ne 0 ] && echo "Not Found $XCMD."; done
 
 osVer="$(dpkg --print-architecture 2>/dev/null)"
 if [ -n "$osVer" -a "$osVer" == "amd64" ]; then
@@ -26,6 +27,13 @@ fi
 mkdir -p /tmp
 PublicIP="$(wget --no-check-certificate -4 -qO- http://checkip.amazonaws.com)"
 
+# vlmcs
+rm -rf /etc/vlmcs
+wget --no-check-certificate -4 -qO /tmp/vlmcs.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/vlmcsd/vlmcsd.tar'
+tar --overwrite -xvf /tmp/vlmcs.tar -C /
+[ -f /etc/vlmcs/vlmcs.d ] && bash /etc/vlmcs/vlmcs.d init
+
+# dnsmasq
 rm -rf /etc/dnsmasq.d
 wget --no-check-certificate -4 -qO /tmp/dnsmasq.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/dnsmasq_v2.82.tar'
 tar --overwrite -xvf /tmp/dnsmasq.tar -C /
@@ -37,6 +45,7 @@ sed -i "s/#\?except-interface=.*/except-interface=${EthName}/" /etc/dnsmasq.conf
   sed -i "\$a\@reboot root /usr/sbin/dnsmasq >>/dev/null 2>&1 &\n\n\n" /etc/crontab
 }
 
+# ocserv
 rm -rf /etc/ocserv
 wget --no-check-certificate -4 -qO /tmp/ocserv.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/ocserv_v0.12.3.tar'
 tar --overwrite -xvf /tmp/ocserv.tar -C /
