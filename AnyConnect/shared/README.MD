@@ -1,8 +1,10 @@
 # 证书登陆时所有分组选择 Default
 
-# 苹果设备下载 _WithPasswd.p12, 密码为: MoeClub
+# 苹果设备下载 *_WithPasswd.p12, 密码为: MoeClub
 
-# 非苹果设备下载 _NoPasswd.p12, 密码为空或无密码.
+# 安卓设备下载 Route_*.p12, 密码为空 或 MoeClub. 
+
+# 其他设备下载 *_NoPasswd.p12, 密码为空或无密码.
 
 # Windows 双击安装时选 "本地计算机"
 
