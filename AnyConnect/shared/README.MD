@@ -10,3 +10,4 @@
 ```
 https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/shared/NoRoute_WithPasswd.p12
 ```
+# 首次使用服务器可能需要使用账户密码登陆一次: MoeClub / MoeClub
