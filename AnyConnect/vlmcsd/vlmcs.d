@@ -7,6 +7,7 @@ MyPort="1688"
 MyPath="$(dirname `readlink -f "$0"`)"
 MyExec="${MyPath}/vlmcsdmulti"
 
+[ -f "${MyPort}" ] || exit 1
 [ -f "${MyExec}" ] || exit 1
 
 IPTABLES(){
@@ -14,7 +15,7 @@ IPTABLES(){
   echo "$RULE_RAW" |grep -q "^iptables"
   [ $? -eq 0 ] || return 1
   RULE_CHECK=`echo "$RULE_RAW" |sed 's/-I\|-A/-C/'`
-  ${RULE_CHECK} 2>/dev/null
+  ${RULE_CHECK} >>/dev/null 2>&1
   [ $? -eq 1 ] && ${RULE_RAW} 
   return 0
 }
