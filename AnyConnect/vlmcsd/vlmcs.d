@@ -35,8 +35,8 @@ INIT(){
 }
 
 STOP(){
-  kill -9 $(ps -C vlmcsd -o pid=) >>/dev/null 2>&1;
-  kill -9 $(ps -C vlmcsdmulti -o pid=) >>/dev/null 2>&1;
+  DEAMONS=("vlmcsd", "vlmcsdmulti")
+  for deamon in "${DEAMONS[@]}"; do [ -n "$deamon" ] && kill -9 `ps -C "$deamon" -o pid=` >>/dev/null 2>&1; done
 }
 
 START(){
