@@ -40,7 +40,7 @@ STOP(){
 
 START(){
   STOP;
-  IPTABLES -I INPUT -p tcp --dport ${MyPort} -j ACCEPT
+  IPTABLES "iptables -I INPUT -p tcp --dport ${MyPort} -j ACCEPT"
   "${MyExec}" vlmcsd >>/dev/null 2>&1;
 }
 
