@@ -7,16 +7,14 @@ MyPort="1688"
 MyPath="$(dirname `readlink -f "$0"`)"
 MyExec="${MyPath}/vlmcsdmulti"
 
-[ -f "${MyPort}" ] || exit 1
 [ -f "${MyExec}" ] || exit 1
-
 
 IPTABLES(){
   RULE_RAW=`echo "$1" |sed 's/^\s*//' |sed 's/\s*$//'`
   echo "$RULE_RAW" |grep -q "^iptables"
   [ $? -eq 0 ] || return 1
   RULE_CHECK=`echo "$RULE_RAW" |sed 's/-I\|-A/-C/'`
-  ${RULE_CHECK} >>/dev/null 2>&1
+  ${RULE_CHECK} 2>/dev/null
   [ $? -eq 1 ] && ${RULE_RAW} 
   return 0
 }
@@ -64,6 +62,9 @@ if [ "$MyARG" == "INIT" ]; then
   INIT;
   exit 0;
 elif [ "$MyARG" == "START" ]; then
+  START;
+  exit 0;
+elif [ "$MyARG" == "RESTART" ]; then
   START;
   exit 0;
 elif [ "$MyARG" == "STOP" ]; then
