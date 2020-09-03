@@ -2,7 +2,7 @@
 
 MyPort="1688"
 MyPath="$(dirname `readlink -f "$0"`)"
-MyExec="${MyPath}/vlmcsd"
+MyExec="${MyPath}/vlmcsdmulti"
 [ -f "${MyExec}" ] || exit 1
 [ -n "$MyPort" ] && iptables -I INPUT -p tcp --dport ${MyPort} -j ACCEPT
 
