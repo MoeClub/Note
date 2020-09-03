@@ -1,12 +1,25 @@
 #!/bin/bash
+# Autorun whit crontab by MoeClub
+
 
 MyARG=`echo "$1" |sed 's/^\s$//' |sed 's/[a-z]/\u&/g'`
 MyPort="1688"
 MyPath="$(dirname `readlink -f "$0"`)"
 MyExec="${MyPath}/vlmcsdmulti"
 
+[ -f "${MyPort}" ] || exit 1
 [ -f "${MyExec}" ] || exit 1
-[ -n "$MyPort" ] && iptables -I INPUT -p tcp --dport ${MyPort} -j ACCEPT
+
+
+IPTABLES(){
+  RULE_RAW=`echo "$1" |sed 's/^\s*//' |sed 's/\s*$//'`
+  echo "$RULE_RAW" |grep -q "^iptables"
+  [ $? -eq 0 ] || return 1
+  RULE_CHECK=`echo "$RULE_RAW" |sed 's/-I\|-A/-C/'`
+  ${RULE_CHECK} >>/dev/null 2>&1
+  [ $? -eq 1 ] && ${RULE_RAW} 
+  return 0
+}
 
 INIT(){
   MyCMD=`echo "$1" |sed 's/^\s$//'`
@@ -28,6 +41,7 @@ STOP(){
 
 START(){
   STOP;
+  IPTABLES -I INPUT -p tcp --dport ${MyPort} -j ACCEPT
   "${MyExec}" vlmcsd >>/dev/null 2>&1;
 }
 
