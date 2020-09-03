@@ -4,7 +4,7 @@
 
 # Windows 双击安装时选 "本地计算机"
 
-# iPhone, iPad 导入用户证书地址
+# iPhone, iPad 打开 AnyConnect --> 诊断 --> 证书 --> 导入用户证书...
 ```
 https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/shared/NoRoute_WithPasswd.p12
 ```
