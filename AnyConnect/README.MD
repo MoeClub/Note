@@ -26,7 +26,7 @@ bash <(wget --no-check-certificate --no-cache -4 -qO- "https://raw.githubusercon
 ## 安装后需要的一些工作([域名证书可点此查看申请步骤](https://github.com/MoeClub/AlphaSSL))
 - 将域名证书上传至 `/etc/ocserv/server.cert.pem`
 - 将域名证书私钥上传至 `/etc/ocserv/server.key.pem`
-- 如果有多组服务器, 备份保存CA证书 `/etc/ocserv/template/ca-cert.pem` 和 `/etc/ocserv/template/ca-key.pem`.
+- 如果有多组服务器, 备份保存CA证书 `/etc/ocserv/template/ca.cert.pem` 和 `/etc/ocserv/template/ca.key.pem`.
 - **预设用户名**为`Default`,`NoRoute`,`Route`; **预设密码**为`MoeClub`.(可自行更改`/etc/ocserv/ocpasswd`)      
   - 用户密码格式: `<用户名>:<用户组>:<用户密码密文>`       
   - 用户密码密文: `openssl passwd Moeclub` (`Moeclub`为密码)     
