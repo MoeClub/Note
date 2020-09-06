@@ -13,3 +13,9 @@
 https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/shared/NoRoute_WithPasswd.p12
 ```
 # (可选)首次使用服务器可能需要使用账户密码登陆一次: NoRoute / MoeClub
+
+# 注意事项(因系统限制)
+- iOS 用户请使用 NoRoute 分组, 预设用户名为 NoRoute.
+- Android 用户请使用 Route 分组, 预设用户名为 Route.
+
+
