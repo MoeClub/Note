@@ -31,8 +31,8 @@ bash <(wget --no-check-certificate --no-cache -4 -qO- "https://raw.githubusercon
   - 用户密码格式: `<用户名>:<用户组>:<用户密码密文>`       
   - 用户密码密文: `openssl passwd Moeclub` (`Moeclub`为密码)     
 - 注意事项(**因系统限制**)
-  - iOS 用户请使用 `NoRoute`, 预设用户名为 `NoRoute`.
-  - Android 用户请使用 `Route`, 预设用户名为 `Route`.
+  - iOS 用户请使用 `NoRoute` 分组, 预设用户名为 `NoRoute`.
+  - Android 用户请使用 `Route` 分组, 预设用户名为 `Route`.
 ```
 ## 非必要步骤
 # 修改 SSH 端口 (改为 9527)
