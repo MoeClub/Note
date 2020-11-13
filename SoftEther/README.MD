@@ -15,6 +15,12 @@ bash <(wget --no-check-certificate --no-cache -4 -qO- "https://raw.githubusercon
 
 ```
 
+## Usage
+```
+Usage:
+        bash SoftEther.sh -a [AdminPasswd] -u [User] -p [Passwd]
+```
+
 ## Network
 ```
 Address: 192.168.233.2 ~ 192.168.233.254
