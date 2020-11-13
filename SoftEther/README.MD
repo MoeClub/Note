@@ -3,10 +3,10 @@
 ## Require
 ```
 # Debian/Ubuntu
-apt-get install -y build-essential
+apt-get install -y gcc make
 
 # CentOS
-# TODO
+yum install gcc make
 ```
 
 ## Install
