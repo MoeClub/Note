@@ -39,18 +39,19 @@ rm -rf /tmp/vpnserver
 rm -rf /etc/softether
 mkdir -p /etc/softether
 
-wget -qO "/tmp/softether.tar.gz" "https://www.softether-download.com/files/softether/v4.34-9745-rtm-2020.04.05-tree/Linux/SoftEther_VPN_Server/64bit_-_Intel_x64_or_AMD64/softether-vpnserver-v4.34-9745-rtm-2020.04.05-linux-x64-64bit.tar.gz"
-wget -qO "/etc/softether/vpn_server.config" "https://raw.githubusercontent.com/MoeClub/Note/master/SoftEther/vpn_server.config"
+wget --no-check-certificate --no-cache -4 -qO "/tmp/softether.tar.gz" "https://www.softether-download.com/files/softether/v4.34-9745-rtm-2020.04.05-tree/Linux/SoftEther_VPN_Server/64bit_-_Intel_x64_or_AMD64/softether-vpnserver-v4.34-9745-rtm-2020.04.05-linux-x64-64bit.tar.gz"
+wget --no-check-certificate --no-cache -4 -qO "/etc/softether/vpn_server.config" "https://raw.githubusercontent.com/MoeClub/Note/master/SoftEther/vpn_server.config"
 
 
 tar -zvxf /tmp/softether.tar.gz -C /tmp
 cd /tmp/vpnserver
 make i_read_and_agree_the_license_agreement
-[ $? -ne 0 ] || exit 1
+[ $? -eq 0 ] || exit 1
 
 
-cp -rf /tmp/vpnserver/vpnserver /etc/softether
-cp -rf /tmp/vpnserver/vpncmd /etc/softether
+[ -f /tmp/vpnserver/vpnserver ] && cp -rf /tmp/vpnserver/vpnserver /etc/softether
+[ -f /tmp/vpnserver/vpncmd ] && cp -rf /tmp/vpnserver/vpncmd /etc/softether
+[ -f /etc/softether/vpnserver ] && [ -f /etc/softether/vpncmd ] || exit 1
 chmod -R 755 /etc/softether
 
 
