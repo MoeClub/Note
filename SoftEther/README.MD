@@ -1,6 +1,7 @@
 # SoftEther (Linux)
 ```
 bash <(wget --no-check-certificate --no-cache -4 -qO- "https://raw.githubusercontent.com/MoeClub/Note/master/SoftEther/SoftEther.sh") -a empty -u vpn -p vpn
+
 ```
 
 # Network
