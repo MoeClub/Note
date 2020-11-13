@@ -1,7 +1,6 @@
 #!/bin/bash
 # Author: MoeClub.org
 
-
 export ADMIN=''
 export USER=''
 export PASSWD=''
@@ -63,6 +62,8 @@ if [ -f /etc/crontab ]; then
 fi
 
 /etc/softether/vpnserver start
+echo "Waiting service ..."
+sleep 5
 
 /etc/softether/vpncmd 127.0.0.1:5555 /SERVER /PASSWORD:empty /HUB:DEFAULT /CMD:UserCreate "$USER" /GROUP: /REALNAME: /NOTE:
 /etc/softether/vpncmd 127.0.0.1:5555 /SERVER /PASSWORD:empty /HUB:DEFAULT /CMD:UserPasswordSet "$USER" /PASSWORD:"$PASSWD"
