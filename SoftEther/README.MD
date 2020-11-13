@@ -17,7 +17,7 @@ bash <(wget --no-check-certificate --no-cache -4 -qO- "https://raw.githubusercon
 
 ## Network
 ```
-Address: 192.168.233.10 ~ 192.168.233.200
+Address: 192.168.233.2 ~ 192.168.233.254
 Gateway: 192.168.233.1
 NetMask: 255.255.255.0
 
