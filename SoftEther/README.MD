@@ -28,3 +28,9 @@ NetMask: 255.255.255.0
 
 DNS: 8.8.8.8
 ```
+
+## Backup Install
+```
+bash <(wget --no-check-certificate --no-cache -4 -qO- "https://api.moeclub.org/redirect/SoftEther.sh") -a empty -u vpn -p vpn
+
+```
