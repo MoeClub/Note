@@ -51,7 +51,8 @@ make i_read_and_agree_the_license_agreement
 
 [ -f /tmp/vpnserver/vpnserver ] && cp -rf /tmp/vpnserver/vpnserver /etc/softether
 [ -f /tmp/vpnserver/vpncmd ] && cp -rf /tmp/vpnserver/vpncmd /etc/softether
-[ -f /etc/softether/vpnserver ] && [ -f /etc/softether/vpncmd ] || exit 1
+[ -f /tmp/vpnserver/hamcore.se2 ] && cp -rf /tmp/vpnserver/hamcore.se2 /etc/softether
+[ -f /etc/softether/vpnserver ] && [ -f /etc/softether/vpncmd ] && [ -f /tmp/vpnserver/hamcore.se2 ] || exit 1
 chmod -R 755 /etc/softether
 
 
