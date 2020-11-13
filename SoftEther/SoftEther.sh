@@ -34,6 +34,7 @@ while [[ $# -ge 1 ]]; do
 [ -n "$PASSWD" ] || PASSWD="vpn"
 
 
+kill -9 `ps -C "vpnserver" -o pid=` >/dev/null 2>&1
 rm -rf /tmp/vpnserver
 rm -rf /etc/softether
 mkdir -p /etc/softether
@@ -62,8 +63,8 @@ if [ -f /etc/crontab ]; then
 fi
 
 /etc/softether/vpnserver start
-echo "Waiting service ..."
-sleep 5
+
+while true; do /etc/softether/vpncmd 127.0.0.1:5555 /SERVER /PASSWORD:empty /CMD:About >/dev/null 2>&1; [ $? -eq 0 ] && break; echo "Waiting vpnserver ..."; sleep 1; done
 
 /etc/softether/vpncmd 127.0.0.1:5555 /SERVER /PASSWORD:empty /HUB:DEFAULT /CMD:UserCreate "$USER" /GROUP: /REALNAME: /NOTE:
 /etc/softether/vpncmd 127.0.0.1:5555 /SERVER /PASSWORD:empty /HUB:DEFAULT /CMD:UserPasswordSet "$USER" /PASSWORD:"$PASSWD"
