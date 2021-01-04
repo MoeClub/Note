@@ -11,14 +11,19 @@ defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
 defaults write com.apple.loginwindow SHOWOTHERUSERS_MANAGED -bool FALSE
 ```
 
-### Disable system update
+### Disable system update red notice
 ```
-defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
+defaults delete com.apple.systempreferences AttentionPrefBundleIDs && killall Dock
 ```
 
 ### Disable App Store Update Notification
 ```
-sudo defaults write /Library/Preferences/com.apple.AppStore.plist DisableSoftwareUpdateNotifications -bool TRUE
+defaults write /Library/Preferences/com.apple.AppStore.plist DisableSoftwareUpdateNotifications -bool TRUE
+```
+
+### Disable system update notice
+```
+sudo chmod 644 /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app/Contents/MacOS/SoftwareUpdateNotificationManager
 ```
 
 ### Delete system file
