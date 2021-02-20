@@ -4,6 +4,8 @@ if [ -f "/usr/bin/sudo" ]; then
   [ "$(sudo whoami)" == "root" ] || return
   # System setting
   echo -e "\n# System setting ..."
+  sudo nvram StartupMute=%01
+  sudo nvram BootAudio=%00
   sudo nvram SystemAudioVolume=%80
   sudo defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
   sudo defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
