@@ -191,12 +191,12 @@ ENABLEALL "./System/Library/LaunchDaemons"
 ENABLEALL "./System/Library/LaunchAgents"
 
 # Enable Update Check
-echo -e "\n# Enable Update Check ..."
-if [ -f "/usr/bin/sudo" ]; then
-sudo find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" sudo chmod 755 "{}"
-else
-find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" chmod 755 "{}"
-fi
+#echo -e "\n# Enable Update Check ..."
+#if [ -f "/usr/bin/sudo" ]; then
+#sudo find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" sudo chmod 755 "{}"
+#else
+#find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" chmod 755 "{}"
+#fi
 
 # Enable and Exit
 # exit 0
