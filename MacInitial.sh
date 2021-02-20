@@ -11,7 +11,7 @@ fi
 
 
 # Check SIP
-[ -f "/usr/bin/sudo" ] && [ "$(csrutil status |cut -d':' -f2 |grep -io 'enable\|disable')" != "disable" ] && echo "Please disable SIP. (csrutil disable)" && exit 1
+[ -f "/usr/bin/sudo" ] && [ "$(csrutil status |cut -d':' -f2 |grep -io 'enable\|disable')" != "disable" ] && echo "Please disable SIP. (command + r; csrutil disable)" && exit 1
 
 # Mount
 if [ -f "/usr/bin/sudo" ]; then
