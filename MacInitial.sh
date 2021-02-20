@@ -68,11 +68,11 @@ RENAMEBIN(){
 }
 
 RMAPP(){
-  [ -n "$1" ] &&  [ -n "$2" ] && [ -d "$1" ] && [ -d "$2" ] || return
+  [ -n "$1" ] &&  [ -n "$2" ] && [ -d "$1" ] || return
   for item in `find "$1" -type d -maxdepth 1 -name "${2}"`
     do
       [ -n "$item" ] || continue
-      echo "RM APP'$2'"
+      echo "RM APP '$2'"
       if [ -f "/usr/bin/sudo" ]; then
         sudo rm -rf "${item}"
       else
@@ -226,12 +226,12 @@ find "/System/Library/PrivateFrameworks/SoftwareUpdate.framework" -type f -name 
 fi
 
 # Disable Update Check
-echo -e "\n# Disable Update Check ..."
-if [ -f "/usr/bin/sudo" ]; then
-sudo find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" sudo chmod 644 "{}"
-else
-find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" chmod 644 "{}"
-fi
+#echo -e "\n# Disable Update Check ..."
+#if [ -f "/usr/bin/sudo" ]; then
+#sudo find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" sudo chmod 644 "{}"
+#else
+#find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" chmod 644 "{}"
+#fi
 
 # Finish
 echo -e "\n# Finish! \n"
