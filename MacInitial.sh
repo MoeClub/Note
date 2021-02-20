@@ -210,10 +210,12 @@ echo -e "\n# Replace spindump ..."
 RENAMEBIN "/usr/sbin/spindump"
 
 # Disable Update Notice
+echo -e "\n# Disable Update Notice ..."
 find "/System/Library/PrivateFrameworks/SoftwareUpdate.framework" -type f -name "SoftwareUpdateNotificationManager" |xargs -t -I "{}" chmod 644 "{}"
 
 # Disable Update Check
-find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" chmod 644 "{}"
+#echo -e "\n# Disable Update Check ..."
+#find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" chmod 644 "{}"
 
 # Finish
 echo -e "\n# Finish! \n"
