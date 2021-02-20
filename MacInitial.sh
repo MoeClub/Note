@@ -6,6 +6,7 @@ if [ -f "/usr/bin/sudo" ]; then
   echo -e "\n# System setting ..."
   sudo defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
   sudo defaults write com.apple.loginwindow SHOWOTHERUSERS_MANAGED -bool FALSE
+  sudo defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
 fi
 
 
@@ -62,7 +63,7 @@ RENAMEBIN(){
     sudo mv "${1}" "${1}.bak"
   fi
   if [ -f "${1}.bak" ]; then
-    sudo ln -sf /usr/bin/true "$1"
+    sudo ln -sf "/usr/bin/true" "$1"
   fi
 }
 
@@ -73,7 +74,7 @@ RMAPP(){
       [ -n "$item" ] || continue
       echo "RM APP'$2'"
       if [ -f "/usr/bin/sudo" ]; then
-        rm -rf "${item}"
+        sudo rm -rf "${item}"
       else
         rm -rf "${item}"
       fi
@@ -85,7 +86,7 @@ DEAMONS=()
 # Disable Analytic
 DEAMONS+=("com.apple.analyticsd.plist")
 # Disable AirPlay
-DEAMONS+=("com.apple.AirPlayXPCHelper.plist")
+#DEAMONS+=("com.apple.AirPlayXPCHelper.plist")
 # Disable Updates
 DEAMONS+=("com.apple.softwareupdate.plist")
 # Disable DVD
@@ -98,7 +99,7 @@ DEAMONS+=("com.apple.SubmitDiagInfo.plist" \
 # Disable FTP
 DEAMONS+=("com.apple.ftp-proxy.plist")
 # Disable APSD
-# DEAMONS+=("com.apple.apsd")
+#DEAMONS+=("com.apple.apsd")
 # Disable spindump
 DEAMONS+=("com.apple.spindump.plist")
 # Disable systemstats
@@ -135,9 +136,11 @@ AGENTS+=("com.apple.siriknowledged.plist" \
          "com.apple.assistant_service.plist" \
          "com.apple.assistantd.plist" \
          "com.apple.Siri.agent.plist")
+# Disable Airplay
+#AGENTS+=("com.apple.AirPlayUIAgent.plist")
 # Disable Sidecar
-AGENTS+=("com.apple.sidecar-hid-relay.plist" \
-         "com.apple.sidecar-relay.plist")
+#AGENTS+=("com.apple.sidecar-hid-relay.plist" \
+#         "com.apple.sidecar-relay.plist")
 # Disable Ad
 AGENTS+=("com.apple.ap.adprivacyd.plist" \
          "com.apple.ap.adservicesd.plist")
@@ -147,8 +150,7 @@ AGENTS+=("com.apple.spindump_agent.plist" \
          "com.apple.ReportGPURestart.plist" \
          "com.apple.ReportPanic.plist")
 # Disable Others
-AGENTS+=("com.apple.AirPlayUIAgent.plist" \
-         "com.apple.AirPortBaseStationAgent.plist" \
+AGENTS+=("com.apple.AirPortBaseStationAgent.plist" \
          "com.apple.photoanalysisd.plist" \
          "com.apple.familycircled.plist" \
          "com.apple.familycontrols.useragent.plist" \
@@ -175,8 +177,7 @@ APPS+=("TV.app" \
        "Books.app" \
        "Chess.app" \
        "Podcasts.app" \
-       "Stocks.app" \
-       "Music.app")
+       "Stocks.app")
 
 
 
@@ -207,6 +208,12 @@ for app in "${APPS[@]}"; do RMAPP "./System/Applications" "$app"; done
 # Replace spindump
 echo -e "\n# Replace spindump ..."
 RENAMEBIN "/usr/sbin/spindump"
+
+# Disable Update Notice
+find "/System/Library/PrivateFrameworks/SoftwareUpdate.framework" -type f -name "SoftwareUpdateNotificationManager" |xargs -t -I "{}" chmod 644 "{}"
+
+# Disable Update Check
+find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" chmod 644 "{}"
 
 # Finish
 echo -e "\n# Finish! \n"
