@@ -4,9 +4,10 @@ if [ -f "/usr/bin/sudo" ]; then
   [ "$(sudo whoami)" == "root" ] || return
   # System setting
   echo -e "\n# System setting ..."
+  sudo nvram SystemAudioVolume=%80
+  sudo defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
   sudo defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
   sudo defaults write com.apple.loginwindow SHOWOTHERUSERS_MANAGED -bool FALSE
-  sudo defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
 fi
 
 
@@ -57,12 +58,13 @@ ENABLEALL(){
 
 
 RENAMEBIN(){
-  [ -f "/usr/bin/sudo" ] && [ -n "$1" ] && [ -f "$1" ] || return
+  [ -f "/usr/bin/sudo" ] && [ -n "$1" ] || return
   if [ ! -f "${1}.bak" ]; then
     echo "${1} --> ${1}.bak"
     sudo mv "${1}" "${1}.bak"
   fi
   if [ -f "${1}.bak" ]; then
+    echo "/usr/bin/true --> ${1}"
     sudo ln -sf "/usr/bin/true" "$1"
   fi
 }
@@ -190,13 +192,6 @@ ENABLEALL "./System/Library/LaunchDaemons"
 # Enable /System/Library/LaunchAgents
 ENABLEALL "./System/Library/LaunchAgents"
 
-# Enable Update Check
-#echo -e "\n# Enable Update Check ..."
-#if [ -f "/usr/bin/sudo" ]; then
-#sudo find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" sudo chmod 755 "{}"
-#else
-#find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" chmod 755 "{}"
-#fi
 
 # Enable and Exit
 # exit 0
@@ -225,13 +220,6 @@ else
 find "/System/Library/PrivateFrameworks/SoftwareUpdate.framework" -type f -name "SoftwareUpdateNotificationManager" |xargs -t -I "{}" chmod 644 "{}"
 fi
 
-# Disable Update Check
-#echo -e "\n# Disable Update Check ..."
-#if [ -f "/usr/bin/sudo" ]; then
-#sudo find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" sudo chmod 644 "{}"
-#else
-#find "/System/Library/CoreServices/Software Update.app" -type f -name "softwareupdated" |xargs -t -I "{}" chmod 644 "{}"
-#fi
 
 # Finish
 echo -e "\n# Finish! \n"
