@@ -217,9 +217,9 @@ RENAMEBIN "/usr/sbin/spindump"
 # Disable Update Notice
 echo -e "\n# Disable Update Notice ..."
 if [ -f "/usr/bin/sudo" ]; then
-sudo find "/System/Library/PrivateFrameworks/SoftwareUpdate.framework" -type f -name "SoftwareUpdateNotificationManager" |xargs -t -I "{}" sudo chmod 644 "{}"
+sudo find "./System/Library/PrivateFrameworks/SoftwareUpdate.framework" -type f -name "SoftwareUpdateNotificationManager" |xargs -t -I "{}" sudo chmod 644 "{}"
 else
-find "/System/Library/PrivateFrameworks/SoftwareUpdate.framework" -type f -name "SoftwareUpdateNotificationManager" |xargs -t -I "{}" chmod 644 "{}"
+find "./System/Library/PrivateFrameworks/SoftwareUpdate.framework" -type f -name "SoftwareUpdateNotificationManager" |xargs -t -I "{}" chmod 644 "{}"
 fi
 
 
