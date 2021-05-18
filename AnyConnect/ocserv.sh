@@ -97,6 +97,8 @@ fi
 cp -f /usr/share/zoneinfo/PRC /etc/localtime
 echo "Asia/Shanghai" >/etc/timezone
 
-read -n 1 -p "Press <ENTER> to reboot..."
+## Not Reboot
+[ "$1" -eq "NotReboot" ] && exit 0
 ## Rebot Now
+read -n 1 -p "Press <ENTER> to reboot..."
 reboot
