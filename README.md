@@ -11,14 +11,15 @@ defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
 defaults write com.apple.loginwindow SHOWOTHERUSERS_MANAGED -bool FALSE
 ```
 
-### Disable system update red notice
+### Clear system update red notice
 ```
 defaults delete com.apple.systempreferences AttentionPrefBundleIDs && killall Dock
 ```
 
-### Disable App Store Update Notification
+### Clear App Store Update Notification
 ```
 defaults write /Library/Preferences/com.apple.AppStore.plist DisableSoftwareUpdateNotifications -bool TRUE
+defaults write com.apple.appstored.plist BadgeCount 0 && killall Dock
 ```
 
 ### System update notice
@@ -27,8 +28,21 @@ defaults write /Library/Preferences/com.apple.AppStore.plist DisableSoftwareUpda
 sudo chmod 644 /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app/Contents/MacOS/SoftwareUpdateNotificationManager
 
 # enable
-sudo chmod 755 /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app/Contents/MacOS/SoftwareUpdateNotificationManager
+sudo chmod 751 /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app/Contents/MacOS/SoftwareUpdateNotificationManager
 ```
+
+### MacOS System & App Store
+```
+# check
+/usr/libexec/nsurlsessiond
+
+# notice
+/System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app/Contents/MacOS/SoftwareUpdateNotificationManager
+
+# download
+/System/Library/PrivateFrameworks/MobileSoftwareUpdate.framework/Support/softwareupdated
+```
+
 
 ### Delete system file
 ```
