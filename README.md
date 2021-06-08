@@ -21,9 +21,13 @@ defaults delete com.apple.systempreferences AttentionPrefBundleIDs && killall Do
 defaults write /Library/Preferences/com.apple.AppStore.plist DisableSoftwareUpdateNotifications -bool TRUE
 ```
 
-### Disable system update notice
+### System update notice
 ```
+# disable
 sudo chmod 644 /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app/Contents/MacOS/SoftwareUpdateNotificationManager
+
+# enable
+sudo chmod 755 /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app/Contents/MacOS/SoftwareUpdateNotificationManager
 ```
 
 ### Delete system file
