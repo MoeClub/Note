@@ -48,6 +48,7 @@ sudo chmod 751 /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versio
 ```
 # Disbale SIP (command + r)
 csrutil disable
+csrutil authenticated-root disable
 
 # Mount '/' as write
 sudo mount -uw /
@@ -65,6 +66,7 @@ sudo rm -rf /System/Applications/Music.app
 
 # Enable SIP
 csrutil enable
+csrutil authenticated-root enable
 ```
 
 # Modify user name and folder
