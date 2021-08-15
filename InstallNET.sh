@@ -281,6 +281,7 @@ if [[ -z "$DIST" ]]; then
         [[ "$isDigital" == '14.04' ]] && DIST='trusty';
         [[ "$isDigital" == '16.04' ]] && DIST='xenial';
         [[ "$isDigital" == '18.04' ]] && DIST='bionic';
+        [[ "$isDigital" == '20.04' ]] && DIST='focal';
       }
     }
     LinuxMirror=$(SelectMirror "$Relese" "$DIST" "$VER" "$tmpMirror")
