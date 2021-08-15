@@ -1,6 +1,7 @@
 # Install
 ```
 bash <(wget --no-check-certificate -qO- "https://raw.githubusercontent.com/MoeClub/Note/master/Deluge/deluge.sh") "deluge"
+
 ```
 
 # Nginx
