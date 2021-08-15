@@ -10,14 +10,14 @@ cd /tmp/deluge-* && ppython setup.py install --force --install-layout=deb --sing
 
 pip3 install lxml==4.3.5 deluge_client
 
-
+RSC="https://raw.githubusercontent.com/MoeClub/Note/master/Deluge/deluge"
 mkdir -p "$HOME/.config/deluge/plugins"
-wget --no-check-certificate -qO "$HOME/.config/deluge/deluged" 'https://moeclub.org/attachment/LinuxSoftware/deluge/deluged'
-wget --no-check-certificate -qO "$HOME/.config/deluge/deluge_passwd.py" 'https://moeclub.org/attachment/LinuxSoftware/deluge/deluge_passwd.py'
-wget --no-check-certificate -qO "$HOME/.config/deluge/web.conf" 'https://moeclub.org/attachment/LinuxSoftware/deluge/web.conf'
-wget --no-check-certificate -qO "$HOME/.config/deluge/core.conf" 'https://moeclub.org/attachment/LinuxSoftware/deluge/core.conf'
-wget --no-check-certificate -qO "$HOME/.config/deluge/ltconfig.conf" 'https://moeclub.org/attachment/LinuxSoftware/deluge/ltconfig.conf'
-wget --no-check-certificate -qO "$HOME/.config/deluge/plugins/ltConfig-0.3.1-py2.7.egg" 'https://moeclub.org/attachment/LinuxSoftware/deluge/plugins/ltConfig-0.3.1-py2.7.egg'
+wget --no-check-certificate -qO "$HOME/.config/deluge/deluged" "${RSC}/deluged"
+wget --no-check-certificate -qO "$HOME/.config/deluge/deluge_passwd.py" "${RSC}deluge_passwd.py"
+wget --no-check-certificate -qO "$HOME/.config/deluge/web.conf" "${RSC}/web.conf"
+wget --no-check-certificate -qO "$HOME/.config/deluge/core.conf" "${RSC}/core.conf"
+wget --no-check-certificate -qO "$HOME/.config/deluge/ltconfig.conf" "${RSC}/ltconfig.conf"
+wget --no-check-certificate -qO "$HOME/.config/deluge/plugins/ltConfig-0.3.1-py2.7.egg" "${RSC}/plugins/ltConfig-0.3.1-py2.7.egg"
 
 if [ -f "$HOME/.config/deluge/core.conf" ]; then
   grep '"download_location":' "$HOME/.config/deluge/core.conf" |cut -d'"' -f4 |xargs mkdir -p
