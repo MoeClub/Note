@@ -1,16 +1,17 @@
 #!bin/bash
 # Install Deluge
 
+
 delugePwd="${1:-deluge}"
 apt-get update --allow-releaseinfo-change
 apt-get install -y python python-twisted python-openssl python-setuptools intltool python-xdg python-chardet python-libtorrent python-notify python-pygame python-glade2 librsvg2-common xdg-utils python-mako 
 
-wget --no-check-certificate -qO- 'http://download.deluge-torrent.org/source/deluge-1.3.15.tar.gz' |tar -zvx -C /tmp
+RSC="https://raw.githubusercontent.com/MoeClub/Note/master/Deluge/deluge"
+wget --no-check-certificate -qO- "${RSC}/deluge-1.3.15.tar.gz" |tar -zvx -C /tmp
 cd /tmp/deluge-* && ppython setup.py install --force --install-layout=deb --single-version-externally-managed --record /tmp/deluge.log
 
 pip3 install lxml==4.3.5 deluge_client
 
-RSC="https://raw.githubusercontent.com/MoeClub/Note/master/Deluge/deluge"
 mkdir -p "$HOME/.config/deluge/plugins"
 wget --no-check-certificate -qO "$HOME/.config/deluge/deluged" "${RSC}/deluged"
 wget --no-check-certificate -qO "$HOME/.config/deluge/deluge_passwd.py" "${RSC}deluge_passwd.py"
