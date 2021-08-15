@@ -4,6 +4,12 @@ bash <(wget --no-check-certificate -qO- "https://raw.githubusercontent.com/MoeCl
 
 ```
 
+# Reset Passwd
+```
+python "$HOME/.config/deluge/deluge_passwd.py" "deluge"
+
+```
+
 # Nginx
 ```
     location ^~ /deluge {
