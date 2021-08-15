@@ -1,4 +1,7 @@
 # Install Deluge
+```
+bash <()
+```
 
 # Nginx
 ```
