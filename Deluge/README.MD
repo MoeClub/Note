@@ -19,6 +19,7 @@ python "$HOME/.config/deluge/deluge_passwd.py" "deluge"
         proxy_set_header Cookie "_session_id=000000000000000000000000000;";
         proxy_cookie_domain $proxy_host $host;
         proxy_pass http://127.0.0.1:8112;
+        client_max_body_size 10m;
     }
 
 ```
