@@ -248,7 +248,7 @@ fi
 [ -z "$VER" ] && VER='amd64'
 
 if [[ -z "$tmpDIST" ]]; then
-  [ "$Relese" == 'Debian' ] && tmpDIST='jessie' && DIST='jessie';
+  [ "$Relese" == 'Debian' ] && tmpDIST='jessie' && DIST='buster';
   [ "$Relese" == 'Ubuntu' ] && tmpDIST='bionic' && DIST='bionic';
   [ "$Relese" == 'CentOS' ] && tmpDIST='6.10' && DIST='6.10';
 fi
@@ -265,6 +265,7 @@ if [[ -z "$DIST" ]]; then
         [[ "$isDigital" == '8' ]] && DIST='jessie';
         [[ "$isDigital" == '9' ]] && DIST='stretch';
         [[ "$isDigital" == '10' ]] && DIST='buster';
+        [[ "$isDigital" == '11' ]] && DIST='bullseye';
       }
     }
     LinuxMirror=$(SelectMirror "$Relese" "$DIST" "$VER" "$tmpMirror")
@@ -847,7 +848,7 @@ chown root:root $GRUBDIR/$GRUBFILE
 chmod 444 $GRUBDIR/$GRUBFILE
 
 if [[ "$loaderMode" == "0" ]]; then
-  sleep 3 && reboot >/dev/null 2>&1
+  sleep 3 && reboot || sudo reboot >/dev/null 2>&1
 else
   rm -rf "$HOME/loader"
   mkdir -p "$HOME/loader"
