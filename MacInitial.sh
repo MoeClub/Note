@@ -4,13 +4,17 @@ if [ -f "/usr/bin/sudo" ]; then
   [ "$(sudo whoami)" == "root" ] || return
   # System setting
   echo -e "\n# System setting ..."
+  sudo nvram StartupMute=%01
+  sudo nvram BootAudio=%00
+  sudo nvram SystemAudioVolume=%80
+  sudo defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
   sudo defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
   sudo defaults write com.apple.loginwindow SHOWOTHERUSERS_MANAGED -bool FALSE
 fi
 
 
 # Check SIP
-[ -f "/usr/bin/sudo" ] && [ "$(csrutil status |cut -d':' -f2 |grep -io 'enable\|disable')" != "disable" ] && echo "Please disable SIP. (csrutil disable)" && exit 1
+[ -f "/usr/bin/sudo" ] && [ "$(csrutil status |cut -d':' -f2 |grep -io 'enable\|disable')" != "disable" ] && echo "Please disable SIP. (command + r; csrutil disable)" && exit 1
 
 # Mount
 if [ -f "/usr/bin/sudo" ]; then
@@ -56,24 +60,25 @@ ENABLEALL(){
 
 
 RENAMEBIN(){
-  [ -f "/usr/bin/sudo" ] && [ -n "$1" ] && [ -f "$1" ] || return
+  [ -f "/usr/bin/sudo" ] && [ -n "$1" ] || return
   if [ ! -f "${1}.bak" ]; then
     echo "${1} --> ${1}.bak"
     sudo mv "${1}" "${1}.bak"
   fi
   if [ -f "${1}.bak" ]; then
-    sudo ln -sf /usr/bin/true "$1"
+    echo "/usr/bin/true --> ${1}"
+    sudo ln -sf "/usr/bin/true" "$1"
   fi
 }
 
 RMAPP(){
-  [ -n "$1" ] &&  [ -n "$2" ] && [ -d "$1" ] && [ -d "$2" ] || return
+  [ -n "$1" ] &&  [ -n "$2" ] && [ -d "$1" ] || return
   for item in `find "$1" -type d -maxdepth 1 -name "${2}"`
     do
       [ -n "$item" ] || continue
-      echo "RM APP'$2'"
+      echo "RM APP '$2'"
       if [ -f "/usr/bin/sudo" ]; then
-        rm -rf "${item}"
+        sudo rm -rf "${item}"
       else
         rm -rf "${item}"
       fi
@@ -85,7 +90,7 @@ DEAMONS=()
 # Disable Analytic
 DEAMONS+=("com.apple.analyticsd.plist")
 # Disable AirPlay
-DEAMONS+=("com.apple.AirPlayXPCHelper.plist")
+#DEAMONS+=("com.apple.AirPlayXPCHelper.plist")
 # Disable Updates
 DEAMONS+=("com.apple.softwareupdate.plist")
 # Disable DVD
@@ -98,7 +103,7 @@ DEAMONS+=("com.apple.SubmitDiagInfo.plist" \
 # Disable FTP
 DEAMONS+=("com.apple.ftp-proxy.plist")
 # Disable APSD
-# DEAMONS+=("com.apple.apsd")
+#DEAMONS+=("com.apple.apsd")
 # Disable spindump
 DEAMONS+=("com.apple.spindump.plist")
 # Disable systemstats
@@ -135,9 +140,11 @@ AGENTS+=("com.apple.siriknowledged.plist" \
          "com.apple.assistant_service.plist" \
          "com.apple.assistantd.plist" \
          "com.apple.Siri.agent.plist")
+# Disable Airplay
+#AGENTS+=("com.apple.AirPlayUIAgent.plist")
 # Disable Sidecar
-AGENTS+=("com.apple.sidecar-hid-relay.plist" \
-         "com.apple.sidecar-relay.plist")
+#AGENTS+=("com.apple.sidecar-hid-relay.plist" \
+#         "com.apple.sidecar-relay.plist")
 # Disable Ad
 AGENTS+=("com.apple.ap.adprivacyd.plist" \
          "com.apple.ap.adservicesd.plist")
@@ -147,8 +154,7 @@ AGENTS+=("com.apple.spindump_agent.plist" \
          "com.apple.ReportGPURestart.plist" \
          "com.apple.ReportPanic.plist")
 # Disable Others
-AGENTS+=("com.apple.AirPlayUIAgent.plist" \
-         "com.apple.AirPortBaseStationAgent.plist" \
+AGENTS+=("com.apple.AirPortBaseStationAgent.plist" \
          "com.apple.photoanalysisd.plist" \
          "com.apple.familycircled.plist" \
          "com.apple.familycontrols.useragent.plist" \
@@ -175,8 +181,7 @@ APPS+=("TV.app" \
        "Books.app" \
        "Chess.app" \
        "Podcasts.app" \
-       "Stocks.app" \
-       "Music.app")
+       "Stocks.app")
 
 
 
@@ -188,6 +193,7 @@ ENABLEALL "./System/Library/LaunchDaemons"
 
 # Enable /System/Library/LaunchAgents
 ENABLEALL "./System/Library/LaunchAgents"
+
 
 # Enable and Exit
 # exit 0
@@ -207,6 +213,15 @@ for app in "${APPS[@]}"; do RMAPP "./System/Applications" "$app"; done
 # Replace spindump
 echo -e "\n# Replace spindump ..."
 RENAMEBIN "/usr/sbin/spindump"
+
+# Disable Update Notice
+echo -e "\n# Disable Update Notice ..."
+if [ -f "/usr/bin/sudo" ]; then
+sudo find "./System/Library/PrivateFrameworks/SoftwareUpdate.framework" -type f -name "SoftwareUpdateNotificationManager" |xargs -t -I "{}" sudo chmod 644 "{}"
+else
+find "./System/Library/PrivateFrameworks/SoftwareUpdate.framework" -type f -name "SoftwareUpdateNotificationManager" |xargs -t -I "{}" chmod 644 "{}"
+fi
+
 
 # Finish
 echo -e "\n# Finish! \n"

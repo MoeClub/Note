@@ -1,0 +1,104 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:		deluged
+# Required-Start:	$all
+# Required-Stop:	
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Description: Start deluge-web and deluged.
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+[ -n "$(command -v python)" ] || exit 1
+[ -n "$(command -v deluge-web)" ] || exit 1
+[ -n "$(command -v deluged)" ] || exit 1
+
+USER='root'
+config_path="$(eval echo "~$USER")/.config/deluge"
+SetInternet="0"
+
+set_internet(){
+  ifname="eth0"
+  [ "$SetInternet" == "1" ] || return
+  webui_port="$(cat "${config_path}/web.conf" |grep '"port":' |grep -o '[0-9]*')"
+  [ -n "$webui_port" ] || return
+  if [ "$1"  == "close" ]; then
+    iptables -D INPUT -p tcp --dport $webui_port -j deluge >/dev/null 2>&1
+    iptables -D INPUT -p udp --dport $webui_port -j deluge >/dev/null 2>&1
+    iptables -F deluge >/dev/null 2>&1
+    iptables -X deluge >/dev/null 2>&1
+    iptables -N deluge >/dev/null 2>&1
+    iptables -A deluge -j RETURN
+    iptables -I INPUT -p tcp --dport $webui_port -j deluge
+    iptables -I INPUT -p udp --dport $webui_port -j deluge
+    iptables -I deluge -i $ifname -p tcp --dport $webui_port -j REJECT
+    iptables -I deluge -i $ifname -p udp --dport $webui_port -j REJECT
+  elif [ "$1"  == "open" ]; then
+    iptables -D INPUT -p tcp --dport $webui_port -j deluge >/dev/null 2>&1
+    iptables -D INPUT -p udp --dport $webui_port -j deluge >/dev/null 2>&1
+    iptables -F deluge >/dev/null 2>&1
+    iptables -X deluge >/dev/null 2>&1
+  fi
+}
+
+check_status(){
+  [ -n "$1" ] || return
+  ps -C "$1" -o pid= |grep -o '[0-9]*'
+}
+
+do_stop(){
+  [ "$#" -ge "1" ] || return
+  for xproc in "$@"; do
+    kill -9 `ps -C "$xproc" -o pid= |grep -o '[0-9]*'` >>/dev/null 2>&1
+    sleep 1
+  done
+}
+
+do_start(){
+  [ -f "$1" ] || return
+  exec_name=$(basename "$1")
+  start-stop-daemon --start --chuid $USER --name $exec_name --background --exec "$1" -- $2
+}
+
+case "$1" in
+  start|"")
+    set_internet close
+    [ -n "$(check_status deluge-web)" ] || do_start "$(command -v deluge-web)" "--quiet"
+    [ -n "$(check_status deluged)" ] || do_start "$(command -v deluged)" "--do-not-daemonize --config=$config_path"
+    ;;
+  restart)
+    do_stop deluge-web deluged
+    set_internet open
+    set_internet close
+    do_start "$(command -v deluge-web)" "--quiet"
+    do_start "$(command -v deluged)" "--do-not-daemonize --config=$config_path"
+    ;;
+  stop)
+    do_stop deluge-web deluged
+    set_internet open
+    ;;
+  init)
+    initfile=$(readlink -f "$0")
+    chmod 755 "$initfile"
+    sed -i '/deluged/d' /etc/crontab
+    while [ -z "$(sed -n '$p' /etc/crontab)" ]; do sed -i '$d' /etc/crontab; done
+    sed -i '$a\@reboot root bash '${initfile}' start\n\n' /etc/crontab
+    # Easy to contrl
+    ln -sf "${initfile}" /usr/bin/deluge-ctl
+    # Patch for base url
+    [ -f /usr/lib/python2.7/dist-packages/deluge/ui/web/server.py ] && sed -i 's|^[[:space:]]\{4,12\}self.site = server.Site(self.top_level)|#&\n        res = resource.Resource()\n        base_url = self.config["base"]\n        if base_url == "/":\n            base_url = ""\n        else:\n            base_url = base_url.strip("/")\n        res.putChild(base_url, self.top_level)\n        self.site = server.Site(res)|' /usr/lib/python2.7/dist-packages/deluge/ui/web/server.py
+    #initname=$(basename "$initfile")
+    #if [ "$initfile" != "/etc/init.d/${initname}" ]; then
+    #  ln -sf "$initfile" "/etc/init.d/${initname}"
+    #fi
+    #update-rc.d -f "${initname}" remove
+    #update-rc.d -f "${initname}" defaults
+    ;;
+  *)
+    echo "Usage: $0 [start|restart|stop|init]"
+    exit 1
+    ;;
+esac
+

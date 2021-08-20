@@ -56,7 +56,8 @@ openssl genrsa -out /etc/ocserv/server.key.pem 2048
 openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=/CN=${PublicIP}"
 
 # Default User
-echo "MoeClub:Default:$(openssl passwd MoeClub)" >/etc/ocserv/ocpasswd
+UserPasswd=`openssl passwd MoeClub`
+echo -e "Default:Default:${UserPasswd}\nRoute:Route:${UserPasswd}\nNoRoute:NoRoute:${UserPasswd}\n" >/etc/ocserv/ocpasswd
 
 bash /etc/ocserv/template/client.sh
 
@@ -96,6 +97,8 @@ fi
 cp -f /usr/share/zoneinfo/PRC /etc/localtime
 echo "Asia/Shanghai" >/etc/timezone
 
-read -n 1 -p "Press <ENTER> to reboot..."
+## Not Reboot
+[ "$1" == "NotReboot" ] && exit 0
 ## Rebot Now
+read -n 1 -p "Press <ENTER> to reboot..."
 reboot

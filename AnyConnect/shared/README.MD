@@ -1,6 +1,6 @@
 # 证书登陆时所有分组选择 Default
 
-# 苹果设备下载 *_WithPasswd.p12, 密码为: MoeClub
+# 苹果设备下载 NoRoute_WithPasswd.p12, 密码为: MoeClub
 
 # 安卓设备下载 Route_*.p12, 密码为空 或 MoeClub. 
 
@@ -12,4 +12,11 @@
 ```
 https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/shared/NoRoute_WithPasswd.p12
 ```
-# 首次使用服务器可能需要使用账户密码登陆一次: MoeClub / MoeClub
+# (可选)首次使用服务器可能需要使用账户密码登陆一次:     
+##  `Default / MoeClub`; `Route / MoeClub`; `NoRoute / MoeClub`
+
+# 注意事项(因系统限制)
+- iOS 用户请使用 `NoRoute` 分组, 预设用户名为 `NoRoute`.
+- Android 用户请使用 `Route` 分组, 预设用户名为 `Route`.
+
+

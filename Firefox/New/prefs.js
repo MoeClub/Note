@@ -108,3 +108,5 @@ user_pref("signon.importedFromSqlite", true);
 user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);
 user_pref("trailhead.firstrun.didSeeAboutWelcome", true);
 user_pref("xpinstall.signatures.required", false);
+user_pref("full-screen-api.macos-native-full-screen", true);
+
