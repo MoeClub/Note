@@ -304,32 +304,16 @@ fi
 
 tempDisk=`getDisk`; [ -n "$tempDisk" ] && IncDisk="$tempDisk"
 
-if [[ -n "$tmpVER" ]]; then
-  tmpVER="$(echo "$tmpVER" |sed -r 's/(.*)/\L\1/')";
-  if  [[ "$tmpVER" == '32' ]] || [[ "$tmpVER" == 'i386' ]] || [[ "$tmpVER" == 'x86' ]]; then
-    VER='i386';
-  fi
-  if  [[ "$tmpVER" == '64' ]] || [[ "$tmpVER" == 'amd64' ]] || [[ "$tmpVER" == 'x86_64' ]] || [[ "$tmpVER" == 'x64' ]]; then
-    if [[ "$Relese" == 'Debian' ]] || [[ "$Relese" == 'Ubuntu' ]]; then
-      VER='amd64';
-    elif [[ "$Relese" == 'CentOS' ]]; then
-      VER='x86_64';
-    fi
-  fi
-  if  [[ "$tmpVER" == 'arm' ]] || [[ "$tmpVER" == 'arm64' ]]; then
-    if [[ "$Relese" == 'Debian' ]]; then
-      VER='arm64';
-    fi
-  fi
+case `uname -m` in aarch64|arm64) VER="arm64";; x86|i386|i686) VER="i386";; x86_64|amd64) VER="amd64";; *) VER="";; esac
+tmpVER="$(echo "$tmpVER" |sed -r 's/(.*)/\L\1/')";
+if [[ "$VER" != "arm64" ]] && [[ -n "$tmpVER" ]]; then
+  case "$tmpVER" in i386|i686|x86|32) VER="i386";; amd64|x86_64|x64|64) [[ "$Relese" == 'CentOS' ]] && VER='x86_64' || VER='amd64';; *) VER='';; esac
 fi
 
-if [ -z "$VER" ]; then
-  if [[ "$Relese" == 'Debian' ]] || [[ "$Relese" == 'Ubuntu' ]]; then
-    VER=`dpkg --print-architecture 2>/dev/null`;
-    [ -n "$VER" ] || VER='amd64';
-  elif [[ "$Relese" == 'CentOS' ]]; then
-    VER='x86_64';
-  fi
+if [[ -z "$VER" ]]; then
+  echo "Error! Not Architecture."
+  bash $0 error;
+  exit 1;
 fi
 
 if [[ -z "$tmpDIST" ]]; then
