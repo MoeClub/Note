@@ -35,6 +35,7 @@ export UNVER='6.4'
 export GRUBDIR=''
 export GRUBFILE=''
 export GRUBVER=''
+export VER=''
 
 while [[ $# -ge 1 ]]; do
   case $1 in
