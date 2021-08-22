@@ -314,7 +314,7 @@ if [[ "$VER" != "arm64" ]] && [[ -n "$tmpVER" ]]; then
   case "$tmpVER" in i386|i686|x86|32) VER="i386";; amd64|x86_64|x64|64) [[ "$Relese" == 'CentOS' ]] && VER='x86_64' || VER='amd64';; *) VER='';; esac
 fi
 
-if [[ -z "$VER" ]]; then
+if [[ ! -n "$VER" ]]; then
   echo "Error! Not Architecture."
   bash $0 error;
   exit 1;
