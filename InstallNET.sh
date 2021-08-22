@@ -32,6 +32,9 @@ export SpikCheckDIST='0'
 export setInterfaceName='0'
 export UNKNOWHW='0'
 export UNVER='6.4'
+export GRUBDIR=''
+export GRUBFILE=''
+export GRUBVER=''
 
 while [[ $# -ge 1 ]]; do
   case $1 in
