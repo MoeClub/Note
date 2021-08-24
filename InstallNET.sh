@@ -248,7 +248,7 @@ function getGrub(){
   if [ -z "$fileName" ]; then
     ls -1 "$folder" 2>/dev/null |grep -q '^grubenv$'
     [ $? -eq 0 ] || return
-    folder=`find "$Boot" -type f -name "grubenv" 2>/dev/null |xargs dirname |grep -v "$folder" |head -n1`
+    folder=`find "$Boot" -type f -name "grubenv" 2>/dev/null |xargs dirname |grep -v "^$folder" |head -n1`
     [ -n "$folder" ] || return
     fileName=`ls -1 "$folder" 2>/dev/null |grep '^grub.conf$\|^grub.cfg$'`
   fi
