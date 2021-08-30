@@ -14,7 +14,7 @@ pip3 install lxml==4.3.5 deluge_client
 
 mkdir -p "$HOME/.config/deluge/plugins"
 wget --no-check-certificate -qO "$HOME/.config/deluge/deluged" "${RSC}/deluged"
-wget --no-check-certificate -qO "$HOME/.config/deluge/deluge_passwd.py" "${RSC}deluge_passwd.py"
+wget --no-check-certificate -qO "$HOME/.config/deluge/deluge_passwd.py" "${RSC}/deluge_passwd.py"
 wget --no-check-certificate -qO "$HOME/.config/deluge/web.conf" "${RSC}/web.conf"
 wget --no-check-certificate -qO "$HOME/.config/deluge/core.conf" "${RSC}/core.conf"
 wget --no-check-certificate -qO "$HOME/.config/deluge/ltconfig.conf" "${RSC}/ltconfig.conf"
