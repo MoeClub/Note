@@ -257,6 +257,12 @@ function getGrub(){
   echo "${folder}:${fileName}:${ver}"
 }
 
+function lowmem(){
+  mem=`grep "^MemTotal:" /proc/meminfo 2>/dev/null |grep -o "[0-9]*"`
+  [ -n "$mem" ] || return 0
+  [ "$mem" -le "524288" ] && return 1 || return 0
+}
+
 if [[ "$loaderMode" == "0" ]]; then
   Grub=`getGrub "/boot"`
   [ -z "$Grub" ] && echo -ne "Error! Not Found grub.\n" && exit 1;
@@ -531,6 +537,8 @@ if [[ "$loaderMode" == "0" ]]; then
 
   [[ "$setInterfaceName" == "1" ]] && Add_OPTION="net.ifnames=0 biosdevname=0" || Add_OPTION=""
   [[ "$setIPv6" == "1" ]] && Add_OPTION="$Add_OPTION ipv6.disable=1"
+  
+  lowmem || Add_OPTION="$Add_OPTION lowmem/low=true"
 
   if [[ "$linux_relese" == 'debian' ]] || [[ "$linux_relese" == 'ubuntu' ]]; then
     BOOT_OPTION="auto=true $Add_OPTION hostname=$linux_relese domain= -- quiet"
