@@ -13,6 +13,7 @@ sed -i 's/^#\?RuntimeMaxUse=.*/RuntimeMaxUse=8M/' /etc/systemd/journald.conf
 systemctl restart systemd-journald
 
 # ssh
+[ -d ~/.ssh ] || mkdir -p ~/.ssh
 echo -ne "# chmod 600 ~/.ssh/id_rsa\n\nHost *\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  IdentityFile ~/.ssh/id_rsa\n" > ~/.ssh/config
 
 # nload
