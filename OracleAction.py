@@ -10,7 +10,7 @@
 # {
 #   "compartmentId": "ocid1.tenancy...",
 #   "userId": "ocid1.user...",
-#   "URL": "https://iaas.xxx.oraclecloud.com/20160918/",
+#   "URL": "ap-seoul-1",
 #   "certFinger": "ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff",
 #   "certKey": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
 # }
@@ -18,6 +18,7 @@
 # create/defaults.json
 # {
 #   "shape": "VM.Standard.E2.1.Micro",
+#   "shapeConfig": {"ocpus": 4, "memoryInGBs": 24},
 #   "availabilityDomain": "xx:XX",
 #   "subnetId": "ocid1.subnet...",
 #   "imageId": "ocid1.image...",
@@ -92,7 +93,7 @@ class oracle:
         fd = open(file, 'r', encoding=coding)
         data = fd.read()
         fd.close()
-        return json.loads(data, encoding=coding)
+        return json.loads(data)
 
     @classmethod
     def api(cls, method, url, keyID, privateKey, data=None):
@@ -109,9 +110,10 @@ class oracle:
         return cls.http(url, method, headers, data)
 
 
-class action:
+class Action:
     def __init__(self, apiDict, instancesId=None, configDict=None):
         self.apiDict = apiDict
+        self.apiDict["URL"] = self.apiDict["URL"] if str(self.apiDict["URL"]).startswith("https://iaas.") else str("https://iaas.{}.oraclecloud.com/20160918/").format(self.apiDict["URL"])
         self.privateKey = self.apiDict["certKey"]
         self.apiKey = "/".join([self.apiDict["compartmentId"], self.apiDict["userId"], self.apiDict["certFinger"]])
         self.configDict = configDict
@@ -185,8 +187,8 @@ class action:
         BodyTwo = json.dumps(bodyTwo, ensure_ascii=False)
         response = oracle.api("POST", url, keyID=self.apiKey, privateKey=self.privateKey, data=BodyTwo)
         NewPublic = json.loads(response.read().decode())
-        print("PublicIP:", NewPublic["ipAddress"])
-        return NewPublic
+        print("PublicIP:", NewPublic["ipAddress"] if "ipAddress" in NewPublic else "NULL")
+        return NewPublic if "ipAddress" in NewPublic else "NULL"
 
     def showPublicIP(self, showLog=True):
         self.getPrivateIP()
@@ -265,6 +267,8 @@ class action:
         response_json = json.loads(response.read().decode())
         InstancesItem = []
         for item in response_json:
+            if "id" not in item:
+                continue
             itemItem = {}
             itemItem["displayName"] = item["displayName"]
             itemItem["shape"] = item["shape"]
@@ -274,7 +278,7 @@ class action:
             InstancesItem.append(itemItem)
         return InstancesItem
 
-    def createInstancesPre(self, Name=None):
+    def createInstancesConfig(self, Name=None):
         self.instancesDict = {
             'displayName': str(str(self.configDict["availabilityDomain"]).split(":", 1)[-1].split("-")[1]),
             'shape': self.configDict["shape"],
@@ -297,57 +301,57 @@ class action:
                 'isManagementDisabled': False
             },
         }
-        if Name and str(Name).strip():
+        if self.configDict["shape"] == "VM.Standard.A1.Flex":
+            self.instancesDict["shapeConfig"] = self.configDict["shapeConfig"]
+        if Name is not None and str(Name).strip() != "":
             self.instancesDict['displayName'] = str(Name).strip()
 
-    def createInstances(self, Name=None, Full=True, WaitResource=True):
+    def createInstance(self, Name=None):
         url = self.apiDict["URL"] + "instances"
         if not self.instancesDict or Name is not None:
-            self.createInstancesPre(Name=Name)
+            self.createInstancesConfig(Name=Name)
         body = json.dumps(self.instancesDict, ensure_ascii=False)
-        while True:
-            FLAG = False
+        isBreak = False
+        while not isBreak:
+            sleepTime = 0
             try:
-                try:
-                    response = oracle.api("POST", url, keyID=self.apiKey, privateKey=self.privateKey, data=body)
-                    response_json = json.loads(response.read().decode())
-                    response_json["status_code"] = str(response.code)
-                except Exception as e:
-                    print(e)
-                    response_json = {"code": "InternalError", "message": "Timeout.", "status_code": "555"}
-                if str(response_json["status_code"]).startswith("4"):
-                    FLAG = True
-                    if str(response_json["status_code"]) == "401":
-                        response_json["message"] = "Not Authenticated."
-                    elif str(response_json["status_code"]) == "400":
-                        if str(response_json["code"]) == "LimitExceeded":
-                            response_json["message"] = "Limit Exceeded."
-                        if str(response_json["code"]) == "QuotaExceeded":
-                            response_json["message"] = "Quota Exceeded."
-                    elif str(response_json["status_code"]) == "429":
-                        FLAG = False
-                    elif str(response_json["status_code"]) == "404":
-                        if WaitResource and str(response_json["code"]) == "NotAuthorizedOrNotFound":
-                            FLAG = False
-                if int(response_json["status_code"]) < 300:
-                    vm_ocid = str(str(response_json["id"]).split(".")[-1])
-                    print(str("{} [{}] {}").format(time.strftime("[%Y/%m/%d %H:%M:%S]", time.localtime()), response_json["status_code"], str(vm_ocid[:5] + "..." + vm_ocid[-7:])))
-                else:
-                    print(str("{} [{}] {}").format(time.strftime("[%Y/%m/%d %H:%M:%S]", time.localtime()), response_json["status_code"], response_json["message"]))
-                if Full is False and str(response_json["status_code"]) == "200":
-                    FLAG = True
-                if not FLAG:
-                    if str(response_json["status_code"]) == "429":
-                        time.sleep(60)
-                    elif str(response_json["status_code"]) == "404":
-                        time.sleep(30)
-                    else:
-                        time.sleep(5)
+                response = oracle.api("POST", url, keyID=self.apiKey, privateKey=self.privateKey, data=body)
+                response_json = json.loads(response.read().decode())
+                response_json["status_code"] = str(response.code)
             except Exception as e:
-                FLAG = True
                 print(e)
-            if FLAG:
-                break
+                response_json = {"code": "InternalError", "message": "Timeout.", "status_code": "555"}
+
+            if str(response_json["status_code"]).startswith("4"):
+                if str(response_json["status_code"]) == "401":
+                    response_json["message"] = "Not Authenticated."
+                    isBreak = True
+
+                elif str(response_json["status_code"]) == "400":
+                    if str(response_json["code"]) == "LimitExceeded":
+                        response_json["message"] = "Limit Exceeded."
+                    elif str(response_json["code"]) == "QuotaExceeded":
+                        response_json["message"] = "Quota Exceeded."
+                    isBreak = True
+
+                elif str(response_json["status_code"]) == "404":
+                    isBreak = True
+
+                elif str(response_json["status_code"]) == "429":
+                    sleepTime = 60
+
+            if int(response_json["status_code"]) < 300:
+                vm_ocid = str(str(response_json["id"]).split(".")[-1])
+                print(str("{} [{}] {}").format(time.strftime("[%Y/%m/%d %H:%M:%S]", time.localtime()), response_json["status_code"], str(vm_ocid[:5] + "..." + vm_ocid[-7:])))
+                isBreak = True
+                continue
+            else:
+                print(str("{} [{}] {}").format(time.strftime("[%Y/%m/%d %H:%M:%S]", time.localtime()), response_json["status_code"], response_json["message"]))
+
+            if sleepTime > 0:
+                time.sleep(sleepTime)
+            else:
+                time.sleep(30)
 
 
 if __name__ == "__main__":
@@ -382,47 +386,49 @@ if __name__ == "__main__":
         configAction = "change"
 
     if configAction == "show":
-        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        Action = Action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.showPublicIP()
     elif configAction == "change":
-        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        Action = Action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.changePubilcIP()
     elif configAction == "rename":
         if not configInstancesName:
             Exit(1, "Require Instances Name.")
-        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        Action = Action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.rename(configInstancesName)
     elif configAction == "reboot":
-        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        Action = Action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.reboot()
     elif configAction == "delete":
-        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        Action = Action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.delete()
     elif configAction == "deladdr":
-        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        Action = Action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         Action.delPublicIPbyAddress()
     elif configAction == "create":
         if not configInstancesName:
             configInstancesName = None
         else:
             configInstancesName = str(configInstancesName).strip()
-        Action = action(apiDict=oracle.load_Config(configPath), configDict=oracle.load_Config(configInstancesId))
-        Action.createInstances(configInstancesName)
+        Action = Action(apiDict=oracle.load_Config(configPath), configDict=oracle.load_Config(configInstancesId))
+        Action.createInstance(configInstancesName)
     elif configAction == "target":
-        Action = action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
+        Action = Action(apiDict=oracle.load_Config(configPath), instancesId=configInstancesId)
         while True:
             NewPublic = Action.changePubilcIP()
-            if str(NewPublic["ipAddress"]).startswith(configAddress):
+            if isinstance(NewPublic, str):
+                time.sleep(2)
+            elif isinstance(NewPublic, dict) and str(NewPublic["ipAddress"]).startswith(configAddress):
                 break
             else:
                 del NewPublic
-                time.sleep(3)
+            time.sleep(5)
     elif configAction == "list":
-        Action = action(apiDict=oracle.load_Config(configPath))
+        Action = Action(apiDict=oracle.load_Config(configPath))
         Item = Action.getInstances()
         print(json.dumps(Item, indent=4))
     elif configAction == "listaddr":
-        Action = action(apiDict=oracle.load_Config(configPath))
+        Action = Action(apiDict=oracle.load_Config(configPath))
         Item = Action.getInstances()
         ItemWithAddress = []
         try:
