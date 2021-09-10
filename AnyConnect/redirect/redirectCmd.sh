@@ -30,5 +30,5 @@ RemotePort="$(echo ${RemoteAddress} |cut -d: -f2 |grep -o '[0-9]\{1,5\}')"
 
 iptables -I INPUT -p tcp --dport ${LocalPort} -j ACCEPT
 iptables -t nat -A PREROUTING -p tcp -i ${LocalIf} --dport ${LocalPort} -j DNAT --to-destination ${RemoteHost}:${RemotePort}
-iptables -t nat -I POSTROUTING -d ${RemoteHost} -p tcp --dport ${HostPort} -j MASQUERADE
+iptables -t nat -I POSTROUTING -d ${RemoteHost} -p tcp --dport ${RemotePort} -j MASQUERADE
 
