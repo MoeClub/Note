@@ -5,6 +5,7 @@ Max=95
 Num=0
 
 CORES=$(cat /proc/cpuinfo| grep -i "physical id"| sort| uniq| wc -l)
+[ -n "$CORES" ] || CORES=1
 
 function RAND() {
   min=$1
