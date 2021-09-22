@@ -2,7 +2,7 @@
 
 Min=65
 Max=95
-Num=0
+Sum=0
 
 CORES=$(cat /proc/cpuinfo| grep -i "physical id"| sort| uniq| wc -l)
 [ -n "$CORES" ] || CORES=1
@@ -14,6 +14,6 @@ function RAND() {
   echo $(($num%$max+$min))
 }
 
-for((i=0;i<$CORES;i++)) do Num=$(($Num+$(RAND $Min $Max))); done
+for((i=0;i<$CORES;i++)) do Sum=$(($Sum+$(RAND $Min $Max))); done
 
-echo $Num
+echo $Sum
