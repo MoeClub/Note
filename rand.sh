@@ -1,6 +1,6 @@
 #!/bin/bash
 
-Min=65
+Min=75
 Max=95
 Sum=0
 
