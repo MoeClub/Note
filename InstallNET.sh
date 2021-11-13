@@ -36,6 +36,7 @@ export GRUBDIR=''
 export GRUBFILE=''
 export GRUBVER=''
 export VER=''
+export setCMD=''
 
 while [[ $# -ge 1 ]]; do
   case $1 in
@@ -116,6 +117,11 @@ while [[ $# -ge 1 ]]; do
       shift
       setRDP='1'
       WinRemote="$1"
+      shift
+      ;;
+    -cmd)
+      shift
+      setCMD="$1"
       shift
       ;;
     -firmware)
@@ -671,7 +677,10 @@ d-i debian-installer/exit/reboot boolean true
 d-i preseed/late_command string	\
 sed -ri 's/^#?Port.*/Port ${sshPORT}/g' /target/etc/ssh/sshd_config; \
 sed -ri 's/^#?PermitRootLogin.*/PermitRootLogin yes/g' /target/etc/ssh/sshd_config; \
-sed -ri 's/^#?PasswordAuthentication.*/PasswordAuthentication yes/g' /target/etc/ssh/sshd_config;
+sed -ri 's/^#?PasswordAuthentication.*/PasswordAuthentication yes/g' /target/etc/ssh/sshd_config; \
+echo '@reboot root cat /etc/run.sh 2>/dev/null |base64 -d >/tmp/run.sh; rm -rf /etc/run.sh; sed -i /^@reboot/d /etc/crontab; bash /tmp/run.sh' >>/target/etc/crontab; \
+echo '' >>/target/etc/crontab; \
+echo '${setCMD}' >/target/etc/run.sh;
 EOF
 
 if [[ "$loaderMode" != "0" ]] && [[ "$setNet" == '0' ]]; then
