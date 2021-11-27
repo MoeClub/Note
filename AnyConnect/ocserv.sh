@@ -15,28 +15,30 @@ fi
 XCMDS=("wget" "tar" "xz" "nc" "openssl" "certtool")
 for XCMD in "${XCMDS[@]}"; do command -v "$XCMD" >>/dev/null 2>&1; [ $? -ne 0 ] && echo "Not Found $XCMD."; done
 
-osVer="$(dpkg --print-architecture 2>/dev/null)"
-if [ -n "$osVer" -a "$osVer" == "amd64" ]; then
-  debVer="$(cat /etc/issue |grep -io 'Debian.*' |sed -r 's/(.*)/\L\1/' |grep -o '[0-9.]*')"
-  if [ "$debVer" == "9" ]; then
-    bash <(wget --no-check-certificate -4 -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0 0
-  fi
-fi
+case `uname -m` in aarch64|arm64) VER="arm64";; x86_64|amd64) VER="amd64";; *) VER="";; esac
+[ ! -n "$VER" ] && echo "Not Support! " && exit 1
 
 
 mkdir -p /tmp
 PublicIP="$(wget --no-check-certificate -4 -qO- http://checkip.amazonaws.com)"
 
+# BBR
+bash <(wget --no-check-certificate -4 -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0 0
+
 # vlmcs
-rm -rf /etc/vlmcs
-wget --no-check-certificate -4 -qO /tmp/vlmcs.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/vlmcsd/vlmcsd.tar'
-tar --overwrite -xvf /tmp/vlmcs.tar -C /
-[ -f /etc/vlmcs/vlmcs.d ] && bash /etc/vlmcs/vlmcs.d init
+if [ "$VER" == "amd64" ]; then
+  rm -rf /etc/vlmcs
+  wget --no-check-certificate -4 -qO /tmp/vlmcs.tar "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/vlmcsd/vlmcsd_${VER}.tar"
+  tar --overwrite -xvf /tmp/vlmcs.tar -C /
+  [ -f /etc/vlmcs/vlmcs.d ] && bash /etc/vlmcs/vlmcs.d init
+fi
 
 # dnsmasq
 rm -rf /etc/dnsmasq.d
-wget --no-check-certificate -4 -qO /tmp/dnsmasq.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/dnsmasq_v2.82.tar'
-tar --overwrite -xvf /tmp/dnsmasq.tar -C /
+wget --no-check-certificate -4 -qO /tmp/dnsmasq_bin.tar "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/dnsmasq_${VER}_v2.8.2.tar"
+tar --overwrite -xvf /tmp/dnsmasq_bin.tar -C /
+wget --no-check-certificate -4 -qO /tmp/dnsmasq_config.tar "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/dnsmasq_config.tar"
+tar --overwrite -xvf /tmp/dnsmasq_config.tar -C /
 sed -i "s/#\?except-interface=.*/except-interface=${EthName}/" /etc/dnsmasq.conf
 
 if [ -f /etc/crontab ]; then
@@ -47,8 +49,10 @@ fi
 
 # ocserv
 rm -rf /etc/ocserv
-wget --no-check-certificate -4 -qO /tmp/ocserv.tar 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/ocserv_v0.12.3.tar'
-tar --overwrite -xvf /tmp/ocserv.tar -C /
+wget --no-check-certificate -4 -qO /tmp/ocserv_bin.tar "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/ocserv_${VER}_v0.12.3.tar"
+tar --overwrite -xvf /tmp/ocserv_bin.tar -C /
+wget --no-check-certificate -4 -qO /tmp/ocserv_config.tar "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/ocserv_config.tar"
+tar --overwrite -xvf /tmp/ocserv_config.tar -C /
 
 # server cert key file: /etc/ocserv/server.key.pem
 openssl genrsa -out /etc/ocserv/server.key.pem 2048
@@ -94,7 +98,7 @@ fi
 [ -f /etc/ssh/sshd_config ] && sed -i "s/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g" /etc/ssh/sshd_config;
 
 # Timezone
-cp -f /usr/share/zoneinfo/PRC /etc/localtime
+cp -rf /usr/share/zoneinfo/PRC /etc/localtime 2>/dev/null
 echo "Asia/Shanghai" >/etc/timezone
 
 ## Not Reboot
