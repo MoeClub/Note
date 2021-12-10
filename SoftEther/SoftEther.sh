@@ -60,7 +60,8 @@ wget --no-check-certificate --no-cache -4 -qO "/etc/softether/vpn_server.config"
 
 tar -zvxf /tmp/softether.tar.gz -C /tmp
 cd /tmp/vpnserver
-make i_read_and_agree_the_license_agreement
+# make i_read_and_agree_the_license_agreement
+make main
 [ $? -eq 0 ] || exit 1
 
 
