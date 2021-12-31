@@ -1,6 +1,11 @@
 # Note
 
 ## MacOS
+###
+```
+sudo xattr -r -d com.apple.quarantine </File/To/Path>
+```
+
 ### Uncheck "Reopen windows when logging back in" by defaults
 ```
 defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
