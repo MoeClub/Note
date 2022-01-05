@@ -19,7 +19,7 @@ function getInterface(){
 
 echo "${RemoteAddress}" |grep -q "[0-9a-zA-Z\.]\+:[0-9]\{1,5\}"
 [ "$?" -ne 0 ] && echo "Invalid RemoteAddress(Host:Port)" && exit 1
-RemoteHost="$(echo ${RemoteAddress} |cut -d: -f1 |grep -o '[0-9\.]\{1,3\}\.[0-9\.]\{1,3\}\.[0-9\.]\{1,3\}\.[0-9\.]\{1,3\}')"
+RemoteHost="$(host $(echo ${RemoteAddress} |cut -d: -f1) |grep -o '[0-9\.]\{1,3\}\.[0-9\.]\{1,3\}\.[0-9\.]\{1,3\}\.[0-9\.]\{1,3\}')"
 RemotePort="$(echo ${RemoteAddress} |cut -d: -f2 |grep -o '[0-9]\{1,5\}')"
 
 [ ! -n "${RemoteHost}" ] && echo "Invalid RemoteHost" && exit 1
