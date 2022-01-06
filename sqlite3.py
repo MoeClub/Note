@@ -62,7 +62,7 @@ class SQLite3:
                 create_tbl = '''create table %s %s''' % (self.table, tbl)
                 await self.execute(create_tbl, True)
         except Exception as e:
-            if not 'already exists' in str(e):
+            if 'already exists' not in str(e):
                 print("init:", e)
 
 if __name__ == "__main__":
