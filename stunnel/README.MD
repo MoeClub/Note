@@ -2,11 +2,11 @@
 
 ## yandex-mail.conf
 ```
-IMAP: yandex-mail.lib.mk
+IMAP: mail.lib.mk
       993
       SSL
       
-SMTP: yandex-mail.lib.mk
+SMTP: mail.lib.mk
       465
       SSL
 
