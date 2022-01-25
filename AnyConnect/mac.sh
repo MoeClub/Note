@@ -35,6 +35,7 @@ cat >"${USER_Home}/.anyconnect"<<EOF
 <DisableCaptivePortalDetection>true</DisableCaptivePortalDetection></ControllablePreferences>
 </AnyConnectPreferences>
 EOF
+chomd 777 "${USER_Home}/.anyconnect"
 
 [[ -f "${CERT_URL}" ]] && cp -f "${CERT_URL}" "/tmp/MacOS.p12" || curl -ksSL -H "User-Agent: wget/1.0" -o "/tmp/MacOS.p12" "${CERT_URL}"
 if [[ -f "/tmp/MacOS.p12" ]]; then
