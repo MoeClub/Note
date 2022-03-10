@@ -22,7 +22,7 @@ installPrefix="/tmp/install"
 
 export CC=/usr/bin/gcc
 export PKG_CONFIG_SYSROOT_DIR="$installPrefix"
-export PKG_CONFIG_LIBDIR="$installPrefix/lib/pkgconfig"
+export PKG_CONFIG_LIBDIR="$installPrefix/lib/pkgconfig:$installPrefix/lib64/pkgconfig"
 case `uname -m` in aarch64|arm64) arch="arm64";; x86_64|amd64) arch="amd64";; *) arch="unknown";; esac
 
 
@@ -53,7 +53,7 @@ void mpz_mod_2exp(mpz_t remainder, mpz_t dividend, unsigned long int exponent_of
 }
 EOF
 CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$installPrefix/lib -static-libgcc -static-libstdc++" \
+LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static-libgcc -static-libstdc++" \
 ./configure \
 	--enable-mini-gmp --enable-x86-aesni --enable-static \
 	--disable-{documentation,shared,rpath}
@@ -73,7 +73,7 @@ mkdir -p gnutls; tar -xJ -f gnutls.tar.xz -C gnutls --strip-components=1;
 cd gnutls
 #sed -i '/gmp\.h/d' lib/nettle/int/dsa-fips.h
 CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$installPrefix/lib -static-libgcc -static-libstdc++" \
+LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static-libgcc -static-libstdc++" \
 ./configure \
 	--with-nettle-mini --with-included-{libtasn1,unistring} \
 	--without-p11-kit --enable-static \
@@ -91,7 +91,7 @@ wget --no-check-certificate -4 -O libev.tar.gz http://dist.schmorp.de/libev/Atti
 mkdir -p libev; tar -xz -f libev.tar.gz -C libev --strip-components=1;
 cd libev
 CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$installPrefix/lib -static-libgcc -static-libstdc++" \
+LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static-libgcc -static-libstdc++" \
 ./configure \
   --enable-static \
 	--disable-{shared,rpath} 
@@ -158,7 +158,7 @@ cd ocserv
 sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
 sed -i 's/\$LIBS \$LIBEV/\$LIBEV \$LIBS/g' configure
 CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$installPrefix/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
+LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 LIBNETTLE_LIBS="-lnettle -lhogweed" LIBREADLINE_LIBS="-lreadline" \
 LIBS="-lm" \
 ./configure --prefix=/usr \
