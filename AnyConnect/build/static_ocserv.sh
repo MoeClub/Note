@@ -1,32 +1,38 @@
 #!/bin/bash -e
+
+# Build static ocserv 
+#                   by MoeClub
+
+# apt install -y gcc make autoconf pkg-config xz-utils
+
+#################
+#################
+
+ver_nettle=3.6
+ver_gnutls=3.6.16
+ver_libev=4.33
+ver_ocserv=1.1.6
+
+#################
+#################
+
 cd /tmp
-
-#################
-#################
-
-ver_nettle=3.3
-ver_gnutls=3.5.8
-ver_libev=4.22
-ver_ocserv=0.12.3
-
-#################
-#################
-
 cores=$(grep -c '^processor' /proc/cpuinfo)
-instPrefix="/tmp/inst"
+installPrefix="/tmp/install"
 
 export CC=/usr/bin/gcc
-export PKG_CONFIG_SYSROOT_DIR="$instPrefix"
-export PKG_CONFIG_LIBDIR="$instPrefix/lib/pkgconfig"
+export PKG_CONFIG_SYSROOT_DIR="$installPrefix"
+export PKG_CONFIG_LIBDIR="$installPrefix/lib/pkgconfig"
+case `uname -m` in aarch64|arm64) arch="arm64";; x86_64|amd64) arch="amd64";; *) arch="unknown";; esac
 
 
 #################
 #################
 
-rm -rf $instPrefix
-mkdir -p $instPrefix
-ln -s . $instPrefix/usr
-ln -s . $instPrefix/local
+rm -rf $installPrefix
+mkdir -p $installPrefix
+ln -s . $installPrefix/usr
+ln -s . $installPrefix/local
 
 #################
 #################
@@ -46,33 +52,36 @@ void mpz_mod_2exp(mpz_t remainder, mpz_t dividend, unsigned long int exponent_of
 	mpz_tdiv_r_2exp(remainder, dividend, exponent_of_2);
 }
 EOF
-CFLAGS="-I$instPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$instPrefix/lib -static-libgcc -static-libstdc++" \
+CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
+LDFLAGS="-L$installPrefix/lib -static-libgcc -static-libstdc++" \
 ./configure \
 	--enable-mini-gmp --enable-x86-aesni --enable-static \
 	--disable-{documentation,shared,rpath}
-#sed -i 's/cnd-copy\.c /&cnd-memcpy.c /' Makefile
+[ -f ./cnd-memcpy.c ] && sed -i 's/cnd-copy\.c /&cnd-memcpy.c /' Makefile
+[ -f ./shake256.c ] && sed -i 's/cnd-copy\.c /&shake256.c /' Makefile
+[ $? -eq 0 ] || exit 1 
 make -j$cores
 [ $? -eq 0 ] || exit 1 
-make DESTDIR=$instPrefix install
+make DESTDIR=$installPrefix install
 cd ..
 
 
 # GnuTLS
-wget --no-check-certificate -4 -O gnutls.tar.xz ftp://ftp.gnutls.org/gcrypt/gnutls/v${ver_gnutls%.*}/gnutls-${ver_gnutls}.tar.xz
+wget --no-check-certificate -4 -O gnutls.tar.xz https://www.gnupg.org/ftp/gcrypt/gnutls/v${ver_gnutls%.*}/gnutls-${ver_gnutls}.tar.xz
 [ -d gnutls ] && rm -rf gnutls
 mkdir -p gnutls; tar -xJ -f gnutls.tar.xz -C gnutls --strip-components=1;
 cd gnutls
-sed -i '/gmp\.h/d' lib/nettle/int/dsa-fips.h
-CFLAGS="-I$instPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$instPrefix/lib -static-libgcc -static-libstdc++" \
+#sed -i '/gmp\.h/d' lib/nettle/int/dsa-fips.h
+CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
+LDFLAGS="-L$installPrefix/lib -static-libgcc -static-libstdc++" \
 ./configure \
 	--with-nettle-mini --with-included-{libtasn1,unistring} \
 	--without-p11-kit --enable-static \
 	--disable-{doc,tools,cxx,tests,nls,guile,rpath,shared}
+[ $? -eq 0 ] || exit 1 
 make -j$cores
 [ $? -eq 0 ] || exit 1 
-make DESTDIR=$instPrefix install
+make DESTDIR=$installPrefix install
 cd ..
 
 
@@ -81,19 +90,20 @@ wget --no-check-certificate -4 -O libev.tar.gz http://dist.schmorp.de/libev/Atti
 [ -d libev ] && rm -rf libev
 mkdir -p libev; tar -xz -f libev.tar.gz -C libev --strip-components=1;
 cd libev
-CFLAGS="-I$instPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$instPrefix/lib -static-libgcc -static-libstdc++" \
+CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
+LDFLAGS="-L$installPrefix/lib -static-libgcc -static-libstdc++" \
 ./configure \
   --enable-static \
 	--disable-{shared,rpath} 
+[ $? -eq 0 ] || exit 1 
 make -j$cores
 [ $? -eq 0 ] || exit 1 
-make DESTDIR=$instPrefix install
+make DESTDIR=$installPrefix install
 cd ..
 
 
 # readline.h
-cat >$instPrefix/include/readline.h <<EOF
+cat >$installPrefix/include/readline.h <<EOF
 #ifndef READLINE_H
 #define READLINE_H
 typedef char *rl_compentry_func_t(const char*, int);
@@ -133,7 +143,7 @@ char **rl_completion_matches(const char *text, void *entry_func) {return NULL;}
 void rl_redisplay(void) {}
 EOF
 # readline.a
-ar rcs $instPrefix/lib/libreadline.a readline.o
+ar rcs $installPrefix/lib/libreadline.a readline.o
 rm -rf readline.o
 
 
@@ -147,8 +157,8 @@ cd ocserv
 #autoreconf -fvi
 sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
 sed -i 's/\$LIBS \$LIBEV/\$LIBEV \$LIBS/g' configure
-CFLAGS="-I$instPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$instPrefix/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
+CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
+LDFLAGS="-L$installPrefix/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 LIBNETTLE_LIBS="-lnettle -lhogweed" LIBREADLINE_LIBS="-lreadline" \
 LIBS="-lm" \
 ./configure --prefix=/usr \
@@ -156,12 +166,13 @@ LIBS="-lm" \
 	--with-local-talloc \
 	--without-{root-tests,docker-tests,nuttcp-tests} \
 	--without-{protobuf,maxmind,geoip,liboath,pam,radius,utmp,lz4,http-parser,gssapi,pcl-lib}
+[ $? -eq 0 ] || exit 1 
 make -j$cores
 [ $? -eq 0 ] || exit 1 
 make DESTDIR=$HOME/ocserv-bin install
 cd ..
 
-# cd $HOME/ocserv-bin
-# tar -cvf "../ocserv_v0.12.3.tar" ./
-# tar --overwrite -xvf ocserv_v0.12.3.tar -C /
+cd $HOME/ocserv-bin
+tar -cvf "../ocserv_${arch}_v${ver_ocserv}.tar" ./
+# tar --overwrite -xvf "ocserv_${arch}_v${ver_ocserv}.tar" -C /
 
