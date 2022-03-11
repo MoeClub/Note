@@ -1,10 +1,12 @@
 #!/bin/bash
 
+ver_dnsmasq=2.86
+
 cd /tmp
 
-wget --no-check-certificate -4 -O dnsmasq.tar.xz http://www.thekelleys.org.uk/dnsmasq/dnsmasq-2.86.tar.gz
+wget --no-check-certificate -4 -O dnsmasq.tar.gz "http://www.thekelleys.org.uk/dnsmasq/dnsmasq-${ver_dnsmasq}.tar.gz"
 [ -d dnsmasq ] && rm -rf dnsmasq
-mkdir -p dnsmasq; tar -xvf dnsmasq.tar.xz -C dnsmasq --strip-components=1;
+mkdir -p dnsmasq; tar -xvf dnsmasq.tar.gz -C dnsmasq --strip-components=1;
 cd dnsmasq
 
 # Disable IPv6
@@ -18,4 +20,10 @@ sed -i 's/^[[:space:]]*if (flags || ede == EDE_NOT_READY)[[:space:]]*$/      if 
 
 
 make CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -s"
-make PREFIX=/usr DESTDIR=/tmp install
+make PREFIX=/usr DESTDIR=$HOME/dnsmasq-build install
+
+case `uname -m` in aarch64|arm64) arch="arm64";; x86_64|amd64) arch="amd64";; *) arch="unknown";; esac
+cd $HOME/dnsmasq-build
+tar -cvf "../dnsmasq_${arch}_v${ver_dnsmasq}.tar" ./
+# tar --overwrite -xvf "ocserv_${arch}_v${ver_dnsmasq}.tar" -C /
+
