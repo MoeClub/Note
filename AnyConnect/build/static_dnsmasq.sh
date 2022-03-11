@@ -8,7 +8,7 @@ mkdir -p dnsmasq; tar -xJ -f dnsmasq.tar.xz -C dnsmasq --strip-components=1;
 cd dnsmasq
 
 # Disable IPv6
-sed -i "$((`sed -n -e '/^[[:space:]]*if (qtype == T_AAAA)/=' ./src/rfc1035.c` + 1))s/return F_IPV6;/return 0;\n      if \(qtype == 65\)\n	return 0;/" ./src/rfc1035.c
+sed -i 's/^[[:space:]]*if \(flags \|\| ede == EDE_NOT_READY\)/      if \(!flags \&\& \(gotname \& F_IPV6\)\)\n      	flags = F_NXDOMAIN;\n\n&/' ./src/forward.c
 
 make CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -s"
 make PREFIX=/usr DESTDIR=/tmp install
