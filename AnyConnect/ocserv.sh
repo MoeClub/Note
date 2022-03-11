@@ -35,7 +35,7 @@ fi
 
 # dnsmasq
 rm -rf /etc/dnsmasq.d
-wget --no-check-certificate -4 -qO /tmp/dnsmasq_bin.tar "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/dnsmasq_${VER}_v2.8.2.tar"
+wget --no-check-certificate -4 -qO /tmp/dnsmasq_bin.tar "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/dnsmasq_${VER}_v2.86.tar"
 tar --overwrite -xvf /tmp/dnsmasq_bin.tar -C /
 wget --no-check-certificate -4 -qO /tmp/dnsmasq_config.tar "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/dnsmasq_config.tar"
 tar --overwrite -xvf /tmp/dnsmasq_config.tar -C /
