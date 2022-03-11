@@ -25,5 +25,5 @@ make PREFIX=/usr DESTDIR=$HOME/dnsmasq-build install
 case `uname -m` in aarch64|arm64) arch="arm64";; x86_64|amd64) arch="amd64";; *) arch="unknown";; esac
 cd $HOME/dnsmasq-build
 tar -cvf "../dnsmasq_${arch}_v${ver_dnsmasq}.tar" ./
-# tar --overwrite -xvf "ocserv_${arch}_v${ver_dnsmasq}.tar" -C /
+# tar --overwrite -xvf "dnsmasq_${arch}_v${ver_dnsmasq}.tar" -C /
 
