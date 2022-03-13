@@ -11,8 +11,8 @@ TCP=`cat "${Config}" |grep '^#\?tcp-port' |cut -d"=" -f2 |grep -o '[0-9]*' |head
 UDP=`cat "${Config}" |grep '^#\?udp-port' |cut -d"=" -f2 |grep -o '[0-9]*' |head -n1`
 
 if [ "$ARG" == "CHECK" ]; then
-  TCPX=`printf '%04X\n' "${TCP}"`
-  cat /proc/net/tcp |grep -q "^\s*[0-9]\+:\s*[0-9A-Za-z]\+:${TCPX}\s"
+  TCPHEX=`printf '%04X\n' "${TCP}"`
+  cat /proc/net/tcp |grep -q "^\s*[0-9]\+:\s*[0-9A-Za-z]\+:${TCPHEX}\s*[0-9A-Za-z]\+:[0-9A-Za-z]\+\s*0A\s*"
   if [ "$?" -eq 0 ]; then
     exit 0
   else
