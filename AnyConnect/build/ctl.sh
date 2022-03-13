@@ -13,12 +13,7 @@ UDP=`cat "${Config}" |grep '^#\?udp-port' |cut -d"=" -f2 |grep -o '[0-9]*' |head
 if [ "$ARG" == "CHECK" ]; then
   TCPHEX=`printf '%04X\n' "${TCP}"`
   cat /proc/net/tcp |grep -q "^\s*[0-9]\+:\s*[0-9A-Za-z]\+:${TCPHEX}\s*[0-9A-Za-z]\+:[0-9A-Za-z]\+\s*0A\s*"
-  if [ "$?" -eq 0 ]; then
-    exit 0
-  else
-    [ -n "$PID" ] && [ "$PID" -gt "1" ] && kill -KILL "${PID}" >/dev/null 2>&1
-    exit 1
-  fi
+  [ "$?" -eq 0 ] && exit 0 || exit 1
 fi
 
 Ether=`ip route show default |sed 's/.*dev\s*\([0-9a-zA-Z]\+\).*/\1/g'`
