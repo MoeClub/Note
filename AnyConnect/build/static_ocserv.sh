@@ -148,14 +148,15 @@ rm -rf readline.o
 
 
 # OpenConnect server
-rm -rf $HOME/ocserv-bin
-mkdir -p $HOME/ocserv-bin
+rm -rf $HOME/ocserv-build
+mkdir -p $HOME/ocserv-build
 wget --no-check-certificate -4 -O ocserv.tar.xz ftp://ftp.infradead.org/pub/ocserv/ocserv-${ver_ocserv}.tar.xz
 [ -d ocserv ] && rm -rf ocserv
 mkdir -p ocserv; tar -xJ -f ocserv.tar.xz -C ocserv --strip-components=1;
 cd ocserv
 #autoreconf -fvi
 sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
+sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN)\n\t\t\treturn -1;/' src/worker-auth.c
 sed -i 's/\$LIBS \$LIBEV/\$LIBEV \$LIBS/g' configure
 CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
 LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
@@ -169,10 +170,10 @@ LIBS="-lm" \
 [ $? -eq 0 ] || exit 1 
 make -j$cores
 [ $? -eq 0 ] || exit 1 
-make DESTDIR=$HOME/ocserv-bin install
+make DESTDIR=$HOME/ocserv-build install
 cd ..
 
-cd $HOME/ocserv-bin
+cd $HOME/ocserv-build
 tar -cvf "../ocserv_${arch}_v${ver_ocserv}.tar" ./
 # tar --overwrite -xvf "ocserv_${arch}_v${ver_ocserv}.tar" -C /
 
