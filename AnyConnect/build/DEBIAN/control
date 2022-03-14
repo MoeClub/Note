@@ -1,0 +1,8 @@
+Package: ocserv
+Version: 1.1.6
+Section: net
+Priority: optional
+Architecture: all
+Maintainer: MoeClub
+Depends: systemd, openssl, wget, sed, grep
+Description: Package By MoeClub

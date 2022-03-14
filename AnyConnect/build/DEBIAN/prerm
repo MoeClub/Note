@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# ocserv
+rm -rf /etc/systemd/system/ocserv.service
+rm -rf /lib/systemd/system/ocserv.service
+rm -rf /usr/lib/systemd/system/ocserv.service
+rm -rf /etc/ocserv
+rm -rf /usr/bin/occtl
+rm -rf /usr/bin/ocpasswd
+rm -rf /usr/bin/ocserv-fw
+rm -rf /usr/sbin/ocserv
+rm -rf /usr/sbin/ocserv-worker
+rm -rf /usr/share/man/man8/occtl.8
+rm -rf /usr/share/man/man8/ocpasswd.8
+rm -rf /usr/share/man/man8/ocserv.8
+
+# dnsmasq
+rm -rf /etc/systemd/system/dnsmasq.service
+rm -rf /lib/systemd/system/dnsmasq.service
+rm -rf /usr/lib/systemd/system/dnsmasq.service
+rm -rf /etc/dnsmasq.d
+rm -rf /etc/dnsmasq.conf
+rm -rf /usr/sbin/dnsmasq
+rm -rf /usr/share/man/man8/dnsmasq.8
+
+systemctl daemon-reload >/dev/null 2>&1
