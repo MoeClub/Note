@@ -15,12 +15,20 @@ function GetAddress(){
 
 function IPTABLES(){
   RULE=`echo "$1" |sed 's/^\s*//' |sed 's/\s*$//'`
-  echo "$RULE" |grep -q "^iptables"
+  echo "$RULE" |grep -q "^iptables "
   [ $? -eq 0 ] || return 1
   CHECK=`echo "$RULE" |sed 's/-I\|-A/-C/'`
-  ${RULE} >>/dev/null 2>&1
+  ${CHECK} >>/dev/null 2>&1
   [ $? -eq 1 ] && ${RULE} 
   return 0
+}
+
+function GenPasswd(){
+  RawPasswd="${1:-MoeClub}"
+  UserPasswd=`openssl passwd ${RawPasswd}`
+  echo -e "\nUserName\tGroup\t\tPassword\n\nDefault\t\tDefault\t\t${RawPasswd}\nRoute\t\tRoute\t\t${RawPasswd}\nNoRoute\t\tNoRoute\t\t${RawPasswd}\nNull\t\tNull\t\t${RawPasswd}\n"
+  echo -e "Default:Default:${UserPasswd}\nRoute:Route:${UserPasswd}\nNoRoute:NoRoute:${UserPasswd}\nNull:Null:${UserPasswd}\n" >/etc/ocserv/ocpasswd
+  chmod 755 /etc/ocserv/ocpasswd
 }
 
 if [ "$ARG" == "CHECK" ]; then
@@ -28,20 +36,23 @@ if [ "$ARG" == "CHECK" ]; then
   cat /proc/net/tcp |grep -q "^\s*[0-9]\+:\s*[0-9A-Za-z]\+:${TCPHEX}\s*[0-9A-Za-z]\+:[0-9A-Za-z]\+\s*0A\s*"
   [ "$?" -eq 0 ] && exit 0 || exit 1
 elif [ "$ARG" == "INIT" ]; then
-  if [ -d "/usr/lib/systemd/system" ] && [ -f "${ConfigPath}/ocserv.service" ]; then
+  openssl req -x509 -sha256 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 -subj "/C=/ST=/L=/O=/OU=/CN=*" -addext "keyUsage=critical, digitalSignature" -outform PEM -keyout "${ConfigPath}/server.key.pem" -out "${ConfigPath}/server.cert.pem"
+  chown -R root:root "${ConfigPath}"
+  chmod -R 755 "${ConfigPath}"
+  if [ -d "/etc/systemd/system" ] && [ -f "${ConfigPath}/ocserv.service" ]; then
     systemctl stop ocserv.service >/dev/null 2>&1
     systemctl disable ocserv.service >/dev/null 2>&1
     cp -rf "${ConfigPath}/ocserv.service" "/etc/systemd/system/ocserv.service"
     chmod 755 "/etc/systemd/system/ocserv.service"
     systemctl daemon-reload >/dev/null 2>&1
     systemctl enable ocserv.service >/dev/null 2>&1
+    systemctl start ocserv.service >/dev/null 2>&1
   fi
-  touch "${ConfigPath}/ocpasswd"
-  openssl genrsa -out "${ConfigPath}/server.key.pem" 2048
-  openssl req -new -x509 -days 3650 -key "${ConfigPath}/server.key.pem" -out "${ConfigPath}/server.cert.pem" -subj "/C=/ST=/L=/O=/OU=/CN=$(GetAddress)"
-  chown -R root:root "${ConfigPath}"
-  chmod -R 755 "${ConfigPath}"
+  GenPasswd;
+  echo -e "Set Password Command:\n\tbash ${ConfigPath}/ctl.sh passwd <PASSWORD>\n"
   exit 0
+elif [ "$ARG" == "PASSWD" ]; then
+  [ -n "$2" ] && GenPasswd "$2" && exit 0 || exit 1
 fi
 
 Ether=`ip route show default |sed 's/.*dev\s*\([0-9a-zA-Z]\+\).*/\1/g'`
