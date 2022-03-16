@@ -43,7 +43,7 @@ done
 
 
 if [ ! -f ./ca.cert.pem -o ! -f ./ca.key.pem ]; then
-  openssl req -x509 -sha256 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 -subj "/C=/ST=/L=/OU=/O=/CN=${OrgName} CA" -addext "keyUsage=critical, keyCertSign, cRLSign" -outform PEM -keyout ./ca.key.pem -out ./ca.cert.pem  >/dev/null 2>&1
+  openssl req -x509 -sha256 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 -subj "/C=  /ST= /L= /O= /OU= /CN=${OrgName} CA" -addext "keyUsage=critical, keyCertSign, cRLSign" -outform PEM -keyout ./ca.key.pem -out ./ca.cert.pem  >/dev/null 2>&1
   [ $? -ne 0 ] && echo "Generating CA Fail" && exit 1
   cp -rf ./ca.cert.pem ../ca.cert.pem
 fi
@@ -52,7 +52,7 @@ if [ "$INIT" == "1" ]; then
   exit 0
 fi
 
-openssl req -x509 -sha256 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 -subj "/C=/ST=/L=/OU=${GroupName}/O=/CN=${OrgName}.${GroupName}" -addext "keyUsage=critical, digitalSignature" -outform PEM -keyout ./user.key.pem -out ./user.cert.pem  >/dev/null 2>&1
+openssl req -x509 -sha256 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 -subj "/C=  /ST= /L= /OU=${GroupName}/O= /CN=${OrgName}.${GroupName}" -addext "keyUsage=critical, digitalSignature" -outform PEM -keyout ./user.key.pem -out ./user.cert.pem  >/dev/null 2>&1
 [ $? -ne 0 ] && echo "Generating Cert Fail" && exit 1
 
 cat ./ca.cert.pem >>./user.cert.pem

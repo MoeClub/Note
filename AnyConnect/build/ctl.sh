@@ -45,7 +45,7 @@ if [ "$ARG" == "CHECK" ]; then
   cat /proc/net/tcp |grep -q "^\s*[0-9]\+:\s*[0-9A-Za-z]\+:${TCPHEX}\s*[0-9A-Za-z]\+:[0-9A-Za-z]\+\s*0A\s*"
   [ "$?" -eq 0 ] && exit 0 || exit 1
 elif [ "$ARG" == "INIT" ]; then
-  openssl req -x509 -sha256 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 -subj "/C=/ST=/L=/O=/OU=/CN=*" -addext "keyUsage=critical, digitalSignature" -outform PEM -keyout "${ConfigPath}/server.key.pem" -out "${ConfigPath}/server.cert.pem" >/dev/null 2>&1
+  openssl req -x509 -sha256 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 -subj "/C=  /ST= /L= /O= /OU= /CN=0.0.0.0" -addext "keyUsage=critical, digitalSignature, keyEncipherment" -addext "extendedKeyUsage=serverAuth, clientAuth" -outform PEM -keyout "${ConfigPath}/server.key.pem" -out "${ConfigPath}/server.cert.pem" >/dev/null 2>&1
   [ $? -ne 0 ] && echo "Generating Server Cert Fail" && exit 1
   chown -R root:root "${ConfigPath}"
   chmod -R 755 "${ConfigPath}"
@@ -67,7 +67,7 @@ elif [ "$ARG" == "PASSWD" ]; then
   [ -n "$2" ] && GenPasswd "$2" && exit 0 || exit 1
 fi
 
-Ether=`ip route show default |sed 's/.*dev\s*\([0-9a-zA-Z]\+\).*/\1/g'`
+Ether=`ip route show default |head -n1 |sed 's/.*dev\s*\([0-9a-zA-Z]\+\).*/\1/g'`
 [ -n "$Ether" ] || exit 1
 
 [ -f "${ConfigPath}/group/NoRoute" ] && Address="$(GetAddress)" && [ -n "$Address" ] &&  sed -i "s/^no-route\s*=\s*.*\/255.255.255.255/no-route = ${Address}\/255.255.255.255/" "${ConfigPath}/group/NoRoute"
