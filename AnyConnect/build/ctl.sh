@@ -24,11 +24,20 @@ function IPTABLES(){
 }
 
 function GenPasswd(){
+  echo -n >${ConfigPath}/ocpasswd
   RawPasswd="${1:-MoeClub}"
   UserPasswd=`openssl passwd ${RawPasswd}`
-  echo -e "\nUserName\tGroup\t\tPassword\n\nDefault\t\tDefault\t\t${RawPasswd}\nRoute\t\tRoute\t\t${RawPasswd}\nNoRoute\t\tNoRoute\t\t${RawPasswd}\nNull\t\tNull\t\t${RawPasswd}\n"
-  echo -e "Default:Default:${UserPasswd}\nRoute:Route:${UserPasswd}\nNoRoute:NoRoute:${UserPasswd}\nNull:Null:${UserPasswd}\n" >/etc/ocserv/ocpasswd
-  chmod 755 /etc/ocserv/ocpasswd
+  titleNum=0
+  for GP in `find "${ConfigPath}/group" -type f`
+    do
+      [ -n "$GP" ] || continue
+      user=`basename "$GP"`
+      [ -n "$user" ] || continue
+      [ "$titleNum" -le "0" ] && titleNum=$(($titleNum + 1)) && echo -ne "\nUserName\tPassword\tGROUP\n\n"
+      echo -ne "${user}\t\t${RawPasswd}\t\t${user}\n"
+      echo -ne "${user}:${user}:${UserPasswd}\n" >>${ConfigPath}/ocpasswd
+    done
+  chmod 755 ${ConfigPath}/ocpasswd
 }
 
 if [ "$ARG" == "CHECK" ]; then
@@ -36,7 +45,8 @@ if [ "$ARG" == "CHECK" ]; then
   cat /proc/net/tcp |grep -q "^\s*[0-9]\+:\s*[0-9A-Za-z]\+:${TCPHEX}\s*[0-9A-Za-z]\+:[0-9A-Za-z]\+\s*0A\s*"
   [ "$?" -eq 0 ] && exit 0 || exit 1
 elif [ "$ARG" == "INIT" ]; then
-  openssl req -x509 -sha256 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 -subj "/C=/ST=/L=/O=/OU=/CN=*" -addext "keyUsage=critical, digitalSignature" -outform PEM -keyout "${ConfigPath}/server.key.pem" -out "${ConfigPath}/server.cert.pem"
+  openssl req -x509 -sha256 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 -subj "/C=/ST=/L=/O=/OU=/CN=*" -addext "keyUsage=critical, digitalSignature" -outform PEM -keyout "${ConfigPath}/server.key.pem" -out "${ConfigPath}/server.cert.pem" >/dev/null 2>&1
+  [ $? -ne 0 ] && echo "Generating Server Cert Fail" && exit 1
   chown -R root:root "${ConfigPath}"
   chmod -R 755 "${ConfigPath}"
   if [ -d "/etc/systemd/system" ] && [ -f "${ConfigPath}/ocserv.service" ]; then
@@ -49,7 +59,9 @@ elif [ "$ARG" == "INIT" ]; then
     systemctl start ocserv.service >/dev/null 2>&1
   fi
   GenPasswd;
-  echo -e "Set Password Command:\n\tbash ${ConfigPath}/ctl.sh passwd <PASSWORD>\n"
+  echo -e "\nPassword File: ${ConfigPath}/ocpasswd"
+  echo -e "\nSet Password Command:\n\tbash ${ConfigPath}/ctl.sh passwd <PASSWORD>\n"
+  echo -e "\nInitialization Complete! \n"
   exit 0
 elif [ "$ARG" == "PASSWD" ]; then
   [ -n "$2" ] && GenPasswd "$2" && exit 0 || exit 1
