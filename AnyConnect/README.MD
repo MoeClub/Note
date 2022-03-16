@@ -31,7 +31,7 @@ bash <(wget --no-check-certificate --no-cache -4 -qO- "https://raw.githubusercon
   - 用户密码格式: `<用户名>:<用户组>:<用户密码密文>`       
   - 用户密码密文: `openssl passwd MoeClub` (`MoeClub`为密码)     
 - 注意事项(**因系统限制**)
-  - iOS 用户请使用 `NoRoute` 分组, 预设用户名为 `NoRoute`.
+  - iOS, MacOS, Windows 用户请使用 `NoRoute` 分组, 预设用户名为 `NoRoute`.
   - Android 用户请使用 `Default` 分组, 预设用户名为 `Default`.
 ```
 ## 非必要步骤
