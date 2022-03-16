@@ -29,7 +29,7 @@ bash <(wget --no-check-certificate --no-cache -4 -qO- "https://raw.githubusercon
 - 如果有多组服务器, 备份保存CA证书 `/etc/ocserv/template/ca.cert.pem` 和 `/etc/ocserv/template/ca.key.pem`.
 - **预设用户名**为`Default`,`NoRoute`; **预设密码**为`MoeClub`.(可自行更改`/etc/ocserv/ocpasswd`)      
   - 用户密码格式: `<用户名>:<用户组>:<用户密码密文>`       
-  - 用户密码密文: `openssl passwd Moeclub` (`Moeclub`为密码)     
+  - 用户密码密文: `openssl passwd MoeClub` (`MoeClub`为密码)     
 - 注意事项(**因系统限制**)
   - iOS 用户请使用 `NoRoute` 分组, 预设用户名为 `NoRoute`.
   - Android 用户请使用 `Default` 分组, 预设用户名为 `Default`.
