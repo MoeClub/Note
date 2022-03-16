@@ -17,12 +17,14 @@ if [ -f /etc/dnsmasq.d/dnsmasq.service ]; then
   systemctl daemon-reload >/dev/null 2>&1
   systemctl enable dnsmasq.service >/dev/null 2>&1
   systemctl start dnsmasq.service >/dev/null 2>&1
+  rm -rf /tmp/dnsmasq_*.tar
 fi
 
 if [ -f /etc/ocserv/ctl.sh ]; then
 	[ -f "/tmp/ocserv_${arch}.tar" ] && tar --overwrite -xvf "/tmp/ocserv_${arch}.tar" -C / || exit 1
   /bin/bash /etc/ocserv/template/client.sh -i
   /bin/bash /etc/ocserv/ctl.sh init
+  rm -rf /tmp/ocserv_*.tar
 fi
 
 exit 0
