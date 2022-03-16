@@ -5,7 +5,7 @@ case `uname -m` in aarch64|arm64) arch="arm64";; x86_64|amd64) arch="amd64";; *)
 
 if [ -f /etc/dnsmasq.d/dnsmasq.service ]; then
   if [ -f /etc/dnsmasq.conf ]; then
-    Ether=`ip route show default |sed 's/.*dev\s*\([0-9a-zA-Z]\+\).*/\1/g'`
+    Ether=`ip route show default |head -n1 |sed 's/.*dev\s*\([0-9a-zA-Z]\+\).*/\1/g'`
     [ -n "$Ether" ] || exit 1
     sed -i "s/^except-interface=.*/except-interface=${Ether}/" /etc/dnsmasq.conf
   fi

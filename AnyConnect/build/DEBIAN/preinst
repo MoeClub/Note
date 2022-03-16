@@ -1,10 +1,7 @@
 #!/bin/bash
 
-rm -rf /usr/sbin/ocserv
-rm -rf /tmp/ocserv_amd64.tar
-rm -rf /tmp/ocserv_arm64.tar
+rm -rf /usr/sbin/ocserv*
+rm -rf /tmp/ocserv_*.tar
 
-rm -rf /usr/sbin/dnsmasq
-rm -rf /tmp/dnsmasq_amd64.tar
-rm -rf /tmp/dnsmasq_arm64.tar
-
+rm -rf /usr/sbin/dnsmasq*
+rm -rf /tmp/dnsmasq_*.tar
