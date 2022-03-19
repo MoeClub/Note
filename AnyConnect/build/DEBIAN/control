@@ -4,5 +4,5 @@ Section: net
 Priority: optional
 Architecture: all
 Maintainer: MoeClub
-Depends: systemd, openssl, wget, sed, grep
+Depends: systemd, iproute2, openssl, wget, sed, grep
 Description: Package By MoeClub
