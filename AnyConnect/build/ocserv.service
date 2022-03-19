@@ -7,14 +7,13 @@ After=dbus.service
 [Service]
 Type=simple
 PrivateTmp=true
-PIDFile=/var/run/ocserv.pid
 ExecStartPre=/bin/bash /etc/ocserv/ctl.sh
-ExecStart=/usr/sbin/ocserv --foreground --pid-file /var/run/ocserv.pid --config /etc/ocserv/ocserv.conf
+ExecStart=/usr/sbin/ocserv --foreground --config /etc/ocserv/ocserv.conf
 ExecStartPost=/bin/bash /etc/ocserv/ctl.sh CHECK
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStop=/bin/kill -KILL $MAINPID
-RestartSec=5s
-Restart=on-failure
+RestartSec=3s
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

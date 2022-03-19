@@ -45,8 +45,10 @@ if [ "$ARG" == "CHECK" ]; then
   cat /proc/net/tcp |grep -q "^\s*[0-9]\+:\s*[0-9A-Za-z]\+:${TCPHEX}\s*[0-9A-Za-z]\+:[0-9A-Za-z]\+\s*0A\s*"
   [ "$?" -eq 0 ] && exit 0 || exit 1
 elif [ "$ARG" == "INIT" ]; then
-  openssl req -x509 -sha256 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 -subj "/C=  /ST= /L= /O= /OU= /CN=0.0.0.0" -addext "keyUsage=critical, digitalSignature, keyEncipherment" -addext "extendedKeyUsage=serverAuth, clientAuth" -outform PEM -keyout "${ConfigPath}/server.key.pem" -out "${ConfigPath}/server.cert.pem" >/dev/null 2>&1
-  [ $? -ne 0 ] && echo "Generating Server Cert Fail" && exit 1
+	Address="$(GetAddress)"
+	[ -n "$Address" ] || Address="0.0.0.0"
+	bash "${ConfigPath}/template/client.sh" -i "$Address"
+	[ "$?" -eq 0 ] || exit 1
   chown -R root:root "${ConfigPath}"
   chmod -R 755 "${ConfigPath}"
   if [ -d "/etc/systemd/system" ] && [ -f "${ConfigPath}/ocserv.service" ]; then
