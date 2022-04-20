@@ -8,6 +8,7 @@ After=dbus.service
 Type=simple
 PrivateTmp=true
 ExecStart=/usr/sbin/dnsmasq -d
+ExecStop=/bin/kill -KILL $MAINPID
 RestartSec=3s
 Restart=always
 
