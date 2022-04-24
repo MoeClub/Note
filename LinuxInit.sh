@@ -66,10 +66,11 @@ net.ipv4.icmp_echo_ignore_all = 1
 net.ipv6.conf.all.disable_ipv6 = 1
 
 net.ipv4.tcp_fastopen = 0
-net.ipv4.tcp_sack = 1
 net.ipv4.tcp_fack = 1
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_dsack = 1
 net.ipv4.tcp_ecn = 0
-net.ipv4.tcp_ecn_fallback = 0
+net.ipv4.tcp_ecn_fallback = 1
 
 EOF
 sysctl -p
