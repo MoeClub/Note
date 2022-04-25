@@ -1,6 +1,6 @@
 # Download URL 
-MacOS: [charles-proxy-4.5.6.dmg](https://www.charlesproxy.com/assets/release/4.5.6/charles-proxy-4.5.6.dmg)
-Windows: [charles-proxy-4.5.6-win64.msi](https://www.charlesproxy.com/assets/release/4.5.6/charles-proxy-4.5.6-win64.msi)
+MacOS: [charles-proxy-4.5.6.dmg](https://www.charlesproxy.com/assets/release/4.5.6/charles-proxy-4.5.6.dmg)      
+Windows: [charles-proxy-4.5.6-win64.msi](https://www.charlesproxy.com/assets/release/4.5.6/charles-proxy-4.5.6-win64.msi)      
 
 # Register Info
 ```
