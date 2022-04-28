@@ -1,0 +1,16 @@
+[Unit]
+Description=qBittorrent Daemon Service
+After=network.target
+
+
+[Service]
+Type=sample
+ExecStart=/usr/bin/qbittorrent --add-paused=false --first-and-last --profile=/home
+ExecStop=/usr/bin/kill -9 $MAINPID
+Restart=always
+LimitNOFILE=262144
+TimeoutSec=300
+
+
+[Install]
+WantedBy=multi-user.target
