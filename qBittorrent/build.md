@@ -39,9 +39,10 @@ mv -f /root/qbittorrent /root/qbittorrent.bak; cp build/qbittorrent-nox /root/qb
 # optimize
 ```
 # /src/webui/api/torrentscontroller.cpp:TorrentsController::addAction
+const bool firstLastPiece = parseBool(params()["firstLastPiecePrio"]).value_or(true);
 const auto *session = BitTorrent::Session::instance();
-const int upLimit = parseInt(params()[u"upLimit"_qs]).value_or(session->altGlobalUploadSpeedLimit() <= 0 ? -1 : session->altGlobalUploadSpeedLimit());
-const int dlLimit = parseInt(params()[u"dlLimit"_qs]).value_or(session->altGlobalDownloadSpeedLimit() <= 0 ? -1 : session->altGlobalDownloadSpeedLimit());
+const int upLimit = parseInt(params()[u"up_limit"_qs]).value_or(session->altGlobalUploadSpeedLimit() <= 0 ? -1 : session->altGlobalUploadSpeedLimit());
+const int dlLimit = parseInt(params()[u"dl_limit"_qs]).value_or(session->altGlobalDownloadSpeedLimit() <= 0 ? -1 : session->altGlobalDownloadSpeedLimit());
 
 # /src/base/bittorrent/session.cpp:Session::initializeNativeSession
 // lt::settings_pack pack;
