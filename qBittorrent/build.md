@@ -31,10 +31,30 @@ mv -f /root/qbittorrent /root/qbittorrent.bak; cp build/qbittorrent-nox /root/qb
 
 ```
 
+# 
 ```
 # /src/webui/api/torrentscontroller.cpp:TorrentsController::addAction
 const auto *session = BitTorrent::Session::instance();
 const int upLimit = parseInt(params()[u"upLimit"_qs]).value_or(session->altGlobalUploadSpeedLimit() <= 0 ? -1 : session->altGlobalUploadSpeedLimit());
 const int dlLimit = parseInt(params()[u"dlLimit"_qs]).value_or(session->altGlobalDownloadSpeedLimit() <= 0 ? -1 : session->altGlobalDownloadSpeedLimit());
+
+# /src/base/bittorrent/session.cpp:Session::initializeNativeSession
+// lt::settings_pack pack;
+lt::settings_pack pack = lt::high_performance_seed();
+pack.set_int(lt::settings_pack::torrent_connect_boost, 64);
+pack.set_int(lt::settings_pack::tracker_backoff, 128);
+pack.set_int(lt::settings_pack::predictive_piece_announce, 32);
+pack.set_int(lt::settings_pack::send_not_sent_low_watermark, 16384);
+pack.set_int(lt::settings_pack::allowed_fast_set_size, 0);
+// 32MiB max queued disk writes
+pack.set_int(lt::settings_pack::max_queued_disk_bytes, 32 * 1024 * 1024);
+// 16KiB blocks, read 1MiB, write 8MiB
+pack.set_int(lt::settings_pack::read_cache_line_size, 64);
+pack.set_int(lt::settings_pack::write_cache_line_size, 512);
+// cache size, 16KiB blocks, 1GB cache, 128MB volatile
+pack.set_int(lt::settings_pack::cache_size, 65536);
+pack.set_int(lt::settings_pack::cache_size_volatile, 8192);
+pack.set_bool(lt::settings_pack::smooth_connects, false);
+pack.set_int(lt::settings_pack::connection_speed, 512);
 
 ```
