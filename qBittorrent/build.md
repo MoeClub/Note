@@ -33,6 +33,7 @@ cmake --build build
 
 mv -f /root/qbittorrent /root/qbittorrent.bak; cp build/qbittorrent-nox /root/qbittorrent
 
+XZ_OPT=-9 tar -Jcvf ./qbittorrent_${arch}.tar.gz qbittorrent
 
 ```
 
