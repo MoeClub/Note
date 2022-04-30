@@ -1,6 +1,11 @@
+# build
 ```
 bash ~/qbittorrent-nox-static.sh all -i -c -n -qt release-4.4.2 -lt v2.0.6
 
+```
+
+# manual
+```
 HOME="/root/qbt-build"
 PATH="/root/qbt-build/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 PKG_CONFIG_PATH="/root/qbt-build/lib/pkgconfig"
@@ -31,7 +36,7 @@ mv -f /root/qbittorrent /root/qbittorrent.bak; cp build/qbittorrent-nox /root/qb
 
 ```
 
-# 
+# optimize
 ```
 # /src/webui/api/torrentscontroller.cpp:TorrentsController::addAction
 const auto *session = BitTorrent::Session::instance();
