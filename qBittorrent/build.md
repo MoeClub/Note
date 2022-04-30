@@ -1,5 +1,5 @@
 ```
-bash ~/qbittorrent-nox-static.sh all -i -c -qm -n
+bash ~/qbittorrent-nox-static.sh all -i -c -n -qt release-4.4.2 -lt v2.0.6
 
 HOME="/root/qbt-build"
 PATH="/root/qbt-build/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
