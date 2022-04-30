@@ -4,7 +4,7 @@ After=network.target
 
 
 [Service]
-Type=sample
+Type=simple
 ExecStart=/usr/bin/qbittorrent --add-paused=false --first-and-last --profile=/home
 ExecStop=/usr/bin/kill -9 $MAINPID
 Restart=always
