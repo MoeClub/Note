@@ -12,6 +12,8 @@ PKG_CONFIG_PATH="/root/qbt-build/lib/pkgconfig"
 
 cd /root/qbt-build/qbittorrent
 
+rm -rf ./qbittorrent && mkdir -p ./qbittorrent && curl -sSL "https://github.com/qbittorrent/qBittorrent/archive/refs/tags/release-4.4.2.tar.gz" |tar -xz --strip-components=1 -C ./qbittorrent && cd ./qbittorrent
+
 rm -rf build
 
 cmake -Wno-dev -Wno-deprecated \
@@ -34,8 +36,6 @@ cmake --build build
 mv -f /root/qbittorrent /root/qbittorrent.bak; cp build/qbittorrent-nox /root/qbittorrent
 
 XZ_OPT=-9 tar -Jcvf ./qbittorrent_${arch}_qt_v4.4.2_lt_2.0.6.tar.xz qbittorrent
-
-mkdir -p ./qbittorrent && curl -sSL "https://github.com/qbittorrent/qBittorrent/archive/refs/tags/release-4.4.2.tar.gz" |tar -xz --strip-components=1 -C ./qbittorrent
 
 
 ```
