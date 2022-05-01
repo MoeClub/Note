@@ -35,7 +35,7 @@ mv -f /root/qbittorrent /root/qbittorrent.bak; cp build/qbittorrent-nox /root/qb
 
 XZ_OPT=-9 tar -Jcvf ./qbittorrent_${arch}_qt_v4.4.2_lt_2.0.6.tar.xz qbittorrent
 
-curl -sSL "https://github.com/qbittorrent/qBittorrent/archive/refs/tags/release-4.4.2.tar.gz" |tar -xz -C ./qbittorrent
+mkdir -p ./qbittorrent && curl -sSL "https://github.com/qbittorrent/qBittorrent/archive/refs/tags/release-4.4.2.tar.gz" |tar -xz --strip-components=1 -C ./qbittorrent
 ```
 
 # optimize
