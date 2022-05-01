@@ -68,3 +68,24 @@ pack.set_bool(lt::settings_pack::smooth_connects, false);
 pack.set_int(lt::settings_pack::connection_speed, 512);
 
 ```
+
+# webui
+```
+client.js
+    // After showing/hiding the toolbar + status bar
+    let showSearchEngine = false;
+    if (LocalPreferences.get('show_search_engine') !== null)
+        showSearchEngine = LocalPreferences.get('show_search_engine') == "true";
+    let showRssReader = false;
+    if (LocalPreferences.get('show_rss_reader') !== null)
+        showRssReader = LocalPreferences.get('show_rss_reader') == "true";
+
+download.js
+                $('dlLimitText').value = pref.alt_dl_limit <= 0 ? "" : pref.alt_dl_limit / 1024;
+                $('upLimitText').value = pref.alt_up_limit <= 0 ? "" : pref.alt_up_limit / 1024;
+
+upload.html
+                <input type="checkbox" id="firstLastPiecePrio" name="firstLastPiecePrio" value="true" checked />
+      
+
+```
