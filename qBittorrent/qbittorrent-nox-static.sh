@@ -2110,7 +2110,7 @@ if [[ "${!app_name_skip:-yes}" = 'no' ]] || [[ "${1}" = "${app_name}" ]]; then
 		download_folder "${app_name}" "${!app_github_url}"
 		#
 		apply_patches "${app_name}"
-    # patch v4.4.2
+		# patch v4.4.2
 		if [[ "${qbittorrent_github_tag}" == "release-4.4.2" ]]; then
 			cd ../
 			rm -rf ./qbittorrent
