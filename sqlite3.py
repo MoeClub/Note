@@ -69,5 +69,6 @@ if __name__ == "__main__":
     SQL = SQLite3("MoeClub.db", "MoeClub")
     loop = asyncio.get_event_loop()
     loop.run_until_complete(SQL.Init())
+    
     asyncio.run(SQL.execute("select * from MoeClub;"))
 
