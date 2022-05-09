@@ -115,7 +115,7 @@ make -j $cores && make install || exit 1
 rm -rf ../aria2
 
 # aria2c
-cd "$BUILD_DIRECTORY"
-cp "$PREFIX/bin/aria2c" "./"
-./aria2c -v && strip -s ./aria2c && ldd ./aria2c
+rm -rf "$BUILD_DIRECTORY/aria2c"
+cp "$PREFIX/bin/aria2c" "$BUILD_DIRECTORY/"
+$BUILD_DIRECTORY/aria2c -v && strip -s $BUILD_DIRECTORY/aria2c && ldd $BUILD_DIRECTORY/aria2c
 
