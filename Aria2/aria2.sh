@@ -91,6 +91,7 @@ MOD "src/OptionHandlerFactory.cc" "PREF_MAX_CONCURRENT_DOWNLOADS" "2" '"5",' '"1
 MOD "src/OptionHandlerFactory.cc" "PREF_MAX_CONNECTION_PER_SERVER" "2" '"1", 1, 16,' '"16", 1, 1024,'
 MOD "src/OptionHandlerFactory.cc" "PREF_CONTINUE" "0" 'A2_V_FALSE' 'A2_V_TRUE'
 MOD "src/OptionHandlerFactory.cc" "PREF_DISABLE_IPV6" "11" 'A2_V_FALSE' 'A2_V_TRUE'
+MOD "src/OptionHandlerFactory.cc" "PREF_SUMMARY_INTERVAL" "0" '"60",' '"0",'
 
 # aria2 build
 PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig/" \
