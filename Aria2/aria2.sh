@@ -30,6 +30,7 @@ C_ARES="https://c-ares.haxx.se/download/c-ares-1.17.2.tar.gz"
 SSH2="https://www.libssh2.org/download/libssh2-1.9.0.tar.gz"
 ARIA2="https://github.com/aria2/aria2/releases/download/release-1.36.0/aria2-1.36.0.tar.gz"
 
+rm -rf "$PREFIX"
 mkdir -p "$PREFIX"
 
 # zlib
