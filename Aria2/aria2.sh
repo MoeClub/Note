@@ -88,6 +88,8 @@ cd ./aria2
 
 # aria2 mod
 MOD "src/OptionHandlerFactory.cc" "PREF_MAX_CONNECTION_PER_SERVER" "2" '"1", 1, 16,' '"16", 1, 1024,'
+MOD "src/OptionHandlerFactory.cc" "PREF_CONTINUE" "0" 'A2_V_FALSE' 'A2_V_TRUE'
+
 
 # aria2 build
 PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig/" \
