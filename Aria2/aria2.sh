@@ -87,6 +87,8 @@ DOWNLOADER "$ARIA2" "aria2"
 cd ./aria2
 
 # aria2 v1.36.0 mod --> file, tag, offset, src, target
+MOD "src/OptionHandlerFactory.cc" "PREF_SPLIT" "0" '"5",' '"65535",'
+MOD "src/OptionHandlerFactory.cc" "PREF_MIN_SPLIT_SIZE" "0" '"20M",' '"8M",'
 MOD "src/OptionHandlerFactory.cc" "PREF_MAX_CONCURRENT_DOWNLOADS" "2" '"5",' '"16",'
 MOD "src/OptionHandlerFactory.cc" "PREF_MAX_CONNECTION_PER_SERVER" "2" '"1", 1, 16,' '"16", 1, 1024,'
 # MOD "src/OptionHandlerFactory.cc" "PREF_CONTINUE" "0" 'A2_V_FALSE' 'A2_V_TRUE'
