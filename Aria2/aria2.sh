@@ -85,6 +85,11 @@ rm -rf ../libssh2
 cd "$BUILD_DIRECTORY"
 DOWNLOADER "$ARIA2" "aria2"
 cd ./aria2
+
+# aria2 mod
+MOD "OptionHandlerFactory.cc" "PREF_MAX_CONNECTION_PER_SERVER" "2" "16" "-1"
+
+# aria2 build
 PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig/" \
 LD_LIBRARY_PATH="$PREFIX/lib/" \
 CC="$C_COMPILER" \
