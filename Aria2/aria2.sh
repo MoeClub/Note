@@ -87,7 +87,7 @@ DOWNLOADER "$ARIA2" "aria2"
 cd ./aria2
 
 # aria2 mod
-MOD "src/OptionHandlerFactory.cc" "PREF_MAX_CONNECTION_PER_SERVER" "2" "16" "-1"
+MOD "src/OptionHandlerFactory.cc" "PREF_MAX_CONNECTION_PER_SERVER" "2" "16" "1024"
 
 # aria2 build
 PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig/" \
