@@ -2163,6 +2163,7 @@ if [[ "${!app_name_skip:-yes}" = 'no' ]] || [[ "${1}" = "${app_name}" ]]; then
 		#
 		[[ -f "${qbt_install_dir}/bin/qbittorrent-nox" ]] && cp -f "${qbt_install_dir}/bin/qbittorrent-nox" "${qbt_install_dir}/completed/qbittorrent-nox"
 		#
+		strip -s "${qbt_install_dir}/completed/qbittorrent-nox"
 		delete_function boost
 		delete_function "${app_name}" last
 	fi
