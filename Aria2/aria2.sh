@@ -9,10 +9,16 @@ BUILD_DIRECTORY="/tmp"
 PREFIX="$BUILD_DIRECTORY/aria2_build"
 
 DOWNLOADER() {
-  [ $# -eq 2 ] || return
+  [ "$#" -eq 2 ] || return
   rm -rf "./$2"
   mkdir -p "./$2"
   wget -qO- "$1" |tar -zxv --strip-components 1 -C "./$2"
+}
+
+MOD() {
+ [ "$#" -eq 5 ] || return
+ n=`grep -on "$2" "$1" |cut -d':' -f1`
+ sed -i "$(($n+$3))s/$4/$5/" "$1"
 }
 
 ## DEPENDENCES ##
