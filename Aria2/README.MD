@@ -1,1 +1,1 @@
-# build
+# static build
