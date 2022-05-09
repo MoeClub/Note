@@ -102,5 +102,5 @@ rm -rf ../aria2
 # aria2c
 cd "$BUILD_DIRECTORY"
 cp "$PREFIX/bin/aria2c" "./"
-strip -s ./aria2c && ldd ./aria2c
+./aria2c -v && strip -s ./aria2c && ldd ./aria2c
 
