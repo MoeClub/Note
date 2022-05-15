@@ -49,6 +49,7 @@ ifconfig <ifName> promisc
 ifconfig <ifName> -promisc
 
 # windows
-Npcap\WlanHelper.exe <GUID OR NAME> 
+netsh wlan show interfaces
+Npcap\WlanHelper.exe <GUID OR NAME> mode <MODE>
 
 ```
