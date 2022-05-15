@@ -48,5 +48,7 @@ bash <(wget --no-check-certificate --no-cache -4 -qO- "https://api.moeclub.org/r
 ifconfig <ifName> promisc
 ifconfig <ifName> -promisc
 
+# windows
+Npcap\WlanHelper.exe <GUID OR NAME> 
 
 ```
