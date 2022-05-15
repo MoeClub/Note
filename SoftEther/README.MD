@@ -34,3 +34,19 @@ DNS: 8.8.8.8
 bash <(wget --no-check-certificate --no-cache -4 -qO- "https://api.moeclub.org/redirect/SoftEther.sh") -a empty -u vpn -p vpn
 
 ```
+
+## Local Setting
+```
+# SoftEther VPN Bridge --> Create Local Bridge
+# SoftEther VPN Bridge --> Manage Virtual Hub (BRIDGE) --> Manage Level Connect --> Create
+
+```
+
+## promiscuous mode
+```
+# linux
+ifconfig <ifName> promisc
+ifconfig <ifName> -promisc
+
+
+```
