@@ -52,4 +52,8 @@ ifconfig <ifName> -promisc
 netsh wlan show interfaces
 Npcap\WlanHelper.exe <GUID OR NAME> mode <MODE>
 
+netsh bridge show adapter
+netsh bridge set adapter 1 forcecompatmode=enable
+
+
 ```
