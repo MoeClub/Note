@@ -61,11 +61,11 @@ case `uname -m` in aarch64|arm64) ARCH="arm64";; x86|i386|i686) ARCH="i386";; x8
 [ ! -n "$SoftEtherURL" ] && [ "$ARCH" == "i386" ] && SoftEtherURL="http://www.softether-download.com/files/softether/${SoftEtherVersion}-tree/Linux/SoftEther_VPN_Server/32bit_-_Intel_x86/softether-vpnserver-${SoftEtherVersion}-linux-x86-32bit.tar.gz";
 [ ! -n "$SoftEtherURL" ] && exit 1
 
+rm -rf /tmp/softether.tar.gz
 wget --no-check-certificate --no-cache -4 -qO "/tmp/softether.tar.gz" "${SoftEtherURL}"
 [ $? -eq 0 ] || exit 1
 
 kill -9 `ps -C "vpnserver" -o pid=` >/dev/null 2>&1
-rm -rf /tmp/vpnserver
 rm -rf /etc/softether
 mkdir -p /etc/softether
 echo "${SoftEtherConfig}" |base64 -d >/etc/softether/vpn_server.config
