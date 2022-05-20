@@ -25,6 +25,18 @@ wget --no-check-certificate --no-cache -4 -qO /tmp/ocserv.deb "https://raw.githu
 
 ```
 
+# 证书认证
+```
+bash /etc/ocserv/template/client.sh -o <OrgName> -g <GroupName> -p <PASSWORD> -i <CN>
+
+# 重新初始化 CA
+bash /etc/ocserv/template/client.sh -o <OrgName> -g <GroupName> -i <CN>
+
+# 设置用户证书(证书密码可为空,iOS导入需要设置密码)
+# bash /etc/ocserv/template/client.sh -o <OrgName> -g <GroupName> -p <PASSWORD>
+
+```
+
 # ocserv.sh (Debian x64 8+ / CentOS 6+ / Ubuntu 14+)
 ```
 bash <(wget --no-check-certificate --no-cache -4 -qO- "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.sh")
