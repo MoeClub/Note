@@ -29,9 +29,9 @@ wget --no-check-certificate --no-cache -4 -qO /tmp/ocserv.deb "https://raw.githu
 ```
 bash /etc/ocserv/template/client.sh -o <OrgName> -g <GroupName> -p <PASSWORD> -i <CN>
 ## -o, 证书上显示的组织名.
-## -p, 证书密码可为空,在iOS上只能导入已设置密码的证书
+## -p, 证书密码可为空, 在iOS上只能导入已设置密码的证书
 ## -g, 设置分组, 一般用于区分路由表. [Default, NoRoute]
-## -i, 初始化CA证书.
+## -i, 初始化CA证书. [留空, 服务器IP, 域名]
 
 # 重新初始化 CA
 bash /etc/ocserv/template/client.sh -o <OrgName> -i <CN>
