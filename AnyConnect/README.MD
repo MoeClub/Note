@@ -38,6 +38,7 @@ bash /etc/ocserv/template/client.sh -o <OrgName> -i <CN>
 
 # 设置用户证书
 bash /etc/ocserv/template/client.sh -o <OrgName> -g <GroupName> -p <PASSWORD>
+## 示例: bash /etc/ocserv/template/client.sh -o "MoeClub" -g "NoRoute" -p "P@Ssw0rd"
 
 ```
 
