@@ -26,7 +26,7 @@ WantedBy=multi-user.target
 
 EOF
 
-wget -qO /etc/speedtest/speedtest "https://raw.githubusercontent.com/MoeClub/Note/master/SpeedTest/build/linux_${arch}/speedtest"
+wget --no-check-certificate --no-cache -4 -qO /etc/speedtest/speedtest "https://raw.githubusercontent.com/MoeClub/Note/master/SpeedTest/build/linux_${arch}/speedtest"
 
 chmod -R 755 /etc/speedtest
 cp -rf /etc/speedtest/speedtest.service /etc/systemd/system/
