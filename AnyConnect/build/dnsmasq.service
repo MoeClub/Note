@@ -6,8 +6,8 @@ After=dbus.service
 
 [Service]
 Type=simple
-#ExecStartPre=/usr/sbin/iptables -C INPUT -p tcp --dport 53 -j DROP 2>/dev/null || iptables -I INPUT -p tcp --dport 53 -j DROP
-#ExecStartPre=/usr/sbin/iptables -C INPUT -p tcp --dport 53 -j DROP 2>/dev/null || iptables -I INPUT -p tcp --dport 53 -j DROP
+#ExecStartPre=/usr/bin/sh -c "/usr/sbin/iptables -C INPUT -p tcp --dport 53 -j DROP 2>/dev/null || /usr/sbin/iptables -I INPUT -p tcp --dport 53 -j DROP"
+#ExecStartPre=/usr/bin/sh -c "/usr/sbin/iptables -C OUTPUT -p tcp --sport 53 -j DROP 2>/dev/null || /usr/sbin/iptables -I OUTPUT -p tcp --sport 53 -j DROP"
 ExecStart=/usr/sbin/dnsmasq -d -q
 ExecStop=/bin/kill -KILL $MAINPID
 RestartSec=3s
