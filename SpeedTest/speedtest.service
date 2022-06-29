@@ -1,0 +1,12 @@
+[Unit]
+Description=SpeedTest Service
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/speedtest
+RestartSec=3s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
