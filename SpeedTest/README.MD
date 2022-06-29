@@ -7,7 +7,13 @@ CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags '-w -s' -trimpath -o ./b
 
 ```
 
-# Run
+
+# Install
+```
+wget -qO- https://raw.githubusercontent.com/MoeClub/Note/master/SpeedTest/install.sh |bash
+```
+
+# Manual Run
 ```
 # chmod u+x ./speedtest && ./speedtest
 # http://IP:8888
