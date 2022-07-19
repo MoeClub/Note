@@ -53,7 +53,7 @@ void mpz_mod_2exp(mpz_t remainder, mpz_t dividend, unsigned long int exponent_of
 }
 EOF
 CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static-libgcc -static-libstdc++" \
+LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static -static-libgcc -static-libstdc++" \
 ./configure \
 	--enable-mini-gmp --enable-x86-aesni --enable-static \
 	--disable-{documentation,shared,rpath}
@@ -73,10 +73,10 @@ mkdir -p gnutls; tar -xJ -f gnutls.tar.xz -C gnutls --strip-components=1;
 cd gnutls
 #sed -i '/gmp\.h/d' lib/nettle/int/dsa-fips.h
 CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static-libgcc -static-libstdc++" \
+LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static -static-libgcc -static-libstdc++" \
 ./configure \
 	--with-nettle-mini --with-included-{libtasn1,unistring} \
-	--without-p11-kit --enable-static \
+	--without-p11-kit --enable-static --enable-openssl-compatibility \
 	--disable-{doc,tools,cxx,tests,nls,guile,rpath,shared}
 [ $? -eq 0 ] || exit 1 
 make -j$cores
@@ -91,7 +91,7 @@ wget --no-check-certificate -4 -O libev.tar.gz http://dist.schmorp.de/libev/Atti
 mkdir -p libev; tar -xz -f libev.tar.gz -C libev --strip-components=1;
 cd libev
 CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
-LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static-libgcc -static-libstdc++" \
+LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static -static-libgcc -static-libstdc++" \
 ./configure \
   --enable-static \
 	--disable-{shared,rpath} 
