@@ -64,7 +64,7 @@ net.ipv4.tcp_timestamps = 1
 net.ipv4.tcp_slow_start_after_idle = 0
 net.ipv4.ip_forward = 1
 
-net.core.default_qdisc = fq
+net.core.default_qdisc = fq_codel
 net.ipv4.tcp_congestion_control = bbr
 
 net.ipv4.icmp_echo_ignore_all = 1
