@@ -47,5 +47,5 @@ EOF
 systemctl disable docker 2>/dev/null
 systemctl daemon-reload
 systemctl enable docker
-systemctl start docker
+systemctl restart docker
 
