@@ -2,6 +2,7 @@
 
 dockerVer="${1:-20.10.17}"
 
+ps -C dockerd -o pid= |xargs kill -9 >/dev/null 2>&1
 rm -rf /usr/bin/docker-init
 rm -rf /usr/bin/containerd
 rm -rf /usr/bin/ctr
