@@ -35,7 +35,7 @@ Type=simple
 ExecStart=/usr/bin/dockerd
 KillMode=process
 KillSignal=SIGINT
-TimeoutStopSec=1
+TimeoutStopSec=3
 Restart=always
 RestartSec=1s
 
