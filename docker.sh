@@ -13,6 +13,7 @@ rm -rf /usr/bin/docker
 rm -rf /usr/bin/containerd-shim-runc-v2
 rm -rf /etc/systemd/system/docker.service
 rm -rf /var/lib/docker
+rm -rf /etc/docker
 [ "$dockerVer" == "0" ] && exit 0
 
 
