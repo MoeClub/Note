@@ -12,7 +12,7 @@ rm -rf /usr/bin/containerd-shim
 rm -rf /usr/bin/docker
 rm -rf /usr/bin/containerd-shim-runc-v2
 rm -rf /etc/systemd/system/docker.service
-[ "$dockerVer" == 0 ] && exit 0
+[ "$dockerVer" == "0" ] && exit 0
 
 
 case `uname -m` in aarch64|arm64) arch="aarch64";; x86_64|amd64) arch="x86_64";; *) arch="";; esac
