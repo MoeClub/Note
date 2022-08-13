@@ -23,7 +23,7 @@ sed -i 's/^;\?process_control_timeout[[:space:]]*=.*/process_control_timeout = 1
 
 
 extension_dir=`php -i |grep extension_dir |sed 's/[[:space:]]*=>[[:space:]]*/\n/g' |tail -n1`
-wget -qO- "https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_${arch}.tar.gz" | tar -xv --overwrite -C /tmp
+wget -qO- "https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_${arch}.tar.gz" | tar -zxv --overwrite -C /tmp
 ioncube_path="${extension_dir}/ioncube.so"
 cp -rf "/tmp/ioncube/ioncube_loader_lin_${phpVer}.so" "${ioncube_path}"
 sed -i '/ioncube\.so/d' "/etc/php/${phpVer}/cli/php.ini"
