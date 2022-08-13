@@ -7,6 +7,7 @@ phpVer=${1:-5.6}
 
 apt-get install -y gnupg2 ca-certificates lsb-release apt-transport-https
 apt-key add <(wget -qO- https://packages.sury.org/php/apt.gpg)
+rm -rf /etc/apt/sources.list.d/php.list
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" |tee /etc/apt/sources.list.d/php.list
 apt update
 
