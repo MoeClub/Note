@@ -30,6 +30,6 @@ sed -i '/ioncube\.so/d' "/etc/php/${phpVer}/cli/php.ini"
 sed -i '/ioncube\.so/d' "/etc/php/${phpVer}/fpm/php.ini"
 echo "zend_extension = ${ioncube_path}" |tee -a "/etc/php/${phpVer}/cli/php.ini" | tee -a "/etc/php/${phpVer}/fpm/php.ini"
 
-
+php -v
 systemctl restart "php${phpVer}-fpm"
 systemctl status "php${phpVer}-fpm"
