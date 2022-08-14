@@ -19,7 +19,7 @@ iptables -t nat -A PREROUTING -d <本机地址> -p tcp --dport <本机端口> -j
 iptables -t nat -I POSTROUTING -d <远程地址> -p tcp --dport <远程端口> -j MASQUERADE
 ```
 
-# ocserv.deb (Debian x64/ARM64 8+ / Ubuntu x64/ARM64 14+)
+# ocserv.deb (Debian x64/ARM64 10+ / Ubuntu x64/ARM64 18+)
 ```
 wget --no-check-certificate --no-cache -4 -qO /tmp/ocserv.deb "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/ocserv.deb" && dpkg -i /tmp/ocserv.deb
 
