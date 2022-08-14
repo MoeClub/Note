@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # ocserv
+systemctl stop ocserv.service >/dev/null 2>&1
+systemctl disable ocserv.service >/dev/null 2>&1
 rm -rf /etc/systemd/system/ocserv.service
 rm -rf /lib/systemd/system/ocserv.service
 rm -rf /usr/lib/systemd/system/ocserv.service
@@ -15,6 +17,8 @@ rm -rf /usr/share/man/man8/ocpasswd.8
 rm -rf /usr/share/man/man8/ocserv.8
 
 # dnsmasq
+systemctl stop dnsmasq.service >/dev/null 2>&1
+systemctl disable dnsmasq.service >/dev/null 2>&1
 rm -rf /etc/systemd/system/dnsmasq.service
 rm -rf /lib/systemd/system/dnsmasq.service
 rm -rf /usr/lib/systemd/system/dnsmasq.service
