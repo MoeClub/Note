@@ -8,6 +8,7 @@ Config="${ConfigPath}/ocserv.conf"
 
 TCP=`cat "${Config}" |grep '^#\?tcp-port' |cut -d"=" -f2 |grep -o '[0-9]*' |head -n1`
 UDP=`cat "${Config}" |grep '^#\?udp-port' |cut -d"=" -f2 |grep -o '[0-9]*' |head -n1`
+NET=`cat "${Config}" |grep '^ipv4-network' |cut -d"=" -f2 |grep -o '[0-9\.]*' |head -n1`
 
 function GetAddress(){
   echo `wget --no-check-certificate --timeout=3 --no-cache -4 -qO- "http://checkip.amazonaws.com" |grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' |head -n1`
@@ -75,9 +76,14 @@ Ether=`ip route show default |head -n1 |sed 's/.*dev\s*\([0-9a-zA-Z]\+\).*/\1/g'
 [ -f "${ConfigPath}/group/NoRoute" ] && Address="$(GetAddress)" && [ -n "$Address" ] &&  sed -i "s/^no-route\s*=\s*.*\/255.255.255.255/no-route = ${Address}\/255.255.255.255/" "${ConfigPath}/group/NoRoute"
 
 IPTABLES "iptables -t nat -A POSTROUTING -o ${Ether} -j MASQUERADE"
+[ -n "$NET" ] && IPTABLES "iptables -I FORWARD -d ${NET}/24 -j ACCEPT"
+[ -n "$NET" ] && IPTABLES "iptables -I FORWARD -s ${NET}/24 -j ACCEPT"
 IPTABLES "iptables -I FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu"
+[ -n "$NET" ] && IPTABLES "iptables -I OUTPUT -d ${NET}/24 -j ACCEPT"
+[ -n "$NET" ] && IPTABLES "iptables -I INPUT -s ${NET}/24 -j ACCEPT"
 [ -n "$TCP" ] && [ "$TCP" -gt "0" ] && IPTABLES "iptables -I INPUT -p tcp --dport ${TCP} -j ACCEPT"
 [ -n "$UDP" ] && [ "$UDP" -gt "0" ] && IPTABLES "iptables -I INPUT -p udp --dport ${UDP} -j ACCEPT"
+
 
 [ `cat /proc/sys/net/ipv4/ip_forward` != "1" ] && echo "1" >/proc/sys/net/ipv4/ip_forward
 
