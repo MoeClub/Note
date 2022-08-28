@@ -1,6 +1,7 @@
 # MacOS
 ```
-bash <(curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/mac.sh") <CERT_URL> <CERT_PWD>
+curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/mac.sh" |sudo bash -s <CERT_URL> <CERT_PWD>
+
 ```
 
 # iOS
@@ -11,6 +12,22 @@ anyconnect://import?type=pkcs12&uri=<CERT_URL>
 
 anyconnect://connect/?name=<NAME>&onsuccess=anyconnect%3A%2F%2Fclose&onerror=anyconnect%3A%2F%2Fclose
 anyconnect://disconnect/?onsuccess=anyconnect%3A%2F%2Fclose&onerror=anyconnect%3A%2F%2Fclose
+```
+
+# Preferences
+```
+# profile.xml
+## windows: %ProgramData%\Cisco\Cisco AnyConnect Secure Mobility Client\Profile\profile.xml
+## mac/linux: /opt/cisco/anyconnect/profile/profile.xml
+
+# preferences_global.xml
+## windows: %ProgramData%\Cisco\Cisco AnyConnect Secure Mobility Client\preferences_global.xml
+## mac/linux: /opt/cisco/anyconnect/.anyconnect_global
+
+# preferences.xml
+## windows: %LocalAppData%\Cisco\Cisco AnyConnect Secure Mobility Client\preferences.xml
+## mac/linux: $Home/.anyconnect
+
 ```
 
 # 端口转发
