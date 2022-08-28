@@ -6,6 +6,11 @@
 		<RestrictPreferenceCaching>false</RestrictPreferenceCaching>
 		<RestrictTunnelProtocols>false</RestrictTunnelProtocols>
 		<BypassDownloader>true</BypassDownloader>
+		<AutoUpdate>false</AutoUpdate>
+		<CertificateStore>All</CertificateStore>
+		<CertificateStoreMac>All</CertificateStoreMac>
+		<CertificateStoreLinux>All</CertificateStoreLinux>
+		<CertificateStoreOverride>true</CertificateStoreOverride>
 		<AuthenticationTimeout>16</AuthenticationTimeout>
 		<WindowsVPNEstablishment>AllowRemoteUsers</WindowsVPNEstablishment>
 		<LinuxVPNEstablishment>AllowRemoteUsers</LinuxVPNEstablishment>
