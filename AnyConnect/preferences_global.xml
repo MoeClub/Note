@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AnyConnectPreferences>
+<DefaultUser></DefaultUser>
+<DefaultSecondUser></DefaultSecondUser>
+<ClientCertificateThumbprint></ClientCertificateThumbprint>
+<MultipleClientCertificateThumbprints></MultipleClientCertificateThumbprints>
+<ServerCertificateThumbprint></ServerCertificateThumbprint>
+<DefaultHostName></DefaultHostName>
+<DefaultHostAddress></DefaultHostAddress>
+<DefaultGroup>Default</DefaultGroup>
+<ProxyHost></ProxyHost>
+<ProxyPort></ProxyPort>
+<SDITokenType>none</SDITokenType>
+<ControllablePreferences>
+<AutoConnectOnStart>true</AutoConnectOnStart>
+<LocalLanAccess>true</LocalLanAccess>
+<BlockUntrustedServers>false</BlockUntrustedServers>
+<DisableCaptivePortalDetection>true</DisableCaptivePortalDetection>
+</ControllablePreferences>
+</AnyConnectPreferences>

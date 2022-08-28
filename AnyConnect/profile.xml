@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AnyConnectProfile xmlns="http://schemas.xmlsoap.org/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.xmlsoap.org/encoding/ AnyConnectProfile.xsd">
+	<ClientInitialization>
+		<UseStartBeforeLogon UserControllable="false">false</UseStartBeforeLogon>
+		<StrictCertificateTrust>false</StrictCertificateTrust>
+		<RestrictPreferenceCaching>false</RestrictPreferenceCaching>
+		<RestrictTunnelProtocols>false</RestrictTunnelProtocols>
+		<BypassDownloader>true</BypassDownloader>
+		<AuthenticationTimeout>16</AuthenticationTimeout>
+		<WindowsVPNEstablishment>AllowRemoteUsers</WindowsVPNEstablishment>
+		<LinuxVPNEstablishment>AllowRemoteUsers</LinuxVPNEstablishment>
+		<CertEnrollmentPin>pinAllowed</CertEnrollmentPin>
+		<CertificateMatch>
+			<KeyUsage>
+				<MatchKey>Digital_Signature</MatchKey>
+			</KeyUsage>
+			<ExtendedKeyUsage>
+				<ExtendedMatchKey>ClientAuth</ExtendedMatchKey>
+			</ExtendedKeyUsage>
+		</CertificateMatch>
+	</ClientInitialization>
+</AnyConnectProfile>
