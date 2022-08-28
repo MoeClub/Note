@@ -9,7 +9,7 @@ CERT_TMP="/tmp/MacOS"
 # DO NOT EDIT
 [[ -n "${CERT_URL}" ]] || exit 1
 [[ "$(sudo whoami)" == "root" ]] || exit 1
-CERT_PWD=`echo "$CERT_PWD" |tr -d ' '`
+CERT_PWD=`echo "${CERT_PWD}" |tr -d ' '`
 USER_HOME=`echo "$HOME"`
 
 [[ -e "${USER_HOME}/.cisco" ]] && rm -rf "${USER_HOME}/.cisco"
