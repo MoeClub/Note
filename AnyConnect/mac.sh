@@ -8,9 +8,9 @@ CERT_TMP="/tmp/MacOS"
 
 # DO NOT EDIT
 [[ -n "${CERT_URL}" ]] || exit 1
-[[ -n "${CERT_PWD}" ]] && Mode=0 || Mode=1
-USER_HOME=`echo "$HOME"`
 [[ "$(sudo whoami)" == "root" ]] || exit 1
+CERT_PWD=`echo "$CERT_PWD" |tr -d ' '`
+USER_HOME=`echo "$HOME"`
 
 [[ -e "${USER_HOME}/.cisco" ]] && rm -rf "${USER_HOME}/.cisco"
 [[ -e "${USER_HOME}/.anyconnect" ]] && rm -rf "${USER_HOME}/.anyconnect"
