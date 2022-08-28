@@ -79,5 +79,6 @@ if [[ -f "${CERT_TMP}.p12" ]]; then
   openssl pkcs12 -export -inkey "${CERT_TMP}_Key.pem" -in "${CERT_TMP}_Cert.pem" -certfile "${CERT_TMP}_CA.pem" -out "${CERT_TMP}_New.p12" -passout pass:NewCert
   security import "${CERT_TMP}_New.p12" -P "NewCert"
   rm -rf "${CERT_TMP}.p12" "${CERT_TMP}_New.p12" "${CERT_TMP}_CA.pem" "${CERT_TMP}_Cert.pem" "${CERT_TMP}_Key.pem"
+  exit 0
 fi
-exit 0
+exit 1
