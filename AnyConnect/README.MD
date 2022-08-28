@@ -1,6 +1,6 @@
 # MacOS
 ```
-curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/mac.sh" |sudo bash -s <CERT_URL> <CERT_PWD>
+curl -sSL "https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/mac.sh" |bash -s <CERT_URL> <CERT_PWD>
 
 ```
 
