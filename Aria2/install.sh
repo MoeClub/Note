@@ -8,7 +8,7 @@ URL="https://github.com/MoeClub/Note/raw/master/Aria2"
 systemctl stop aria2.service >/dev/null 2>&1
 systemctl disable aria2.service >/dev/null 2>&1
 rm -rf /usr/bin/aria2c
-
+rm -rf /etc/aria2
 
 wget --no-check-certificate -4 -qO- "${URL}/aria2c_${ARCH}_v1.36.0.tar.gz" |tar -zxv -C /usr/bin
 [ $? -eq 0 ] || exit 1
