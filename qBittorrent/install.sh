@@ -17,6 +17,7 @@ wget --no-check-certificate -4 -qO- "${URL}/bin/qbittorrent_${ARCH}_v4.4.2_lt_v2
 strip /usr/bin/qbittorrent >/dev/null 2>&1
 chmod 777 /usr/bin/qbittorrent
 mkdir -p /home/qBittorrent/config
+mkdir -p /home/qBittorrent/downloads
 
 wget --no-check-certificate -4 -qO- "${URL}/qBittorrent.conf" >/home/qBittorrent/config/qBittorrent.conf
 wget --no-check-certificate -4 -qO- "${URL}/qBittorrent.service" >/etc/systemd/system/qb.service
