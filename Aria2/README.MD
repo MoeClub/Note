@@ -15,3 +15,9 @@ bash <(wget -qO- https://raw.githubusercontent.com/MoeClub/Note/master/Aria2/ari
 cd /tmp && tar -zcvf aria2c_$(uname -m)_v1.36.0.tar.gz aria2c
 
 ```
+
+# install
+```
+bash <(wget -qO- https://github.com/MoeClub/Note/raw/master/Aria2/install.sh)
+
+```
