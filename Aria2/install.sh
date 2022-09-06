@@ -18,7 +18,7 @@ chmod 777 /usr/bin/aria2c
 
 mkdir -p /etc/aria2/web
 wget --no-check-certificate -4 -qO- "${URL}/aria2.conf" >/etc/aria2/aria2.conf
-wget --no-check-certificate -4 -qO- "${URL}/AriaNg.tar.gz" |tar --overwrite --strip-components 1 -zxv -C /etc/aria2/web
+wget --no-check-certificate -4 -qO- "${URL}/AriaNg.tar.gz" |tar --overwrite --strip-components 2 -zxv -C /etc/aria2/web
 
 cat >/etc/systemd/system/aria2.service<<EOF
 [Unit]
