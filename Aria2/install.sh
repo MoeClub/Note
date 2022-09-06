@@ -16,8 +16,8 @@ wget --no-check-certificate -4 -qO- "${URL}/aria2c_${ARCH}_v1.36.0.tar.gz" |tar 
 strip /usr/bin/aria2c >/dev/null 2>&1
 chmod 777 /usr/bin/aria2c
 
-mkdir -p /etc/aria2c
-wget --no-check-certificate -4 -qO- "${URL}/aria2.conf" >/etc/aria2c/aria2.conf
+mkdir -p /etc/aria2
+wget --no-check-certificate -4 -qO- "${URL}/aria2.conf" >/etc/aria2/aria2.conf
 
 cat >/etc/systemd/system/aria2.service<<EOF
 [Unit]
@@ -27,7 +27,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/aria2c --conf-path=/etc/aria2c/aria2.conf
+ExecStart=/usr/bin/aria2c --conf-path=/etc/aria2/aria2.conf
 ExecStop=/usr/bin/kill -9 \$MAINPID
 Restart=always
 LimitNOFILE=262144
