@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt-get install -y openssl net-tools dnsutils nload wget curl lsof p7zip-full python3-pip
+apt-get install -y openssl net-tools dnsutils screen nload wget curl lsof p7zip-full python3-pip
 
 # root
 sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config;
