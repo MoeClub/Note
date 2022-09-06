@@ -10,7 +10,7 @@ XZ_OPT=-9 tar -Jcvf /tmp/qbittorrent_$(uname -m)_v4.4.2_lt_v2.0.6.tar.xz  qbitto
 
 # install
 ```
-bash <(curl -sSL "https://github.com/MoeClub/Note/raw/master/qBittorrent/install.sh")
+bash <(wget -qO- "https://github.com/MoeClub/Note/raw/master/qBittorrent/install.sh")
 
 ```
 
