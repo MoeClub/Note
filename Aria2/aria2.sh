@@ -102,6 +102,9 @@ MOD "src/OptionHandlerFactory.cc" "PREF_SUMMARY_INTERVAL" "0" '"60",' '"0",'
 MOD "src/OptionHandlerFactory.cc" "PREF_FILE_ALLOCATION" "0" 'V_PREALLOC,' '\n#ifdef HAVE_SOME_FALLOCATE\nV_FALLOC\n#else\nV_PREALLOC\n#endif \/\/ HAVE_SOME_FALLOCATE\n,\n'
 
 # aria2 build
+CA=""
+[ -f "/etc/ssl/certs/ca-certificates.crt" ] && CA="/etc/ssl/certs/ca-certificates.crt"
+[ -f "/usr/local/share/ca-certificates/cacert.pem" ] && CA="/usr/local/share/ca-certificates/cacert.pem"
 PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig/" \
 LD_LIBRARY_PATH="$PREFIX/lib/" \
 CC="$C_COMPILER" \
@@ -116,7 +119,7 @@ CXX="$CXX_COMPILER" \
     --with-openssl \
     --with-libssh2 \
     --with-sqlite3 \
-    --with-ca-bundle="/etc/ssl/certs/ca-certificates.crt" \
+    --with-ca-bundle="$CA" \
     --enable-shared=no \
     ARIA2_STATIC=yes
 make -j $cores && make install || exit 1
