@@ -3,9 +3,10 @@
 cores=`grep "^processor" /proc/cpuinfo 2>/dev/null |wc -l`
 [ -n "$cores" ] && [ "$cores" -gt 0 ] || cores=1
 
+CA="${2:-}"
+BUILD_DIRECTORY="${1:-/tmp}"
 C_COMPILER="gcc"
 CXX_COMPILER="g++"
-BUILD_DIRECTORY="/tmp"
 PREFIX="$BUILD_DIRECTORY/aria2_build"
 
 DOWNLOADER() {
@@ -102,9 +103,8 @@ MOD "src/OptionHandlerFactory.cc" "PREF_SUMMARY_INTERVAL" "0" '"60",' '"0",'
 MOD "src/OptionHandlerFactory.cc" "PREF_FILE_ALLOCATION" "0" 'V_PREALLOC,' '\n#ifdef HAVE_SOME_FALLOCATE\nV_FALLOC\n#else\nV_PREALLOC\n#endif \/\/ HAVE_SOME_FALLOCATE\n,\n'
 
 # aria2 build
-CA=""
-[ -f "/etc/ssl/certs/ca-certificates.crt" ] && CA="/etc/ssl/certs/ca-certificates.crt"
-[ -f "/usr/local/share/ca-certificates/cacert.pem" ] && CA="/usr/local/share/ca-certificates/cacert.pem"
+[ ! -n "$CA" ] && [ -f "/etc/ssl/certs/ca-certificates.crt" ] && CA="/etc/ssl/certs/ca-certificates.crt"
+[ ! -n "$CA" ] && [ -f "/usr/local/share/ca-certificates/cacert.pem" ] && CA="/usr/local/share/ca-certificates/cacert.pem"
 PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig/" \
 LD_LIBRARY_PATH="$PREFIX/lib/" \
 CC="$C_COMPILER" \
