@@ -17,8 +17,10 @@ DOWNLOADER() {
 
 MOD() {
  [ "$#" -eq 5 ] || return
+ sed --version >/dev/null 2>&1
+ [ $? -eq 0 ] && ext="" || ext=".bak"
  n=`grep -on "$2" "$1" |cut -d':' -f1`
- sed -i "$(($n+$3))s/$4/$5/" "$1"
+ sed -i "$ext" "$(($n+$3))s/$4/$5/" "$1"
 }
 
 ## DEPENDENCES ##
