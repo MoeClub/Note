@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cores=`grep "^processor" /proc/cpuinfo |wc -l`
-[ -n "$cores" ] || cores=1
+cores=`grep "^processor" /proc/cpuinfo 2>/dev/null |wc -l`
+[ -n "$cores" ] && [ "$cores" -gt 0 ] || cores=1
 
 C_COMPILER="gcc"
 CXX_COMPILER="g++"
