@@ -5,9 +5,9 @@ cores=`grep "^processor" /proc/cpuinfo 2>/dev/null |wc -l`
 
 CA="${2:-}"
 BUILD_DIRECTORY="${1:-/tmp}"
+PREFIX="$BUILD_DIRECTORY/aria2_build"
 C_COMPILER="gcc"
 CXX_COMPILER="g++"
-PREFIX="$BUILD_DIRECTORY/aria2_build"
 
 DOWNLOADER() {
   [ "$#" -eq 2 ] || return
