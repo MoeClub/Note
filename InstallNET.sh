@@ -613,6 +613,9 @@ $UNCOMP < /tmp/$NewIMG | cpio --extract --verbose --make-directories --no-absolu
 if [[ "$linux_relese" == 'debian' ]] || [[ "$linux_relese" == 'ubuntu' ]]; then
 cat >/tmp/boot/preseed.cfg<<EOF
 d-i debian-installer/locale string en_US
+d-i debian-installer/country string US
+d-i debian-installer/language string en
+
 d-i console-setup/layoutcode string us
 
 d-i keyboard-configuration/xkb-keymap string us
