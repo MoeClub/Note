@@ -15,3 +15,13 @@ codesign -f -s "<CertificateName>" "/Applications/Navicat Premium.app"
 ./navicat-keygen ./RegPrivateKey.pem
 ```
 - Enjoy.
+
+# Website
+[navicat-keygen](https://notabug.org/doublesine/navicat-keygen)
+
+# Loop Retry
+```
+defaults read com.navicat.NavicatPremium.plist |grep '{' |grep '[0-9A-Z]\{32\}' |cut -d'=' -f1 |sed 's/[[:space:]]//g' |xargs -I {} defaults delete com.navicat.NavicatPremium.plist {}
+find "$HOME/Library/Application Support/PremiumSoft CyberTech/Navicat CC/Navicat Premium" -type f -name ".*" -delete
+
+```
