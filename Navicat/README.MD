@@ -21,7 +21,7 @@ codesign -f -s "<CertificateName>" "/Applications/Navicat Premium.app"
 
 # Loop Retry
 ```
-defaults read "$Plist" |grep '{' |grep -o '[0-9A-Z]\{32\}' |xargs -I {} defaults delete "$Plist" "{}"
+defaults read com.navicat.NavicatPremium.plist |grep '{' |grep -o '[0-9A-Z]\{32\}' |xargs -I {} defaults delete com.navicat.NavicatPremium.plist "{}"
 find "$HOME/Library/Application Support/PremiumSoft CyberTech/Navicat CC/Navicat Premium" -type f -name ".*" -delete
 
 ```
