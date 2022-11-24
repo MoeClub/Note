@@ -6,7 +6,7 @@ defaults write "$Plist" SUSendProfileInfo -int 0;
 defaults write "$Plist" SUHasLaunchedBefore -int 0;
 defaults write "$Plist" SUEnableAutomaticChecks -int 0;
 defaults write "$Plist" didNAV16WelcomePageShow -int 1;
-defaults delete "$Plist" tableViewPreference;
+defaults delete "$Plist" tableViewPreference >/dev/null 2>&1 ;
 
 defaults read "$Plist" |grep '{' |grep -o '[0-9A-Z]\{32\}' |xargs -I {} defaults delete "$Plist" "{}"
 find "$HOME/Library/Application Support/PremiumSoft CyberTech/Navicat CC/Navicat Premium" -type f -name ".*" -delete
