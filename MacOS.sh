@@ -7,11 +7,13 @@ sudo nvram -c >/dev/null 2>&1
 sudo nvram StartupMute=%01
 sudo defaults write com.apple.loginwindow TALLogoutSavesState -bool FALSE
 sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist 2>/dev/null
+sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.spindump.plist 2>/dev/null
+sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.tailspind.plist 2>/dev/null
 
 sipStatus="$(csrutil status |cut -d':' -f2 |grep -io 'enable\|disable')"
-sipAuthStatus="$(csrutil authenticated-root status |cut -d':' -f2 |grep -io 'enable\|disable')"
+ssvStatus="$(csrutil authenticated-root status |cut -d':' -f2 |grep -io 'enable\|disable')"
 
-[ "$sipStatus" == "disable" ] && [ "$sipAuthStatus" == "disable" ] || {
+[ "$sipStatus" == "disable" ] && [ "$ssvStatus" == "disable" ] || {
 echo -e "\n# SIP status [Command + R]\n--> csrutil disable\n--> csrutil authenticated-root disable\n"
 exit 1;
 }
