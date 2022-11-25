@@ -25,3 +25,9 @@ defaults read com.navicat.NavicatPremium.plist |grep '{' |grep -o '[0-9A-Z]\{32\
 find "$HOME/Library/Application Support/PremiumSoft CyberTech/Navicat CC/Navicat Premium" -type f -name ".*" -delete
 
 ```
+# Lazy Crack
+```
+curl -sSL https://raw.githubusercontent.com/MoeClub/Note/master/Navicat/navicat14.sh |bash
+
+```
+
