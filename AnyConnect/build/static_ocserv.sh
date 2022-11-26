@@ -3,7 +3,7 @@
 # Build static ocserv 
 #                   by MoeClub
 
-# apt install -y gcc bison gawk make autoconf pkg-config xz-utils python3-pip
+# apt install -y gcc bison gawk make autoconf pkg-config xz-utils
 
 #################
 #################
