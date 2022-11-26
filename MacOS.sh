@@ -1,6 +1,5 @@
 #!/bin/bash
 
-[ -f "/usr/bin/sudo" ] || exit 1;
 [ "$(sudo whoami)" == "root" ] || exit 1;
 
 sudo nvram -c >/dev/null 2>&1
