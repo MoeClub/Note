@@ -549,7 +549,6 @@ if [[ "$loaderMode" == "0" ]]; then
   LinuxIMG="$(grep 'initrd.*/' /tmp/grub.new |awk '{print $1}' |tail -n 1)";
   [ -z "$LinuxIMG" ] && sed -i "/$LinuxKernel.*\//a\\\tinitrd\ \/" /tmp/grub.new && LinuxIMG='initrd';
 
-  [[ "$setInterfaceName" == "1" ]] && Add_OPTION="net.ifnames=0 biosdevname=0" || Add_OPTION=""
   [[ "$setIPv6" == "1" ]] && Add_OPTION="$Add_OPTION ipv6.disable=1"
   
   lowMem || Add_OPTION="$Add_OPTION lowmem=+2"
@@ -559,8 +558,11 @@ if [[ "$loaderMode" == "0" ]]; then
   elif [[ "$linux_relese" == 'centos' ]]; then
     BOOT_OPTION="ks=file://ks.cfg $Add_OPTION ksdevice=$interfaceSelect"
   fi
-  
-  [ -n "$setConsole" ] && BOOT_OPTION="$BOOT_OPTION --- console=$setConsole"
+ 
+  #options to pass to installed system
+  BOOT_OPTION="$BOOT_OPTION ---"
+  [ -n "$setConsole" ] && BOOT_OPTION="$BOOT_OPTION console=$setConsole"
+  [[ "$setInterfaceName" == "1" ]] && BOOT_OPTION="$BOOT_OPTION net.ifnames=0 biosdevname=0" || BOOT_OPTION=""
 
   [[ "$Type" == 'InBoot' ]] && {
     sed -i "/$LinuxKernel.*\//c\\\t$LinuxKernel\\t\/boot\/vmlinuz $BOOT_OPTION" /tmp/grub.new;
