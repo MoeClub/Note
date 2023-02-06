@@ -4,7 +4,7 @@ After=dbus.service
 
 [Service]
 Type=simple
-ExecStart=/bin/sh -c 'while true; do /usr/bin/free |/usr/bin/grep "^Mem:" |/usr/bin/sed "s/[[:space:]]\+/ /g" | { read t T U F S B A; P=$([ -f /run/shm/MemoryEat.bin ] && /usr/bin/du --apparent-size --block-size=1000 /run/shm/MemoryEat.bin |/usr/bin/cut -f1 || /usr/bin/echo 0); D=$(($(($RANDOM % 5)) + 15)); C=$(($(($T * $D / 100)) - $(($T - $A)) + $P)); [ $C -le 0 ] && /usr/bin/echo 0 || /usr/bin/echo $C; } |/usr/bin/xargs -I {} /usr/bin/dd if=/dev/zero of=/run/shm/MemoryEat.bin bs=1kB count={} >/dev/null 2>&1; /usr/bin/sleep 15; [ -f /run/shm/MemoryEat.bin ] || break; done'
+ExecStart=/bin/sh -c 'while true; do /usr/bin/free |/usr/bin/grep "^Mem:" |/usr/bin/sed "s/[[:space:]]\+/ /g" | { read t T U F S B A; P=$([ -f /run/shm/MemoryEat.bin ] && /usr/bin/du --apparent-size --block-size=1000 /run/shm/MemoryEat.bin |/usr/bin/cut -f1 || /usr/bin/echo 0); D=$((`/usr/bin/od -An -N2 -i /dev/urandom` % 5 + 15)); C=$(($(($(($T * $D)) / 100)) - $(($T - $A)) + $P)); [ $C -le 0 ] && /usr/bin/echo 0 || /usr/bin/echo $C; } |/usr/bin/xargs -I {} /usr/bin/dd if=/dev/zero of=/run/shm/MemoryEat.bin bs=1kB count={} >/dev/null 2>&1; /usr/bin/sleep 15; [ -f /run/shm/MemoryEat.bin ] || break; done'
 ExecStop=/bin/sh -c '/usr/bin/rm -rf /run/shm/MemoryEat.bin'
 Restart=no
 
