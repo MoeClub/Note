@@ -1,6 +1,6 @@
 # Usage
 ```
-wget -qO-  >/etc/systemd/system/eat.service
+wget -qO- https://github.com/MoeClub/Note/raw/master/Oracle/eat.service >/etc/systemd/system/eat.service
 
 systemctl daemon-reload
 systemctl enable eat
