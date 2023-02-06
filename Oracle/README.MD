@@ -3,7 +3,7 @@
 以 15s 的检测间隔, 动态占用至10%的内存使用量.
 (如果已使用超过 10% 的内存则不占用内存)
 
-删除 /run/shm/MemoryEat.bin 则自动停止占用内存
+删除 /run/shm/MemoryEat.bin 则自动停止占用内存, 直到下次重启服务.
 
 ```
 
@@ -18,3 +18,12 @@ systemctl start eat
 systemctl status eat       
 
 ```
+
+# 卸载
+```
+systemctl disable eat
+rm -rf /etc/systemd/system/eat.service
+rm -rf /run/shm/MemoryEat.bin
+
+```
+
