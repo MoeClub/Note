@@ -7,7 +7,7 @@ After=dbus.service
 Type=simple
 ExecStart=/usr/sbin/vlmcsdmulti vlmcsd -D -d -q
 ExecStop=/bin/kill -KILL $MAINPID
-ExecStartPost=/bin/bash -c "sleep 3 && /usr/sbin/vlmcsdmulti vlmcs -D -d -q && exit 0 || exit 1"
+ExecStartPost=/bin/bash -c "sleep 3 && /usr/sbin/vlmcsdmulti vlmcs && exit 0 || exit 1"
 RestartSec=3s
 Restart=always
 
