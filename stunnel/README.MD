@@ -12,6 +12,7 @@ SMTP: mail.lib.mk
       SSL
 
 ```
+
 ### Gmail
 ```
 IMAP: mail.lib.mk
@@ -37,6 +38,18 @@ IMAP: mail.lib.mk
 SMTP: mail.lib.mk
       581
       STARTTLS
+
+```
+
+### Mail.ru
+```
+IMAP: mail.lib.mk
+      997
+      SSL
+
+SMTP: mail.lib.mk
+      466
+      SSL
 
 ```
 
