@@ -6,7 +6,7 @@
 IMAP: mail.lib.mk
       993
       SSL
-      
+
 SMTP: mail.lib.mk
       465
       SSL
@@ -17,7 +17,7 @@ SMTP: mail.lib.mk
 IMAP: mail.lib.mk
       999
       SSL
-      
+
 SMTP: mail.lib.mk
       666
       SSL
@@ -33,10 +33,10 @@ SMTP: mail.lib.mk
 IMAP: mail.lib.mk
       996
       SSL
-      
+
 SMTP: mail.lib.mk
       581
       STARTTLS
-      
+
 ```
 
