@@ -13,6 +13,18 @@ SMTP: mail.lib.mk
 
 ```
 
+### Larksuit
+```
+IMAP: mail.lib.mk
+      998
+      SSL
+
+SMTP: mail.lib.mk
+      468
+      SSL
+
+```
+
 ### Gmail
 ```
 IMAP: mail.lib.mk
