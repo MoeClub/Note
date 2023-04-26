@@ -65,3 +65,9 @@ SMTP: mail.lib.mk
 
 ```
 
+# Service
+```
+
+sed -i 's/;[:space:]*//' /etc/stunnel/stunnel.conf
+```
+
