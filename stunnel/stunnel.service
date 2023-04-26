@@ -1,0 +1,14 @@
+[Unit]
+Description=stunnel
+After=network-online.target
+After=local-fs.target
+After=dbus.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/stunnel /etc/stunnel/stunnel.conf 
+RestartSec=3s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
