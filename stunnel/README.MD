@@ -67,7 +67,15 @@ SMTP: mail.lib.mk
 
 # Service
 ```
+apt install -y stunnel
+wget -qO /etc/stunnel/stunnel.conf https://github.com/MoeClub/Note/raw/master/stunnel/mail.conf
+sed -i 's/;[[:space:]]*foreground.*/foreground = yes/' /etc/stunnel/stunnel.conf
+wget -qO /etc/stunnel/stunnel.service https://github.com/MoeClub/Note/raw/master/stunnel/stunnel.service
+cp -rf /etc/stunnel/stunnel.service /etc/systemd/system/stunnel.service
 
-sed -i 's/;[:space:]*//' /etc/stunnel/stunnel.conf
+systemctl daemon-reload
+systemctl enable stunnel.service
+systemctl start stunnel.service
+
 ```
 
