@@ -46,7 +46,7 @@ wget --no-check-certificate --no-cache -4 -qO /tmp/ocserv.deb "https://raw.githu
 ```
 docker build -t ocserv:latest ./DockerFile; 
 
-docker run --name ocserv --env PASSWD=-Test:TestPwd:NoRoute --env CERT=<CERT_URL> --env KEY=<CERT_URL> --env CA=<CA_URL> --privileged -p 443:443 -d <ImageID> 
+docker run --name ocserv --env PASSWD=-Test:TestPwd:NoRoute --env CERT=<CERT_URL> --env KEY=<KEY_URL> --env CA=<CA_URL> --privileged -p 443:443 -d <ImageID> 
 
 docker rm -f ocserv
 
