@@ -53,6 +53,7 @@ docker rm -f ocserv
 
 --env CA=<URL>         # 用于证书登陆
 --env PASSWD=<STRING>  # 用于用户名密码登陆
+--env DNS=<URL>        # 用于dnsmasq域名解析优化
 --env CERT=<URL>       # 用于域名证书
 --env KEY=<URL> 
 
