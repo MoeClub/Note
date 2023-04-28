@@ -52,7 +52,7 @@ docker rm -f ocserv
 
 
 --env CA=      # 用于证书登陆
---env PASSWD=  #用于用户名密码登陆
+--env PASSWD=  # 用于用户名密码登陆
 --env CERT=    # 用于域名证书
 --env KEY= 
 
