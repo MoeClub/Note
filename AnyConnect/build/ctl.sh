@@ -25,19 +25,30 @@ function IPTABLES(){
 }
 
 function GenPasswd(){
-  echo -n >${ConfigPath}/ocpasswd
+  echo -ne "\nUserName\tPassword\tGROUP\n\n"
   RawPasswd="${1:-MoeClub}"
-  UserPasswd=`openssl passwd ${RawPasswd}`
-  titleNum=0
-  for GP in `find "${ConfigPath}/group" -type f`
-    do
-      [ -n "$GP" ] || continue
-      user=`basename "$GP"`
-      [ -n "$user" ] || continue
-      [ "$titleNum" -le "0" ] && titleNum=$(($titleNum + 1)) && echo -ne "\nUserName\tPassword\tGROUP\n\n"
-      echo -ne "${user}\t\t${RawPasswd}\t\t${user}\n"
-      echo -ne "${user}:${user}:${UserPasswd}\n" >>${ConfigPath}/ocpasswd
-    done
+  if [ `echo "${RawPasswd}" |grep -o ':' |grep -c ':'` == "2" ]; then
+    echo "${RawPasswd}" |grep -q '^-' && echo -n >${ConfigPath}/ocpasswd
+    User=`echo "${RawPasswd}"| cut -d':' -f1 |sed 's/[[:space:]]//g' |tr -d '-'`
+    UserPasswd=`echo "${RawPasswd}"| cut -d':' -f2 |sed 's/[[:space:]]//g'`
+    UserGroup=`echo "${RawPasswd}"| cut -d':' -f3 |sed 's/[[:space:]]//g'`
+    [ -n "$User" ] && [ -n "$UserPasswd" ] && [ -n "$UserGroup" ] || { echo -ne "ERROR: Invalid ARG\n" && return 1; }
+    [ -f "${ConfigPath}/group/${UserGroup}" ] || { echo -ne "ERROR: Invalid Group\n" && return 1; }
+    SaltPasswd=`openssl passwd ${UserPasswd}`
+    echo -ne "${User}\t\t${UserPasswd}\t\t${UserGroup}\n"
+    echo -ne "${User}:${UserGroup}:${SaltPasswd}\n" >>${ConfigPath}/ocpasswd
+  else
+    echo -n >${ConfigPath}/ocpasswd
+    UserPasswd=`openssl passwd ${RawPasswd}`
+    for GroupName in `find "${ConfigPath}/group" -type f`
+      do
+        [ -n "$GroupName" ] || continue
+        User=`basename "$GroupName"`
+        [ -n "$User" ] || continue
+        echo -ne "${User}\t\t${RawPasswd}\t\t${User}\n"
+        echo -ne "${User}:${User}:${UserPasswd}\n" >>${ConfigPath}/ocpasswd
+      done
+  fi
   chmod 755 ${ConfigPath}/ocpasswd
 }
 
