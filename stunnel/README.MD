@@ -72,6 +72,7 @@ wget -qO /etc/stunnel/stunnel.conf https://github.com/MoeClub/Note/raw/master/st
 sed -i 's/;[[:space:]]*foreground.*/foreground = yes/' /etc/stunnel/stunnel.conf
 wget -qO /etc/stunnel/stunnel.service https://github.com/MoeClub/Note/raw/master/stunnel/stunnel.service
 cp -rf /etc/stunnel/stunnel.service /etc/systemd/system/stunnel.service
+rm -rf /etc/init.d/stunnel4
 
 systemctl daemon-reload
 systemctl enable stunnel.service
