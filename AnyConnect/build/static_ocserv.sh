@@ -12,12 +12,11 @@ ver_glibc=2.31
 ver_libev=4.33
 ver_nettle=3.7.3
 ver_gnutls=3.6.16
-ver_ocserv=1.1.6
+ver_ocserv=1.1.7
 
 #################
 #################
 
-cd /tmp
 cores=$(grep -c '^processor' /proc/cpuinfo)
 installPrefix="/tmp/build"
 
@@ -38,6 +37,7 @@ ln -s . $installPrefix/local
 #################
 
 # glibc
+cd /tmp
 wget --no-check-certificate -4 -O glibc.tar.gz https://ftp.gnu.org/pub/gnu/glibc/glibc-${ver_glibc}.tar.gz
 [ -d glibc ] && rm -rf glibc
 mkdir -p glibc; tar -xz -f glibc.tar.gz -C glibc --strip-components=1;
@@ -53,9 +53,9 @@ make -j$cores
 [ $? -eq 0 ] || exit 1 
 make install
 find "$installPrefix/lib" ! -type d ! -name "*.a" -delete
-cd ..
 
 # libev
+cd /tmp
 wget --no-check-certificate -4 -O libev.tar.gz http://dist.schmorp.de/libev/Attic/libev-${ver_libev}.tar.gz
 [ -d libev ] && rm -rf libev
 mkdir -p libev; tar -xz -f libev.tar.gz -C libev --strip-components=1;
@@ -69,9 +69,9 @@ LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static -static-libgcc -sta
 make -j$cores
 [ $? -eq 0 ] || exit 1 
 make DESTDIR=$installPrefix install
-cd ..
 
 # Nettle
+cd /tmp
 wget --no-check-certificate -4 -O nettle.tar.gz https://ftp.gnu.org/gnu/nettle/nettle-${ver_nettle}.tar.gz
 [ -d nettle ] && rm -rf nettle
 mkdir -p nettle; tar -xz -f nettle.tar.gz -C nettle --strip-components=1;
@@ -87,9 +87,9 @@ LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static -static-libgcc -sta
 make -j$cores
 [ $? -eq 0 ] || exit 1 
 make DESTDIR=$installPrefix install
-cd ..
 
 # GnuTLS
+cd /tmp
 wget --no-check-certificate -4 -O gnutls.tar.xz https://www.gnupg.org/ftp/gcrypt/gnutls/v${ver_gnutls%.*}/gnutls-${ver_gnutls}.tar.xz
 [ -d gnutls ] && rm -rf gnutls
 mkdir -p gnutls; tar -xJ -f gnutls.tar.xz -C gnutls --strip-components=1;
@@ -104,7 +104,6 @@ LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static -static-libgcc -sta
 make -j$cores
 [ $? -eq 0 ] || exit 1 
 make DESTDIR=$installPrefix install
-cd ..
 
 # readline.h
 cat >$installPrefix/include/readline.h <<EOF
@@ -152,6 +151,7 @@ rm -rf readline.o
 
 
 # OpenConnect Server
+cd /tmp
 rm -rf $HOME/ocserv-build
 mkdir -p $HOME/ocserv-build
 wget --no-check-certificate -4 -O ocserv.tar.xz ftp://ftp.infradead.org/pub/ocserv/ocserv-${ver_ocserv}.tar.xz
@@ -160,8 +160,8 @@ mkdir -p ocserv; tar -xJ -f ocserv.tar.xz -C ocserv --strip-components=1;
 cd ocserv
 #autoreconf -fvi
 sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
-sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN) {\n\t\t\tcstp_cork(ws);\n\t\t\tret = (cstp_printf(ws, "HTTP\/1.%u 200 OK\\r\\nContent-Type: text\/plain\\r\\nContent-Length: 0\\r\\n\\r\\n", http_ver) < 0 || cstp_uncork(ws) < 0);\n\t\t\tstr_clear(\&str);\n\t\t\treturn -1;\n\t\t}/' src/worker-auth.c
-#sed -i 's/case AC_PKT_DPD_OUT:/&\n\t\tws->last_nc_msg = now;/' src/worker-vpn.c
+sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN) {\n\t\t\tcstp_cork(ws);\n\t\t\tret = (cstp_printf(ws, "HTTP\/1.%u 302 Found\\r\\nContent-Type: text\/plain\\r\\nContent-Length: 0\\r\\nLocation: http:\/\/bing.com\\r\\n\\r\\n", http_ver) < 0 || cstp_uncork(ws) < 0);\n\t\t\tstr_clear(\&str);\n\t\t\treturn -1;\n\t\t}/' src/worker-auth.c
+#sed -i 's/case AC_PKT_DPD_OUT:/&\n\t\tws->last_nc_msg = now;/' src/worker-auth.c
 #sed -i 's/\$LIBS \$LIBEV/\$LIBEV \$LIBS/g' configure
 CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
 LDFLAGS="-L$installPrefix/lib -L$installPrefix/lib64 -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
@@ -175,7 +175,6 @@ LIBS="-lev -lm -lnettle -lhogweed -lreadline" \
 make -j$cores
 [ $? -eq 0 ] || exit 1 
 make DESTDIR=$HOME/ocserv-build install
-cd ..
 
 # Package
 cd $HOME/ocserv-build
