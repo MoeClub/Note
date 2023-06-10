@@ -683,6 +683,7 @@ tasksel tasksel/first multiselect minimal
 d-i pkgsel/update-policy select none
 d-i pkgsel/include string openssh-server
 d-i pkgsel/upgrade select none
+d-i apt-setup/services-select multiselect
 
 popularity-contest popularity-contest/participate boolean false
 
