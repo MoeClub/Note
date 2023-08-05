@@ -37,6 +37,7 @@ sed -i 's/\[mysqld\]/\[mysqld\]\nbind-address = 127.0.0.1/' /etc/my.cnf
 sleep 10
 
 "$MySQLRoot/bin/mysqladmin" -u root password ""
+"$MySQLRoot/bin/mysql" -uroot -Dmysql -e 'DELETE FROM user WHERE Host<>"localhost" OR User=""; FLUSH privileges;'
 
 ln -sf "$MySQLRoot/bin/mysql" /usr/local/bin/mysql
 
