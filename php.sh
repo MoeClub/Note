@@ -12,6 +12,7 @@ echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" |tee /etc/apt/
 apt update
 
 apt-get install -y "php${phpVer}" "php${phpVer}-cli" "php${phpVer}-common" "php${phpVer}-fpm" "php${phpVer}-xml" "php${phpVer}-gd" "php${phpVer}-mysql" "php${phpVer}-imap" "php${phpVer}-curl"
+apt-get install -y "php${phpVer}-mbstring" "php${phpVer}-soap" "php${phpVer}-xmlrpc" "php${phpVer}-zip"
 update-alternatives --set php "/usr/bin/php${phpVer}"
 
 
