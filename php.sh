@@ -22,6 +22,8 @@ sed -i 's/^;\?emergency_restart_threshold[[:space:]]*=.*/emergency_restart_thres
 sed -i 's/^;\?emergency_restart_interval[[:space:]]*=.*/emergency_restart_interval = 300/' "/etc/php/${phpVer}/fpm/php-fpm.conf"
 sed -i 's/^;\?process_control_timeout[[:space:]]*=.*/process_control_timeout = 180/' "/etc/php/${phpVer}/fpm/php-fpm.conf"
 
+sed -i 's/^;\?date\.timezone[[:space:]]*=.*/date\.timezone = \"Asia\/Shanghai\"/' "/etc/php/${phpVer}/cli/php.ini"
+sed -i 's/^;\?date\.timezone[[:space:]]*=.*/date\.timezone = \"Asia\/Shanghai\"/' "/etc/php/${phpVer}/fpm/php.ini"
 
 extension_dir=`php -i |grep extension_dir |sed 's/[[:space:]]*=>[[:space:]]*/\n/g' |tail -n1`
 wget -qO- "https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_${arch}.tar.gz" | tar -zxv --overwrite -C /tmp
