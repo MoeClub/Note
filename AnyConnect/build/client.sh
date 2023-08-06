@@ -75,7 +75,8 @@ openssl x509 -set_serial `printf "%04d" "$(($RANDOM % 10000))"` -CAform PEM -CA 
 
 
 cat ./ca.cert.pem >>./user.cert.pem
-openssl pkcs12 -export -inkey "./user.key.pem" -in "./user.cert.pem" -name "${OrgName}.${GroupName}" -certfile "./ca.cert.pem" -caname "${OrgName} CA" -out "./${GroupName}.p12" -passout "pass:$PASSWORD"
+openssl pkcs12 --help 2>&1 |grep -q 'legacy' && legacy="-legacy" || legacy=""
+openssl pkcs12 $legacy -export -inkey "./user.key.pem" -in "./user.cert.pem" -name "${OrgName}.${GroupName}" -certfile "./ca.cert.pem" -caname "${OrgName} CA" -out "./${GroupName}.p12" -passout "pass:$PASSWORD"
 
 [ $? -eq '0' ] && echo -e "\nSuccess! \nGROUP\t\tPASSWORD\n${GroupName}\t\t$PASSWORD\n" || echo -e "\nFail! \n";
 rm -rf ./user.csr.pem ./user.key.pem ./user.cert.pem
