@@ -38,6 +38,8 @@ export GRUBVER=''
 export VER=''
 export setCMD=''
 export setConsole=''
+export noSwap='0'
+export tmpSwap=''
 
 while [[ $# -ge 1 ]]; do
   case $1 in
@@ -142,6 +144,10 @@ while [[ $# -ge 1 ]]; do
     --noipv6)
       shift
       setIPv6='1'
+      ;;
+    -noswap)
+      shift
+      noSwap='1'
       ;;
     -a|--auto|-m|--manual|-ssl)
       shift
@@ -610,7 +616,20 @@ for COMP in `echo -en 'gzip\nlzma\nxz'`
 
 $UNCOMP < /tmp/$NewIMG | cpio --extract --verbose --make-directories --no-absolute-filenames >>/dev/null 2>&1
 
+
 if [[ "$linux_relese" == 'debian' ]] || [[ "$linux_relese" == 'ubuntu' ]]; then
+if [[ "$noSwap" == "0" ]]; then
+  tmpSwap = "d-i partman-auto/choose_recipe select All files in one partition (recommended for new users)";
+else
+  tmpSwap = "d-i partman-basicfilesystems/no_swap boolean false
+d-i partman-auto/expert_recipe string myroot :: 1000 50 -1 ext4 \
+     $primary{ } $bootable{ } method{ format } \
+     format{ } use_filesystem{ } filesystem{ ext4 } \
+     mountpoint{ / } \
+    .
+d-i partman-auto/choose_recipe select myroot";
+fi
+
 CurrentKernelVersion=`ls -1 ./lib/modules 2>/dev/null |head -n1`
 [ -n "$CurrentKernelVersion" ] && SelectLowmem="di-utils-exit-installer,driver-injection-disk-detect,fdisk-udeb,netcfg-static,parted-udeb,partman-auto,partman-ext3,ata-modules-${CurrentKernelVersion}-di,efi-modules-${CurrentKernelVersion}-di,sata-modules-${CurrentKernelVersion}-di,scsi-modules-${CurrentKernelVersion}-di,scsi-nic-modules-${CurrentKernelVersion}-di" || SelectLowmem=""
 cat >/tmp/boot/preseed.cfg<<EOF
@@ -669,7 +688,7 @@ d-i partman/mount_style select uuid
 d-i partman/choose_partition select finish
 d-i partman-auto/method string regular
 d-i partman-auto/init_automatically_partition select Guided - use entire disk
-d-i partman-auto/choose_recipe select All files in one partition (recommended for new users)
+$tmpSwap
 d-i partman-md/device_remove_md boolean true
 d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-lvm/confirm boolean true
@@ -783,23 +802,22 @@ EOF
 fi
 
 find . | cpio -H newc --create --verbose | gzip -9 > /tmp/initrd.img;
+cp -f /tmp/initrd.img /boot/initrd.img || sudo cp -f /tmp/initrd.img /boot/initrd.img
+cp -f /tmp/vmlinuz /boot/vmlinuz || sudo cp -f /tmp/vmlinuz /boot/vmlinuz
+
+chown root:root $GRUBDIR/$GRUBFILE
+chmod 444 $GRUBDIR/$GRUBFILE
 
 if [[ "$loaderMode" == "0" ]]; then
-  cp -f /tmp/initrd.img /boot/initrd.img || sudo cp -f /tmp/initrd.img /boot/initrd.img
-  cp -f /tmp/vmlinuz /boot/vmlinuz || sudo cp -f /tmp/vmlinuz /boot/vmlinuz
-  
-  chown root:root $GRUBDIR/$GRUBFILE
-  chmod 444 $GRUBDIR/$GRUBFILE
-  
   sleep 3 && reboot || sudo reboot >/dev/null 2>&1
 else
   rm -rf "$HOME/loader"
   mkdir -p "$HOME/loader"
-  cp -rf "/tmp/initrd.img" "$HOME/loader/initrd.img"
-  cp -rf "/tmp/vmlinuz" "$HOME/loader/vmlinuz"
-
-  [[ -f "/tmp/initrd.img" ]] && rm -rf "/tmp/initrd.img"
-  [[ -f "/tmp/vmlinuz" ]] && rm -rf "/tmp/vmlinuz"
+  cp -rf "/boot/initrd.img" "$HOME/loader/initrd.img"
+  cp -rf "/boot/vmlinuz" "$HOME/loader/vmlinuz"
+  [[ -f "/boot/initrd.img" ]] && rm -rf "/boot/initrd.img"
+  [[ -f "/boot/vmlinuz" ]] && rm -rf "/boot/vmlinuz"
   echo && ls -AR1 "$HOME/loader"
 fi
+
 
