@@ -782,22 +782,22 @@ EOF
 [[ "$(echo "$DIST" |grep -o '^[0-9]\{1\}')" == '5' ]] && sed -i '0,/^%end/s//#%end/' /tmp/boot/ks.cfg
 fi
 
-find . | cpio -H newc --create --verbose | gzip -9 > /tmp/initrd.img;
-cp -f /tmp/initrd.img /boot/initrd.img || sudo cp -f /tmp/initrd.img /boot/initrd.img
-cp -f /tmp/vmlinuz /boot/vmlinuz || sudo cp -f /tmp/vmlinuz /boot/vmlinuz
-
-chown root:root $GRUBDIR/$GRUBFILE
-chmod 444 $GRUBDIR/$GRUBFILE
+find . | cpio -H newc --create --verbose | gzip -9 >/tmp/initrd.img
 
 if [[ "$loaderMode" == "0" ]]; then
+  cp -f /tmp/initrd.img /boot/initrd.img || sudo cp -f /tmp/initrd.img /boot/initrd.img
+  cp -f /tmp/vmlinuz /boot/vmlinuz || sudo cp -f /tmp/vmlinuz /boot/vmlinuz
+  chown root:root $GRUBDIR/$GRUBFILE
+  chmod 444 $GRUBDIR/$GRUBFILE
   sleep 3 && reboot || sudo reboot >/dev/null 2>&1
 else
-  rm -rf "$HOME/loader"
   mkdir -p "$HOME/loader"
-  cp -rf "/boot/initrd.img" "$HOME/loader/initrd.img"
-  cp -rf "/boot/vmlinuz" "$HOME/loader/vmlinuz"
-  [[ -f "/boot/initrd.img" ]] && rm -rf "/boot/initrd.img"
-  [[ -f "/boot/vmlinuz" ]] && rm -rf "/boot/vmlinuz"
+  rm -rf "$HOME/loader/$ipAddr"
+  mkdir -p "$HOME/loader/$ipAddr"
+  cp -rf "/tmp/initrd.img" "$HOME/loader/$ipAddr/initrd.img"
+  cp -rf "/tmp/vmlinuz" "$HOME/loader/$ipAddr/vmlinuz"
+  [[ -f "/tmp/initrd.img" ]] && rm -rf "/tmp/initrd.img"
+  [[ -f "/tmp/vmlinuz" ]] && rm -rf "/tmp/vmlinuz"
   echo && ls -AR1 "$HOME/loader"
 fi
 
