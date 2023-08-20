@@ -87,7 +87,7 @@ csrutil authenticated-root enable
 
 # 7z with MacOS
 ```
-curl -sSL "https://www.7-zip.org/a/7z2107-mac.tar.xz" |tar -C /tmp -zxv 7zz && sudo mv /tmp/7zz /usr/local/bin/7z && sudo chmod a+x /usr/local/bin/7z
+curl -sSL "https://www.7-zip.org/a/7z2107-mac.tar.xz" |tar -C /tmp -zxv 7zz && sudo mkdir -p /usr/local/bin && sudo mv /tmp/7zz /usr/local/bin/7z && sudo chmod a+x /usr/local/bin/7z
 
 ```
 
