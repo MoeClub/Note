@@ -14,6 +14,7 @@ USER_HOME=`echo "$HOME"`
 
 [[ -e "${USER_HOME}/.cisco" ]] && rm -rf "${USER_HOME}/.cisco"
 [[ -e "${USER_HOME}/.anyconnect" ]] && rm -rf "${USER_HOME}/.anyconnect"
+[[ ! -d "/opt/cisco/anyconnect/profile" ]] && mkdir -p "/opt/cisco/anyconnect/profile" && chmod 777 "/opt/cisco/anyconnect/profile"
 
 cat >"${USER_HOME}/.anyconnect"<<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -83,6 +84,15 @@ if [[ -f "${CERT_TMP}.p12" ]]; then
   openssl pkcs12 -in "${CERT_TMP}.p12" -nodes -nokeys -cacerts -out "${CERT_TMP}_CA.pem" -password pass:"${CERT_PWD}"
   openssl pkcs12 -export -inkey "${CERT_TMP}_Key.pem" -in "${CERT_TMP}_Cert.pem" -certfile "${CERT_TMP}_CA.pem" -out "${CERT_TMP}_New.p12" -passout pass:NewCert
   security import "${CERT_TMP}_New.p12" -P "NewCert"
+  if [[ "$?" -ne "0" ]]; then
+    KEYCHAIN=`security login-keychain |cut -d'"' -f2`
+    if [[ -n "${KEYCHAIN}" ]]; then
+      security import "${CERT_TMP}_New.p12" -P "NewCert" -k "${KEYCHAIN}"
+      [[ "$?" -ne "0" ]] && echo "Import Certificate Fail."
+    else
+      echo "Get login-keychain Fail."
+    fi
+  fi
   rm -rf "${CERT_TMP}.p12" "${CERT_TMP}_New.p12" "${CERT_TMP}_CA.pem" "${CERT_TMP}_Cert.pem" "${CERT_TMP}_Key.pem"
   exit 0
 fi
