@@ -14,7 +14,7 @@ USER_HOME=`echo "$HOME"`
 
 [[ -e "${USER_HOME}/.cisco" ]] && rm -rf "${USER_HOME}/.cisco"
 [[ -e "${USER_HOME}/.anyconnect" ]] && rm -rf "${USER_HOME}/.anyconnect"
-[[ ! -d "/opt/cisco/anyconnect/profile" ]] && mkdir -p "/opt/cisco/anyconnect/profile" && chmod 777 "/opt/cisco/anyconnect/profile"
+[[ ! -d "/opt/cisco/anyconnect/profile" ]] && mkdir -p "/opt/cisco/anyconnect/profile" && chmod 777 "/opt/cisco/anyconnect"
 
 cat >"${USER_HOME}/.anyconnect"<<EOF
 <?xml version="1.0" encoding="UTF-8"?>
