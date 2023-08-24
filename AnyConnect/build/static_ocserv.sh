@@ -12,7 +12,7 @@ ver_glibc=2.31
 ver_libev=4.33
 ver_nettle=3.7.3
 ver_gnutls=3.6.16
-ver_ocserv=1.1.7
+ver_ocserv=1.2.1
 
 #################
 #################
