@@ -36,6 +36,7 @@ ln -s . $installPrefix/local
 #################
 #################
 
+
 # glibc
 cd /tmp
 wget --no-check-certificate -4 -O glibc.tar.gz https://ftp.gnu.org/pub/gnu/glibc/glibc-${ver_glibc}.tar.gz
@@ -149,7 +150,6 @@ EOF
 ar rcs $installPrefix/lib/libreadline.a readline.o
 rm -rf readline.o
 
-
 # OpenConnect Server
 cd /tmp
 rm -rf $HOME/ocserv-build
@@ -161,6 +161,7 @@ cd ocserv
 #autoreconf -fvi
 sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
 sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN) {\n\t\t\tcstp_cork(ws);\n\t\t\tret = (cstp_printf(ws, "HTTP\/1.%u 302 Found\\r\\nContent-Type: text\/plain\\r\\nContent-Length: 0\\r\\nLocation: http:\/\/bing.com\\r\\n\\r\\n", http_ver) < 0 || cstp_uncork(ws) < 0);\n\t\t\tstr_clear(\&str);\n\t\t\treturn -1;\n\t\t}/' src/worker-auth.c
+sed -i 's/c_isspace/isspace/' src/occtl/occtl.c
 #sed -i 's/case AC_PKT_DPD_OUT:/&\n\t\tws->last_nc_msg = now;/' src/worker-auth.c
 #sed -i 's/\$LIBS \$LIBEV/\$LIBEV \$LIBS/g' configure
 CFLAGS="-I$installPrefix/include -ffloat-store -O0 --static" \
@@ -169,7 +170,7 @@ LIBS="-lev -lm -lnettle -lhogweed -lreadline" \
 ./configure --prefix=/usr \
 	--disable-rpath \
 	--with-local-talloc \
-	--without-{root-tests,docker-tests,nuttcp-tests} \
+	--without-{root-tests,docker-tests,nuttcp-tests,tun-tests} \
 	--without-{protobuf,maxmind,geoip,liboath,pam,radius,utmp,lz4,http-parser,gssapi,pcl-lib}
 [ $? -eq 0 ] || exit 1 
 make -j$cores
