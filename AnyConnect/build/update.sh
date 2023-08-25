@@ -17,3 +17,6 @@ mv /etc/dnsmasq.conf.bak /etc/dnsmasq.conf
 
 systemctl restart dnsmasq
 systemctl restart ocserv
+
+ocserv -v
+dnsmasq -v
