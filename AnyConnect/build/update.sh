@@ -14,3 +14,6 @@ rm -rf /etc/ocserv /etc/dnsmasq.d /etc/dnsmasq.conf
 mv /etc/dnsmasq.d.bak /etc/dnsmasq.d
 mv /etc/ocserv.bak /etc/ocserv
 mv /etc/dnsmasq.conf.bak /etc/dnsmasq.conf
+
+systemctl restart dnsmasq
+systemctl restart ocserv
