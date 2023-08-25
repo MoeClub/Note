@@ -1,8 +1,8 @@
 Package: ocserv
-Version: 1.1.6
+Version: 1.2.1
 Section: net
 Priority: optional
 Architecture: all
 Maintainer: MoeClub
 Depends: systemd, iproute2, wget, sed, grep, openssl (>= 1.1.1)
-Description: Package By MoeClub
+Description: ocserv with dnsmasq By MoeClub
