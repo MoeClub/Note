@@ -6,5 +6,5 @@
 # auto-select-group = false
 
 ## All Route List
-route = 0.0.0.0/128.0.0.0
-route = 128.0.0.0/128.0.0.0
+# route = 0.0.0.0/128.0.0.0
+# route = 128.0.0.0/128.0.0.0
