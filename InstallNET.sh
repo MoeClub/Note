@@ -797,8 +797,8 @@ else
   mkdir -p "$HOME/loader"
   cp -rf "/tmp/initrd.img" "$HOME/loader/initrd.img"
   cp -rf "/tmp/vmlinuz" "$HOME/loader/vmlinuz"
-  [[ -f "/boot/initrd.img" ]] && rm -rf "/boot/initrd.img"
-  [[ -f "/boot/vmlinuz" ]] && rm -rf "/boot/vmlinuz"
+  rm -rf "/boot/initrd.img"
+  rm -rf "/boot/vmlinuz"
   echo && ls -AR1 "$HOME/loader"
 fi
 
