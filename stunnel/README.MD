@@ -4,11 +4,11 @@
 ### Yandex
 ```
 IMAP: mail.lib.mk
-      993
+      995
       SSL
 
 SMTP: mail.lib.mk
-      465
+      467
       SSL
 
 ```
