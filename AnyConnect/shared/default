@@ -1,0 +1,28 @@
+server {
+	listen 80 default_server;
+	listen 65443 ssl;
+	
+	server_name _;
+	
+	ssl_certificate /etc/ocserv/server.crt.pem;
+	ssl_certificate_key /etc/ocserv/server.key.pem;
+	ssl_protocols TLSv1.3 TLSv1.2 TLSv1.1 TLSv1;
+	ssl_ciphers EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5:!RC4;
+	ssl_prefer_server_ciphers on;
+	ssl_session_cache shared:SSL:16m;
+	ssl_buffer_size 4k;
+	ssl_stapling off;
+	ssl_stapling_verify off;
+	
+	autoindex on;
+	gzip off;
+	
+	root /var/www/html;
+	index index.html;
+
+	if ($scheme != "https") { return 302 "https://$host:65443$request_uri"; }
+
+	location / {
+		try_files $uri $uri/ =404;
+	}
+}
