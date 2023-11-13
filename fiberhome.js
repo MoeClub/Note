@@ -95,5 +95,7 @@ function Post(d, uri) {
 }
 
 Login();
-Post({"dataObj":{"result":"DeviceInfo.HardwareVersion"},"ajaxmethod":"get_value_by_xmlnode"})
+Post({"dataObj":{"MemoryTotal":"DeviceInfo.MemoryStatus.Total", "MemoryFree": "DeviceInfo.MemoryStatus.Free"},"ajaxmethod":"get_value_by_xmlnode"});
+Post({"dataObj":{"KEY":"UPTIME"},"ajaxmethod":"get_cmd_result_web"});
+Post({"dataObj":null,"ajaxmethod":"version_detection"});
 
