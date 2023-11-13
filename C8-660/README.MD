@@ -1,4 +1,4 @@
-# nrpkg zip解包后出现3个文件
+# nrpkg 文件解包后有3个文件
 
 ```
 一个系统镜像(重命名为systemnew2flash.bin)，
