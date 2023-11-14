@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dockerVer="${1:-20.10.17}"
+dockerVer="${1:-20.10.24}"
 
 rm -rf /usr/bin/docker-init
 rm -rf /usr/bin/containerd
