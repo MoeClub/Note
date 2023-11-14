@@ -12,3 +12,10 @@
 刷入 system: mtd -q write /tmp/systemnew2flash.bin ubi
 校验 system: mtd -q verify /tmp/systemnew2flash.bin ubi
 ```
+
+# 换源
+```
+sed -i 's/mirrors.vsean.net/mirrors.cloud.tencent.com/g;' /etc/opkg/distfeeds.conf
+sed -i '/istore/d' /etc/opkg/distfeeds.conf
+
+```
