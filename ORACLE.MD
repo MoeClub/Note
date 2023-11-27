@@ -1,4 +1,12 @@
 # 甲骨文
+#### Free AMD
+```
+cat /proc/cpuinfo
+
+7742 -> 50M
+
+```
+
 #### 试用期间和付费账户可以更改
 ```
 https://myservices-租户名称.console.oraclecloud.com/mycloud/cloudportal/accountDetail/accountManagement
@@ -18,3 +26,4 @@ https://cloud.oracle.com/identity/domains/<ocid1.domain...>/settings/password-po
 https://idcs-<IDCS>.identity.oraclecloud.com/ui/v1/adminconsole?root=security&security=sign-on-policy
 
 ```
+
