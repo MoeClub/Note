@@ -12,3 +12,9 @@ https://idcs-<IDSC>.identity.oraclecloud.com/ui/v1/adminconsole?root=settings&se
 https://cloud.oracle.com/identity/domains/<ocid1.domain...>/settings/password-policy-settings-details/PasswordPolicy
 
 ```
+
+#### 禁用2FA策略
+```
+https://idcs-<IDCS>.identity.oraclecloud.com/ui/v1/adminconsole?root=security&security=sign-on-policy
+
+```
