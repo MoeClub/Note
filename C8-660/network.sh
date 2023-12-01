@@ -112,4 +112,3 @@ while true; do
 done
 
 echo "$(Now) FINISH" |tee -a "$LOG"
-
