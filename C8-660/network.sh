@@ -96,7 +96,7 @@ function CheckIPv4() {
   echo "$(Now) Check IPv4 ..." |tee -a "$LOG"
   for i in $(seq 1 $MaxNum); do
     ipv4=`ubus call network.interface.wan status 2>/dev/null |grep '"address":' |grep -o '[0-9\.]*'`
-    [ -n "$ipv4" ] && echo "$(Now) IPV4: $ipv4" |tee -a "$LOG" && return 0
+    [ -n "$ipv4" ] && echo "$(Now) IPv4: $ipv4" |tee -a "$LOG" && return 0
     sleep 1
   done
   return 1
