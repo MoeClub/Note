@@ -57,7 +57,7 @@ function Reset(){
   /bin/sendat "$PORT" 'AT+QSCLK=0,0'
   /bin/sendat "$PORT" 'AT+QMAPWAC=1'
   /bin/sendat "$PORT" 'AT+QUIMSLOT=1'
-  /bin/sendat "$PORT" 'AT+CFUN=1,1'
+  # /bin/sendat "$PORT" 'AT+CFUN=1,1'
   sleep 5
 }
 
@@ -65,8 +65,7 @@ function MPDN() {
   WaitAT || return 1
   
   echo "$(Now) Reset MPDN ..." |tee -a "$LOG"
-  /bin/sendat "$PORT" 'AT+QMAP="mPDN_rule",0' |grep -q 'OK\|ERROR'
-  [ $? -ne 0 ] && sleep 5 && return 1
+  /bin/sendat "$PORT" 'AT+QMAP="mPDN_rule",0'
   sleep 5
 
   WaitAT || return 1
@@ -78,9 +77,9 @@ function MPDN() {
     [ $? -eq 0 ] && return 1
   done
 
+  WaitAT || return 1
   echo "$(Now) Set MPDN ..." |tee -a "$LOG"
-  /bin/sendat "$PORT" 'AT+QMAP="mPDN_rule",0,1,0,1,1,"FF:FF:FF:FF:FF:FF"' |grep -q 'OK\|ERROR'
-  [ $? -ne 0 ] && sleep 5 && return 1
+  /bin/sendat "$PORT" 'AT+QMAP="mPDN_rule",0,1,0,1,1,"FF:FF:FF:FF:FF:FF"'
   sleep 5
 
   WaitAT || return 1
@@ -97,8 +96,8 @@ function CheckIPv4() {
   WaitAT || return 1
   echo "$(Now) Check IPv4 ..." |tee -a "$LOG"
   for i in $(seq 1 $MaxNum); do
-    ipv4=`/bin/sendat "$PORT" 'AT+CGPADDR=1' |grep '+CGPADDR:' |cut -d'"' -f2`
-    [ -n "$ipv4" ] && echo "$(Now) IPv4: $ipv4" |tee -a "$LOG" && return 0
+    ipv4=`/bin/sendat "$PORT" 'AT+CGPADDR=1' |grep '+CGPADDR:' |cut -d',' -f2 |grep -o '[0-9\.]*'`
+    [ -n "$ipv4" ] && [ "$ipv4" != "0.0.0.0" ] && echo "$(Now) IPv4: $ipv4" |tee -a "$LOG" && return 0
     sleep 1
   done
   return 1
