@@ -13,7 +13,7 @@ function Now() {
 function WaitAT() {
   for i in $(seq 1 $MaxNum); do
     if [ -e "/dev/ttyUSB${PORT}" ]; then
-      /bin/sendat "$PORT" 'AT' |grep 'OK'
+      /bin/sendat "$PORT" 'AT' |grep -q 'OK'
       [ $? -eq 0 ] && return 0
     fi
     sleep 1 
@@ -42,7 +42,7 @@ function Driver(){
 }
 
 function NR5G(){
-  rfBand=`/bin/sendat "$PORT" 'AT+QNWPREFCFG="rf_band"' |grep '+QNWPREFCFG:\s*"nr5g_band"' |cut -d',' -f2 |tr -d '"'`
+  rfBand=`/bin/sendat "$PORT" 'AT+QNWPREFCFG="rf_band"' |grep '+QNWPREFCFG:\s*"nr5g_band"' |cut -d',' -f2 |grep -o '[0-9A-Za-z:]*'`
   band=${1:-$rfBand}
   echo "$(Now) Set NR5G ${band} ..." |tee -a "$LOG"
   /bin/sendat "$PORT" 'AT+QNWCFG="data_roaming",1'
@@ -65,8 +65,9 @@ function MPDN() {
   WaitAT || return 1
   
   echo "$(Now) Reset MPDN ..." |tee -a "$LOG"
-  /bin/sendat "$PORT" 'AT+QMAP="mPDN_rule",0' |grep 'OK\|ERROR'
-  sleep 5 && [ $? -ne 0 ] && return 1
+  /bin/sendat "$PORT" 'AT+QMAP="mPDN_rule",0' |grep -q 'OK\|ERROR'
+  [ $? -ne 0 ] && sleep 5 && return 1
+  sleep 5
 
   WaitAT || return 1
   for i in $(seq 1 $MaxNum); do
@@ -78,8 +79,9 @@ function MPDN() {
   done
 
   echo "$(Now) Set MPDN ..." |tee -a "$LOG"
-  /bin/sendat "$PORT" 'AT+QMAP="mPDN_rule",0,1,0,1,1,"FF:FF:FF:FF:FF:FF"' |grep 'OK\|ERROR'
-  sleep 5 && [ $? -ne 0 ] && return 1
+  /bin/sendat "$PORT" 'AT+QMAP="mPDN_rule",0,1,0,1,1,"FF:FF:FF:FF:FF:FF"' |grep -q 'OK\|ERROR'
+  [ $? -ne 0 ] && sleep 5 && return 1
+  sleep 5
 
   WaitAT || return 1
   for i in $(seq 1 $MaxNum); do
