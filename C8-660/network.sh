@@ -3,6 +3,9 @@
 PORT=2
 MaxNum=120
 LOG="/tmp/network.log"
+BAND="78"
+# BAND="", BAND="78", BAND="1:78"
+
 
 [ -e /bin/sendat ] || exit 1
 
@@ -57,14 +60,14 @@ function Reset(){
   /bin/sendat "$PORT" 'AT+QSCLK=0,0'
   /bin/sendat "$PORT" 'AT+QMAPWAC=1'
   /bin/sendat "$PORT" 'AT+QUIMSLOT=1'
-  # /bin/sendat "$PORT" 'AT+CFUN=1,1'
+  [ $1 -gt 0 ] && /bin/sendat "$PORT" 'AT+CFUN=1,1'
   sleep 5
 }
 
 function MPDN() {
   WaitAT || return 1
   
-  echo "$(Now) Reset MPDN ..." |tee -a "$LOG"
+  echo "$(Now) Empty MPDN ..." |tee -a "$LOG"
   /bin/sendat "$PORT" 'AT+QMAP="mPDN_rule",0'
   sleep 5
 
@@ -78,7 +81,7 @@ function MPDN() {
   done
 
   WaitAT || return 1
-  echo "$(Now) Set MPDN ..." |tee -a "$LOG"
+  echo "$(Now) Reset MPDN ..." |tee -a "$LOG"
   /bin/sendat "$PORT" 'AT+QMAP="mPDN_rule",0,1,0,1,1,"FF:FF:FF:FF:FF:FF"'
   sleep 5
 
@@ -95,7 +98,8 @@ function MPDN() {
 function CheckIPv4() {
   WaitAT || return 1
   echo "$(Now) Check IPv4 ..." |tee -a "$LOG"
-  for i in $(seq 1 $MaxNum); do
+  maxNum=$(($MaxNum/4))
+  for i in $(seq 1 $maxNum); do
     ipv4=`/bin/sendat "$PORT" 'AT+CGPADDR=1' |grep '+CGPADDR:' |cut -d',' -f2 |grep -o '[0-9\.]*'`
     [ -n "$ipv4" ] && [ "$ipv4" != "0.0.0.0" ] && echo "$(Now) IPv4: $ipv4" |tee -a "$LOG" && return 0
     sleep 1
@@ -117,12 +121,19 @@ function ReloadIf() {
 
 echo "$(Now) START" |tee -a "$LOG"
 
-Driver
-NR5G 78
-Reset
-WaitSIM
-
-while true; do
+for i in $(seq 1 $MaxNum); do
+  n=$(($i/2))
+  m=$(($i%2))
+  
+  [ $m -eq 1 ] && {
+    [ $n -eq 0 ] && {
+      Driver
+      NR5G "$BAND"
+    }
+    Reset "$n"
+    WaitSIM
+  }
+  
   MPDN || continue
   CheckIPv4 && ReloadIf && break
 done
