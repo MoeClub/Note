@@ -211,6 +211,6 @@ done
 echo "$(Now) FINISH" |tee -a "$LOG"
 
 # /bin/sendat "$PORT" 'AT+CMGL=4'
-# sms_tool -s "ME" -f "%Y/%d/%m %H:%M:%S" -d /dev/ttyUSB2 -j recv
-
+# sms_tool -f "%Y/%d/%m %H:%M:%S" -d /dev/ttyUSB2 -j recv
+# sms_tool -f "%s" -u -j recv
 
