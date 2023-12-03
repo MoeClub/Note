@@ -3,11 +3,13 @@
 # Lock PCI, If PCILock is empty, will lock first PCI.
 PCIStatic=1
 # PCILock="<PCI>,<RFCN>,<BAND>,<SCS>"
-PCILock=""
+PCILock="530,627264,78,1"
 # BAND="", BAND="78", BAND="1:78"
 BAND=""
 # Use SIM Card Index
 SIMCardIndex=1
+# Empty NVRAM
+EmptyNVRAM=0
 
 
 [ -e /bin/sendat ] || exit 1
@@ -43,31 +45,49 @@ function WaitSIM(){
 
 function Driver(){
   echo "$(Now) Set Driver ..." |tee -a "$LOG"
-  /bin/sendat "$PORT" 'AT&F0'
-  /bin/sendat "$PORT" 'AT+QCFG="pcie_mbim",0'
+  [ $1 -gt 0 ] && /bin/sendat "$PORT" 'AT+QPRTPARA=3'
   /bin/sendat "$PORT" 'AT+QCFG="pcie/mode",1'
   /bin/sendat "$PORT" 'AT+QCFG="data_interface",1,0'
   /bin/sendat "$PORT" 'AT+QETH="eth_driver","r8168",0'
   /bin/sendat "$PORT" 'AT+QETH="eth_driver","r8125",1'
+  /bin/sendat "$PORT" 'AT+QCFG="volte_disable",0'
+  /bin/sendat "$PORT" 'AT+QCFG="sms_control",1,1'
+  /bin/sendat "$PORT" 'AT+QCFG="call_control",0,0'
+  /bin/sendat "$PORT" 'AT+CPMS="ME","ME","ME"'
+  /bin/sendat "$PORT" 'AT+CMGF=0'
 }
 
 function NR5G(){
   rfBand=`/bin/sendat "$PORT" 'AT+QNWPREFCFG="rf_band"' |grep '+QNWPREFCFG:\s*"nr5g_band"' |cut -d',' -f2 |grep -o '[0-9A-Za-z:]*'`
   band="${1:-$rfBand}"
   echo "$(Now) Set NR5G ${band} ..." |tee -a "$LOG"
-  /bin/sendat "$PORT" 'AT+QNWCFG="data_roaming",1'
   /bin/sendat "$PORT" 'AT+QNWPREFCFG="roam_pref",255'
+  /bin/sendat "$PORT" 'AT+QNWPREFCFG="rat_acq_order",NR5G:LTE:WCDMA'
   /bin/sendat "$PORT" 'AT+QNWPREFCFG="mode_pref",NR5G'
   /bin/sendat "$PORT" 'AT+QNWPREFCFG="nr5g_disable_mode",2'
   /bin/sendat "$PORT" "AT+QNWPREFCFG=\"nr5g_band\",${band}"
 }
 
+function COPS(){
+  echo "$(Now) Search COPS ..." |tee -a "$LOG"
+  /bin/sendat "$PORT" 'AT+COPS=2'
+  /bin/sendat "$PORT" 'AT+COPS=0'
+  for i in $(seq 1 $MaxNum); do
+    cops=`/bin/sendat "$PORT" 'AT+COPS?' |grep '+COPS: 0,'  |cut -d'"' -f2 |sed 's/[[:space:]]//g'`
+    [ -n "$cops" ] && echo "$(Now) COPS: $cops" |tee -a "$LOG" && break || sleep 1
+  done
+}
+
 function Modem(){
   echo "$(Now) Reset Modem ..." |tee -a "$LOG"
+  SIMCard="${1:-1}"
+  ResetModem="${2:-0}"
+  /bin/sendat "$PORT" 'AT+QNWCFG="data_roaming",1'
+  /bin/sendat "$PORT" 'AT+QCFG="ims",1'
   /bin/sendat "$PORT" 'AT+QSCLK=0,0'
   /bin/sendat "$PORT" 'AT+QMAPWAC=1'
-  /bin/sendat "$PORT" "AT+QUIMSLOT=${SIMCardIndex:-1}"
-  [ $1 -gt 0 ] && /bin/sendat "$PORT" 'AT+CFUN=1,1'
+  /bin/sendat "$PORT" "AT+QUIMSLOT=${SIMCard}"
+  [ "$ResetModem" -gt 0 ] && /bin/sendat "$PORT" 'AT+CFUN=1,1'
   sleep 5
 }
 
@@ -173,10 +193,11 @@ for i in $(seq 1 $MaxNum); do
   
   [ $m -eq 1 ] && {
     [ $n -eq 0 ] && {
-      Driver
+      Driver "$EmptyNVRAM"
       NR5G "$BAND"
+      COPS
     }
-    Modem "$n"
+    Modem "$SIMCardIndex" "$n"
     WaitSIM
   }
   
@@ -188,4 +209,8 @@ for i in $(seq 1 $MaxNum); do
 done
 
 echo "$(Now) FINISH" |tee -a "$LOG"
+
+# /bin/sendat "$PORT" 'AT+CMGL=4'
+# sms_tool -s "ME" -f "%Y/%d/%m %H:%M:%S" -d /dev/ttyUSB2 -j recv
+
 
