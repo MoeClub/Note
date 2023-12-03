@@ -3,7 +3,7 @@
 # Lock PCI, If PCILock is empty, will lock first PCI.
 PCIStatic=1
 # PCILock="<PCI>,<RFCN>,<BAND>,<SCS>"
-PCILock="530,627264,78,1"
+PCILock=""
 # BAND="", BAND="78", BAND="1:78"
 BAND=""
 # Use SIM Card Index
