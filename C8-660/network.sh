@@ -17,6 +17,7 @@ EmptyNVRAM=0
 PORT=2
 MaxNum=120
 LOG="/tmp/network.log"
+# LOG="/dev/null"
 
 function Now() {
   echo -ne `date '+[%Y/%m/%d %H:%M:%S']`
@@ -54,7 +55,8 @@ function Driver(){
   /bin/sendat "$PORT" 'AT+QCFG="sms_control",1,1'
   /bin/sendat "$PORT" 'AT+QCFG="call_control",0,0'
   /bin/sendat "$PORT" 'AT+CPMS="ME","ME","ME"'
-  /bin/sendat "$PORT" 'AT+CMGF=0'
+  /bin/sendat "$PORT" 'AT+CREG=1'
+  /bin/sendat "$PORT" 'AT+C5GREG=1'
 }
 
 function NR5G(){
@@ -134,8 +136,7 @@ function WaitIPv4() {
   return 1
 }
 
-function ReloadIf() {
-  [ -e /sbin/ifup ] || return 1
+function ReloadWAN() {
   echo "$(Now) Check Interface ..." |tee -a "$LOG"
   mode="${1:-0}"
   if [ "$mode" -eq 0 ]; then
@@ -146,7 +147,10 @@ function ReloadIf() {
     [ "$ipv4" == "$ipv4If" ] && return 0
   fi
   echo "$(Now) Reload Interface ..." |tee -a "$LOG"
-  /sbin/ifup wan
+  ubus call network.interface.wan down
+  ubus call network.interface.wan up
+  ubus call network.interface.wan6 down
+  ubus call network.interface.wan6 up
   /sbin/ifup wan6
   return 0
 }
@@ -205,7 +209,7 @@ for i in $(seq 1 $MaxNum); do
   MPDN || continue
   WaitIPv4 || continue
   
-  ReloadIf && break
+  ReloadWAN && break
 done
 
 echo "$(Now) FINISH" |tee -a "$LOG"
