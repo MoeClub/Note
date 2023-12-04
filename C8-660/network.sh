@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Lock PCI, If PCILock is empty, will lock first PCI.
-PCIStatic=1
+PCIStatic=0
 # PCILock="<PCI>,<RFCN>,<BAND>,<SCS>"
 PCILock=""
 # BAND="", BAND="78", BAND="1:78"
