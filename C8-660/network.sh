@@ -1,15 +1,17 @@
 #!/bin/sh
 
 # Lock PCI, If PCILock is empty, will lock first PCI.
-PCIStatic=0
+PCIStatic=1
 # PCILock="<PCI>,<RFCN>,<BAND>,<SCS>"
 PCILock=""
 # BAND="", BAND="78", BAND="1:78"
 BAND=""
 # Use SIM Card Index
 SIMCardIndex=1
-# Empty NVRAM
-EmptyNVRAM=0
+# Reset NVRAM
+ResetNVRAM="${1:-0}"
+# Notice Shell File Name
+Notice="notice.sh"
 
 
 [ -e /bin/sendat ] || exit 1
@@ -21,6 +23,14 @@ LOG="/tmp/network.log"
 
 function Now() {
   echo -ne `date '+[%Y/%m/%d %H:%M:%S']`
+}
+
+function DeadPID() {
+  [ -n "$1" ] && [ -f "$1" ] || return 0
+  pid=`cat "$1" |grep -o '[0-9]*'`
+  [ -n "$pid" ] || return 0
+  ps |sed 's/^[[:space:]]*//' |cut -d' ' -f1 |grep -q "^${pid}$"
+  [ $? -eq 0 ] && return 1 || return 0
 }
 
 function WaitAT() {
@@ -46,7 +56,7 @@ function WaitSIM(){
 
 function Driver(){
   echo "$(Now) Set Driver ..." |tee -a "$LOG"
-  [ $1 -gt 0 ] && /bin/sendat "$PORT" 'AT+QPRTPARA=3'
+  [ "$1" == "1" ] && /bin/sendat "$PORT" 'AT+QPRTPARA=3'
   /bin/sendat "$PORT" 'AT+QCFG="pcie/mode",1'
   /bin/sendat "$PORT" 'AT+QCFG="data_interface",1,0'
   /bin/sendat "$PORT" 'AT+QETH="eth_driver","r8168",0'
@@ -55,6 +65,7 @@ function Driver(){
   /bin/sendat "$PORT" 'AT+QCFG="sms_control",1,1'
   /bin/sendat "$PORT" 'AT+QCFG="call_control",0,0'
   /bin/sendat "$PORT" 'AT+CPMS="ME","ME","ME"'
+  /bin/sendat "$PORT" 'AT+CGEREP=2,1'
   /bin/sendat "$PORT" 'AT+CREG=1'
   /bin/sendat "$PORT" 'AT+C5GREG=1'
 }
@@ -155,9 +166,6 @@ function ReloadWAN() {
   return 0
 }
 
-# /bin/sendat 3 'AT+QSCAN=2,1'
-# /bin/sendat 3 'AT'
-
 function LockNR5G() {
   # pci:rfcn:band:scs
   echo "$(Now) NR5G Lock ..." |tee -a "$LOG"
@@ -197,7 +205,7 @@ for i in $(seq 1 $MaxNum); do
   
   [ $m -eq 1 ] && {
     [ $n -eq 0 ] && {
-      Driver "$EmptyNVRAM"
+      Driver "$ResetNVRAM"
       NR5G "$BAND"
       COPS
     }
@@ -212,9 +220,19 @@ for i in $(seq 1 $MaxNum); do
   ReloadWAN && break
 done
 
+[ -n "${Notice}" ] && {
+  NetworkFile=`readlink -f "$0"`
+  NoticeFile="${NetworkFile%/*}/${Notice}"
+  [ -f "$NoticeFile"  ] && {
+      NoticePIDFile=`cat "$NoticeFile" |grep '^NoticePID=' |sed 's/"//g' |sed "s/'//g" |cut -d'=' -f2`
+      DeadPID "$NoticePIDFile" && {
+        /bin/sh "$NoticeFile" >/dev/null 2>&1 &
+        NoticePID="$!"
+        echo "$(Now) Notice PID: ${NoticePID}" |tee -a "$LOG"
+        [ -n "$NoticePIDFile" ] && echo "$NoticePID" >"$NoticePIDFile"
+      }
+  }
+}
+
 echo "$(Now) FINISH" |tee -a "$LOG"
-
-# /bin/sendat "$PORT" 'AT+CMGL=4'
-# sms_tool -f "%Y/%d/%m %H:%M:%S" -d /dev/ttyUSB2 -j recv
-# sms_tool -f "%s" -u -j recv
-
+exit 0

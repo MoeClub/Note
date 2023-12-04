@@ -7,11 +7,19 @@ LOG="/tmp/notice.log"
 
 BarkURL=""
 
-
+NoticePID="/tmp/NoticePID"
 Device="/dev/ttyUSB${PORT}"
 
 function Now() {
   echo -ne `date '+[%Y/%m/%d %H:%M:%S']`
+}
+
+function DeadPID() {
+  [ -n "$1" ] && [ -f "$1" ] || return 0
+  pid=`cat "$1" |grep -o '[0-9]*'`
+  [ -n "$pid" ] || return 0
+  ps |sed 's/^[[:space:]]*//' |cut -d' ' -f1 |grep -q "^${pid}$"
+  [ $? -eq 0 ] && return 1 || return 0
 }
 
 function WaitAT() {
@@ -79,6 +87,8 @@ function BarkService() {
   curl -ksSL --connect-timeout 5 -X GET "${url}" >/dev/null 2>&1 &
 }
 
+DeadPID "$NoticePID" || exit 1
+echo "$$" >"$NoticePID"
 while true; do
   WaitAT || {
   	sleep 5
