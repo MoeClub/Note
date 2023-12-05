@@ -22,3 +22,17 @@ opkg update
 opkg install jq
 
 ```
+
+# UCI
+```
+touch /etc/config/modem
+uci add modem network
+uci set modem.@network[0].SIMCardIndex=1
+uci set modem.@network[0].StaticPCI=1
+uci set modem.@network[0].ResetNVRAM=0
+uci set modem.@network[0].NR5GBand=""
+uci set modem.@network[0].LockPCI=""
+uci set modem.@network[0].BarkURL=""
+uci commit cpe
+
+```
