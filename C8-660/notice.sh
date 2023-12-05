@@ -47,6 +47,12 @@ function WaitIPv4() {
 function ReloadWAN() {
   echo "$(Now) New Network ..." |tee -a "$LOG"
   WaitIPv4 || return 1
+  echo "$(Now) Check Interface ..." |tee -a "$LOG"
+  ipv4=`/bin/sendat "$PORT" 'AT+CGPADDR=1' |grep '+CGPADDR:' |cut -d',' -f2 |grep -o '[0-9\.]*'`
+  [ -n "$ipv4" ] || ipv4="0.0.0.0"
+  ipv4If=`ubus call network.interface.wan status |grep '"address":' |cut -d'"' -f4 |grep -o '[0-9\.]*'`
+  [ -n "$ipv4If" ] || ipv4If="0.0.0.0"
+  [ "$ipv4" == "$ipv4If" ] && return 0
   echo "$(Now) Reload Interface ..." |tee -a "$LOG"
   ubus call network.interface.wan down
   ubus call network.interface.wan up

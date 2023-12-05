@@ -162,7 +162,6 @@ function ReloadWAN() {
   ubus call network.interface.wan up
   ubus call network.interface.wan6 down
   ubus call network.interface.wan6 up
-  /sbin/ifup wan6
   return 0
 }
 
