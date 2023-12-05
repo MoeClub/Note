@@ -18,4 +18,7 @@
 sed -i 's/mirrors.vsean.net/mirrors.cloud.tencent.com/g;' /etc/opkg/distfeeds.conf
 sed -i '/istore/d' /etc/opkg/distfeeds.conf
 
+opkg update
+opkg install jq
+
 ```
