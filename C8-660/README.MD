@@ -33,6 +33,6 @@ uci set modem.@network[0].ResetNVRAM=0
 uci set modem.@network[0].NR5GBand=""
 uci set modem.@network[0].LockPCI=""
 uci set modem.@network[0].BarkURL=""
-uci commit cpe
+uci commit modem
 
 ```
