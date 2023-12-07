@@ -223,7 +223,8 @@ done
   NetworkFile=`readlink -f "$0"`
   NoticeFile="${NetworkFile%/*}/${Notice}"
   [ -f "$NoticeFile"  ] && {
-      NoticePIDFile=`cat "$NoticeFile" |grep '^NoticePID=' |sed 's/"//g' |sed "s/'//g" |cut -d'=' -f2`
+      NoticePIDConfig=`cat "$NoticeFile" |grep '^NoticePID=' |sed 's/"//g' |sed "s/'//g"`
+      NoticePIDFile="${NoticePIDConfig#*=}"
       DeadPID "$NoticePIDFile" && {
         /bin/sh "$NoticeFile" >/dev/null 2>&1 &
         NoticePID="$!"
