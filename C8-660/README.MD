@@ -40,8 +40,11 @@ uci commit modem
 # 编译
 ```
 cd immortalwrt-mt798x
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
+
+make dirclean
 
 FORCE_UNSAFE_CONFIGURE=1 make -j $(nproc)
 FORCE_UNSAFE_CONFIGURE=1 make -j 1 V=s
