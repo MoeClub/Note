@@ -43,5 +43,7 @@ cd immortalwrt-mt798x
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
-FORCE_UNSAFE_CONFIGURE=1 make -j4
+FORCE_UNSAFE_CONFIGURE=1 make -j $(nproc)
+FORCE_UNSAFE_CONFIGURE=1 make -j 1 V=s
+
 ```
