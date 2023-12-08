@@ -27,12 +27,21 @@ opkg install jq
 ```
 touch /etc/config/modem
 uci add modem network
-uci set modem.@network[0].SIMCardIndex=1
-uci set modem.@network[0].StaticPCI=1
-uci set modem.@network[0].ResetNVRAM=0
-uci set modem.@network[0].NR5GBand=""
-uci set modem.@network[0].LockPCI=""
-uci set modem.@network[0].BarkURL=""
+uci set modem.@network[-1].SIMCardIndex=1
+uci set modem.@network[-1].StaticPCI=1
+uci set modem.@network[-1].ResetNVRAM=0
+uci set modem.@network[-1].NR5GBand=""
+uci set modem.@network[-1].LockPCI=""
+uci set modem.@network[-1].BarkURL=""
 uci commit modem
 
+```
+
+# 编译
+```
+cd immortalwrt-mt798x
+./scripts/feeds update -a
+./scripts/feeds install -a
+
+FORCE_UNSAFE_CONFIGURE=1 make -j4
 ```
