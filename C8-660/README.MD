@@ -1,16 +1,26 @@
-# nrpkg 文件解包后有3个文件
+# 官方 nrpkg 文件解压
 
 ```
-一个系统镜像(重命名为systemnew2flash.bin)，
-一个uboot(重命名为ubootnew2flash.bin)，
-一个描述文件。
-
-备份 bdinfo:  dd if /dev/mtd4 of /tmp/bdinfobk.bin
-
+备份 bdinfo: dd if /dev/mtd4 of /tmp/bdinfobk.bin
 刷入 uboot: mtd -q write /tmp/ubootnew2flash.bin FIP
 校验 uboot: mtd -q verify /tmp/ubootnew2flash.bin FIP
 刷入 system: mtd -q write /tmp/systemnew2flash.bin ubi
 校验 system: mtd -q verify /tmp/systemnew2flash.bin ubi
+```
+
+# 刷 ImmortalWRT (OpenWRT) 步骤
+```
+## 相同的 uboot 只用刷一次, 之后只刷系统镜像即可.
+## uboot 使用方法: 断电; 连网线插LAN口; 设置地址 192.168.1.100 ; 按住N键后插电, 电源灯有规律闪烁后松开按键; 浏览器进入 192.168.1.1
+
+# 刷入 uboot 步骤 (写入和校验) [8ff84fcbde3f52d65b61c36ccf1f8e5f]
+mtd -q write mt7981_nradio_c8-660-u-boot-512m.fip FIP
+mtd -q verify mt7981_nradio_c8-660-u-boot-512m.fip FIP
+
+# 刷入系统镜像步骤 (写入和校验)
+mtd -q write immortalwrt-mediatek-mt7981-nradio_wt9103_512m-squashfs-factory.bin ubi
+mtd -q verify immortalwrt-mediatek-mt7981-nradio_wt9103_512m-squashfs-factory.bin ubi
+
 ```
 
 # 换源
