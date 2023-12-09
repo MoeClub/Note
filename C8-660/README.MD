@@ -48,6 +48,7 @@ make menuconfig
 make dirclean
 
 FORCE_UNSAFE_CONFIGURE=1 make -j $(nproc)
+FORCE_UNSAFE_CONFIGURE=1 make -j $(nproc) V=sc
 FORCE_UNSAFE_CONFIGURE=1 make -j 1 V=s
 
 ```
