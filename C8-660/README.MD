@@ -30,7 +30,7 @@ sed -i 's/mirrors.vsean.net/mirrors.cloud.tencent.com/g;' /etc/opkg/distfeeds.co
 sed -i '/istore/d' /etc/opkg/distfeeds.conf
 
 opkg update
-opkg install jq
+opkg install python3-pip
 
 ```
 
