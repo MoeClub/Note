@@ -48,13 +48,13 @@ uci set "modem.@network[-1].BandNR5G"=""
 # LockPCI="<PCI>,<RFCN>,<BAND>,<SCS>"
 uci set "modem.@network[-1].LockPCI"=""
 # Network Init Log File
-uci set "modem.@network[-1].NetworkLOG"="/tmp/network.log"
+uci set "modem.@network[-1].NetworkLOG"="/tmp/log/network"
 # Notice File Name
 uci set "modem.@network[-1].NoticeFile"="notice.sh"
 # Notice Log File
-uci set "modem.@network[-1].NoticeLOG"="/tmp/notice.log"
+uci set "modem.@network[-1].NoticeLOG"="/tmp/log/notice"
 # Notice PID File
-uci set "modem.@network[-1].NoticePID"="/tmp/NoticePID"
+uci set "modem.@network[-1].NoticePID"="/tmp/run/notice.pid"
 # Send SMS With Bark
 uci set "modem.@network[-1].BarkURL"=""
 # Try Max Times
