@@ -38,12 +38,28 @@ opkg install python3-pip
 ```
 touch /etc/config/modem
 uci add modem network
-uci set modem.@network[-1].SIMCardIndex=1
-uci set modem.@network[-1].StaticPCI=1
-uci set modem.@network[-1].ResetNVRAM=0
-uci set modem.@network[-1].NR5GBand=""
-uci set modem.@network[-1].LockPCI=""
-uci set modem.@network[-1].BarkURL=""
+
+# Use SIM Card Index
+uci set "modem.@network[-1].SIMCard"=1
+# Lock PCI, If LockPCI is empty, will lock first PCI.
+uci set "modem.@network[-1].StaticPCI"=0
+# BAND="", BAND="78", BAND="1:78"
+uci set "modem.@network[-1].BandNR5G"=""
+# LockPCI="<PCI>,<RFCN>,<BAND>,<SCS>"
+uci set "modem.@network[-1].LockPCI"=""
+# Network Init Log File
+uci set "modem.@network[-1].NetworkLOG"="/tmp/network.log"
+# Notice File Name
+uci set "modem.@network[-1].NoticeFile"="notice.sh"
+# Notice Log File
+uci set "modem.@network[-1].NoticeLOG"="/tmp/notice.log"
+# Notice PID File
+uci set "modem.@network[-1].NoticePID"="/tmp/NoticePID"
+# Send SMS With Bark
+uci set "modem.@network[-1].BarkURL"=""
+# Try Max Times
+uci set "modem.@network[-1].MaxNum"=120
+
 uci commit modem
 
 ```
