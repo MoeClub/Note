@@ -46,8 +46,10 @@ function WaitIPv4() {
 
 function ReloadWAN() {
   echo "$(Now) New Network ..." |tee -a "$LOG"
+  CheckLED 0
   WaitIPv4 || return 1
   echo "$(Now) Check Interface ..." |tee -a "$LOG"
+  CheckLED 1
   ipv4=`/bin/sendat "$PORT" 'AT+CGPADDR=1' |grep '+CGPADDR:' |cut -d',' -f2 |grep -o '[0-9\.]*'`
   [ -n "$ipv4" ] || ipv4="0.0.0.0"
   ipv4If=`ubus call network.interface.wan status |grep '"address":' |cut -d'"' -f4 |grep -o '[0-9\.]*'`
@@ -58,6 +60,23 @@ function ReloadWAN() {
   ubus call network.interface.wan up
   ubus call network.interface.wan6 down
   ubus call network.interface.wan6 up
+}
+
+function CheckLED() {
+  NR5G="hc:blue:cmode5"
+  LTE="hc:blue:cmode4"
+  STATUS=0
+  echo "$(Now) Check Network Mode ..." |tee -a "$LOG"
+  LED_NR5G="/sys/devices/platform/gpio-leds/leds/${NR5G}/brightness"
+  LED_LTE="/sys/devices/platform/gpio-leds/leds/${LTE}/brightness"
+  echo 0 >"$LED_NR5G"
+  echo 0 >"$LED_LTE"
+  [ $1 -eq 0 ] && return "$STATUS"
+  result=`/bin/sendat "$PORT" 'AT+QRSRQ'`
+  net=`echo "${result##*,}" |grep -o 'NR5G\|LTE'`
+  [ "$net" == "NR5G" ] && echo 1 >"$LED_NR5G" && STATUS=1
+  [ "$net" == "LTE" ] && echo 1 >"$LED_LTE" && STATUS=1
+  return "$STATUS"
 }
 
 function NewSMS() {
@@ -95,6 +114,7 @@ function BarkService() {
 
 DeadPID "$NoticePID" || exit 1
 echo "$$" >"$NoticePID"
+CheckLED 1
 while true; do
   WaitAT || {
   	sleep 5

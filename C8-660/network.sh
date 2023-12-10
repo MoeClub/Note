@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Lock PCI, If PCILock is empty, will lock first PCI.
-PCIStatic=1
+PCIStatic=0
 # PCILock="<PCI>,<RFCN>,<BAND>,<SCS>"
 PCILock=""
 # BAND="", BAND="78", BAND="1:78"
@@ -9,7 +9,7 @@ BAND=""
 # Use SIM Card Index
 SIMCardIndex=1
 # Reset NVRAM
-ResetNVRAM="${1:-0}"
+ResetNVRAM=0
 # Notice Shell File Name
 Notice="notice.sh"
 
@@ -229,7 +229,6 @@ done
         /bin/sh "$NoticeFile" >/dev/null 2>&1 &
         NoticePID="$!"
         echo "$(Now) Notice PID: ${NoticePID}" |tee -a "$LOG"
-        [ -n "$NoticePIDFile" ] && echo "$NoticePID" >"$NoticePIDFile"
       }
   }
 }
