@@ -1,34 +1,49 @@
 #!/bin/sh
 
 [ -e /bin/sendat ] || exit 1
+# Log with logger
+SYSLOG="0"
+
+# Log with echo
+LOG="/dev/null"
+
 
 [ -f /etc/config/modem ] || touch /etc/config/modem
 Entry="modem.@network[-1]"
 uci -q get "${Entry}" >/dev/null 2>&1 || {
   uci -q add modem network
   # Use SIM Card Index
-  uci -q set "${Entry}.SIMCard"=1
+  uci -q set "${Entry}.SIMCard"="1"
   # Lock PCI, If LockPCI is empty, will lock first PCI.
-  uci -q set "${Entry}.StaticPCI"=0
+  uci -q set "${Entry}.StaticPCI"="0"
+  # CellMode="", CellMode="NR5G", CellMode="NR5G:LTE:WCDMA"
+  uci -q set "${Entry}.CellMode"=""
   # BAND="", BAND="78", BAND="1:78"
   uci -q set "${Entry}.BandNR5G"=""
-  # LockPCI="<PCI>,<RFCN>,<BAND>,<SCS>"
-  uci -q set "${Entry}.LockPCI"=""
+  # BAND="", BAND="3", BAND="1:3"
+  uci -q set "${Entry}.BandLTE"=""
+  # LockPCINR5G="<PCI>,<RFCN>,<BAND>,<SCS>"
+  uci -q set "${Entry}.LockPCINR5G"=""
   # Network Init Log File
-  uci -q set "${Entry}.NetworkLOG"="/tmp/log/network"
+  uci -q set "${Entry}.InitLOG"="/tmp/log/modemInit"
+  # Network Apply Log File
+  uci -q set "${Entry}.ApplyLOG"="/tmp/log/modemApply"
   # Notice File Name
-  uci -q set "${Entry}.NoticeFile"="notice.sh"
+  uci -q set "${Entry}.NoticeFile"="modemNotice.sh"
   # Notice Log File
-  uci -q set "${Entry}.NoticeLOG"="/tmp/log/notice"
+  uci -q set "${Entry}.NoticeLOG"="/tmp/log/modemNotice"
   # Notice PID File
-  uci -q set "${Entry}.NoticePID"="/tmp/run/notice.pid"
+  uci -q set "${Entry}.NoticePID"="/tmp/run/modemNotice.pid"
   # Send SMS With Bark
   uci -q set "${Entry}.BarkURL"=""
   # Try Max Times
-  uci -q set "${Entry}.MaxNum"=120
+  uci -q set "${Entry}.MaxNum"="120"
+  # Reset NVRAM
+  uci -q set "${Entry}.ResetNVRAM"="0"
+  # Log with syslog
+  uci -q set "${Entry}.Syslog"="1"
   uci commit modem
 }
-
 
 function Config() {
   key="${1:-}"
@@ -38,8 +53,21 @@ function Config() {
   [ -n "$result" ] && echo -ne "$result" || echo -ne "$default"
 }
 
+function ConfigSet() {
+  key="${1:-}"
+  value="${2:-}"
+  [ -n "$key" ] && [ -n "$value" ] || return 1
+  uci -q set "${Entry}.${key}=${value}" 2>/dev/null
+  [ "$?" -eq "0" ] && uci commit modem || return 1
+  return 0
+}
+
 function Now() {
   echo -ne `date '+[%Y/%m/%d %H:%M:%S']`
+}
+
+function Log() {
+  [ "${SYSLOG}" == "1" ] && [ -n "${TAG}" ] && logger -s -p "daemon.notice" -t "${TAG}" "$1" || echo "$(Now) $1" |tee -a "${LOG}"
 }
 
 function DeadPID() {
@@ -63,17 +91,16 @@ function WaitAT() {
 
 function WaitSIM(){
   WaitAT || return 1
-  echo "$(Now) Wait SIM ..." |tee -a "$LOG"
+  Log "Wait SIM ..."
   for i in $(seq 1 $MaxNum); do
     stat=`/bin/sendat "$PORT" 'AT+QINISTAT' |grep '+QINISTAT:' |grep -o '[0-9]*'`
-    echo "$(Now) SIM Satus: $stat" |tee -a "$LOG"
+    Log "SIM Satus: $stat"
     [ "$stat" -ne 7 ] && sleep 1 && continue || break 
    done
 }
 
 function Driver(){
-  echo "$(Now) Set Driver ..." |tee -a "$LOG"
-  # /bin/sendat "$PORT" 'AT+QPRTPARA=3'
+  Log "Config Driver ..."
   /bin/sendat "$PORT" 'AT+QCFG="pcie/mode",1'
   /bin/sendat "$PORT" 'AT+QCFG="data_interface",1,0'
   /bin/sendat "$PORT" 'AT+QETH="eth_driver","r8168",0'
@@ -81,34 +108,94 @@ function Driver(){
   /bin/sendat "$PORT" 'AT+QCFG="volte_disable",0'
   /bin/sendat "$PORT" 'AT+QCFG="sms_control",1,1'
   /bin/sendat "$PORT" 'AT+QCFG="call_control",0,0'
+  /bin/sendat "$PORT" 'AT+QNWCFG="nr5g_meas_info",1' 
   /bin/sendat "$PORT" 'AT+CPMS="ME","ME","ME"'
   /bin/sendat "$PORT" 'AT+CGEREP=2,1'
   /bin/sendat "$PORT" 'AT+CREG=1'
   /bin/sendat "$PORT" 'AT+C5GREG=1'
 }
 
-function NR5G(){
-  rfBand=`/bin/sendat "$PORT" 'AT+QNWPREFCFG="rf_band"' |grep '+QNWPREFCFG:\s*"nr5g_band"' |cut -d',' -f2 |grep -o '[0-9A-Za-z:]*'`
-  band="${1:-$rfBand}"
-  echo "$(Now) Set NR5G ${band} ..." |tee -a "$LOG"
+function ResetNVRAM() {
+  [ -n "$PORT" ] || return 1
+  flag="${1:-0}"
+  if [ "$flag" != "0" ]; then
+      ConfigSet ResetNVRAM 0
+  fi
+  if [ "$flag" == "1" ]; then
+      Log "Reset NVRAM ..."
+      /bin/sendat "$PORT" 'AT+QPRTPARA=3'
+  fi
+  return 0
+}
+
+function Cell(){
+  rfBand=`/bin/sendat "$PORT" 'AT+QNWPREFCFG="rf_band"'`
+  rfNR5G=`echo "$rfBand" |grep '+QNWPREFCFG:\s*"nr5g_band"' |cut -d',' -f2 |grep -o '[0-9A-Za-z:]*'`
+  rfLTE=`echo "$rfBand" |grep '+QNWPREFCFG:\s*"lte_band"' |cut -d',' -f2 |grep -o '[0-9A-Za-z:]*'`
+  cellMode="${1:-NR5G:LTE:WCDMA}"
+  nr5gBand="${2:-$rfNR5G}"
+  lteBand="${3:-$rfLTE}"
   /bin/sendat "$PORT" 'AT+QNWPREFCFG="rat_acq_order",NR5G:LTE:WCDMA'
-  /bin/sendat "$PORT" 'AT+QNWPREFCFG="mode_pref",NR5G'
   /bin/sendat "$PORT" 'AT+QNWPREFCFG="nr5g_disable_mode",2'
-  /bin/sendat "$PORT" "AT+QNWPREFCFG=\"nr5g_band\",${band}"
+  Log "Set Cell Mode ${cellMode}"
+  /bin/sendat "$PORT" "AT+QNWPREFCFG=\"mode_pref\",${cellMode}"
+  Log "Set NR5G ${nr5gBand} ..."
+  /bin/sendat "$PORT" "AT+QNWPREFCFG=\"nr5g_band\",${nr5gBand}"
+  Log "Set LTE ${lteBand} ..."
+  /bin/sendat "$PORT" "AT+QNWPREFCFG=\"lte_band\",${lteBand}"
+}
+
+function LockNR5G() {
+  [ "$1" == "0" ] && {
+      Log "NR5G Lock Release ..."
+      /bin/sendat "$PORT" 'AT+QNWLOCK="common/4g",0' >/dev/null 2>&1
+      /bin/sendat "$PORT" 'AT+QNWLOCK="common/5g",0' >/dev/null 2>&1
+      return 0
+  }
+  # pci:rfcn:band:scs
+  Log "Config Lock NR5G ..."
+  cell=`/bin/sendat "$PORT" 'AT+QENG="servingcell"'|grep '+QENG:' |grep 'NR5G' |cut -d',' -f8,10,16,11`
+  Log "NR5G Cell: $cell"
+  [ -n "$cell" ] || return 1
+  lock="${1:-$cell}"
+  Log "NR5G Lock: $lock"
+  pci=`echo "$lock" |cut -d',' -f1`
+  rfcn=`echo "$lock" |cut -d',' -f2`
+  band=`echo "$lock" |cut -d',' -f3`
+  scs=`echo "$lock" |cut -d',' -f4`
+  [ "$lock" != "$cell" ] && {
+      meas=`/bin/sendat "$PORT" 'AT+QNWCFG="nr5g_meas_info"' |grep '+QNWCFG:' |cut -d',' -f4,3`
+      echo "$meas" |grep -q "^${rfcn},${pci}$"
+      [ $? -eq 0 ] || {
+          Log "NR5G Lock: NotFoundPCI"
+          return 1
+      }
+  }
+  scsHz="$(($((2**${scs}))*15))"
+  /bin/sendat "$PORT" "AT+QNWLOCK=\"common/5g\",${pci},${rfcn},${scsHz},${band}" |grep -q "OK"
+  [ $? -eq 0 ] && {
+      Log "NR5G: N${band}:${rfcn}:${pci}"
+      return 0
+  } || {
+      Log "NR5G Lock: Fail"
+      return 1
+  }
 }
 
 function COPS(){
-  echo "$(Now) Search COPS ..." |tee -a "$LOG"
+  Log "Search COPS ..."
   /bin/sendat "$PORT" 'AT+COPS=2'
   /bin/sendat "$PORT" 'AT+COPS=0'
-  for i in $(seq 1 $MaxNum); do
+  maxNum=$(($MaxNum/4))
+  for i in $(seq 1 $maxNum); do
     cops=`/bin/sendat "$PORT" 'AT+COPS?' |grep '+COPS: 0,'  |cut -d'"' -f2 |sed 's/[[:space:]]//g'`
-    [ -n "$cops" ] && echo "$(Now) COPS: $cops" |tee -a "$LOG" && break || sleep 1
+    [ -n "$cops" ] && Log "COPS: $cops" && return 0 || sleep 1
   done
+  return 1
 }
 
 function Modem(){
-  echo "$(Now) Reset Modem ..." |tee -a "$LOG"
+  Log "Config Modem ..."
   simCard="${1:-1}"
   resetModem="${2:-0}"
   /bin/sendat "$PORT" 'AT+QNWPREFCFG="roam_pref",255'
@@ -117,14 +204,18 @@ function Modem(){
   /bin/sendat "$PORT" 'AT+QSCLK=0,0'
   /bin/sendat "$PORT" 'AT+QMAPWAC=1'
   /bin/sendat "$PORT" "AT+QUIMSLOT=${simCard}"
-  [ "$resetModem" -gt 0 ] && /bin/sendat "$PORT" 'AT+CFUN=1,1'
+  [ "$resetModem" -gt 0 ] && {
+    sleep 5
+    Log "Restart Modem ..."
+    /bin/sendat "$PORT" 'AT+CFUN=1,1'
+  }
   sleep 5
 }
 
 function MPDN() {
   WaitAT || return 1
   
-  echo "$(Now) Empty MPDN ..." |tee -a "$LOG"
+  Log "Empty MPDN ..."
   /bin/sendat "$PORT" 'AT+QMAP="MPDN_rule",0'
   sleep 5
 
@@ -138,7 +229,7 @@ function MPDN() {
   done
 
   WaitAT || return 1
-  echo "$(Now) Reset MPDN ..." |tee -a "$LOG"
+  Log "Reset MPDN ..."
   /bin/sendat "$PORT" 'AT+QMAP="MPDN_rule",0,1,0,1,1,"FF:FF:FF:FF:FF:FF"'
   sleep 5
 
@@ -154,28 +245,28 @@ function MPDN() {
 
 function WaitIPv4() {
   WaitAT || return 1
-  echo "$(Now) Wait IPv4 ..." |tee -a "$LOG"
+  Log "Wait IPv4 ..."
   maxNum=$(($MaxNum/4))
   for i in $(seq 1 $maxNum); do
     ipv4=`/bin/sendat "$PORT" 'AT+CGPADDR=1' |grep '+CGPADDR:' |cut -d',' -f2 |grep -o '[0-9\.]*'`
-    [ -n "$ipv4" ] && [ "$ipv4" != "0.0.0.0" ] && echo "$(Now) IPv4: $ipv4" |tee -a "$LOG" && return 0
+    [ -n "$ipv4" ] && [ "$ipv4" != "0.0.0.0" ] && Log "IPv4: $ipv4" && return 0
     sleep 1
   done
   return 1
 }
 
 function ReloadWAN() {
-  echo "$(Now) New Network ..." |tee -a "$LOG"
+  Log "New Network ..."
   ResetLED 0
   WaitIPv4 || return 1
-  echo "$(Now) Check Interface ..." |tee -a "$LOG"
+  Log "Check Interface ..."
   ResetLED 1
-  ipv4=`/bin/sendat "$PORT" 'AT+CGPADDR=1' |grep '+CGPADDR:' |cut -d',' -f2 |grep -o '[0-9\.]*'`
-  [ -n "$ipv4" ] || ipv4="0.0.0.0"
   ipv4If=`ubus call network.interface.wan status |grep '"address":' |cut -d'"' -f4 |grep -o '[0-9\.]*'`
   [ -n "$ipv4If" ] || ipv4If="0.0.0.0"
+  ipv4=`/bin/sendat "$PORT" 'AT+CGPADDR=1' |grep '+CGPADDR:' |cut -d',' -f2 |grep -o '[0-9\.]*'`
+  [ -n "$ipv4" ] || ipv4="0.0.0.0"
   [ "$ipv4" == "$ipv4If" ] && return 0
-  echo "$(Now) Reload Interface ..." |tee -a "$LOG"
+  Log "Reload Interface ..."
   ubus call network.interface.wan down
   ubus call network.interface.wan up
   ubus call network.interface.wan6 down
@@ -192,25 +283,25 @@ function ResetLED() {
   echo 0 >"$LED_NR5G"
   echo 0 >"$LED_LTE"
   [ $1 -eq 0 ] && {
-      echo "$(Now) Reset LED ..." |tee -a "$LOG"
+      Log "Reset LED ..."
       return "$STATUS"
   }
   result=`/bin/sendat "$PORT" 'AT+QRSRQ'`
   net=`echo "${result##*,}" |grep -o 'NR5G\|LTE'`
   [ "$net" == "NR5G" ] && echo 1 >"$LED_NR5G" && STATUS=1
   [ "$net" == "LTE" ] && echo 1 >"$LED_LTE" && STATUS=1
-  echo "$(Now) Network Mode: ${net:-NULL}" |tee -a "$LOG"
+  Log " Network Mode: ${net:-NULL}"
   return "$STATUS"
 }
 
 function NewSMS() {
-  echo "$(Now) New SMS ..." |tee -a "$LOG"
+  Log "New SMS ..."
   data=`sms_tool -f '%Y/%m/%d %H:%M:%S' -j -u recv`
   HandlerSMS "$data"
 }
 
 function HandlerSMS() {
-  echo "$(Now) SMS Handler ..." |tee -a "$LOG"
+  Log "SMS Handler ..."
   data="${1:-}"
   [ -n "$data" ] || return 1
   length=`echo "$data" |jq '.msg |length'`
@@ -218,7 +309,7 @@ function HandlerSMS() {
   i=0
   while [ $i -lt $length ]; do
     item=`echo "$data" |jq -c ".msg[$i]"`
-    echo "$(Now) SMS: $item" |tee -a "$LOG"
+    Log "SMS: $item"
     sender=`echo "$item" |jq -r ".sender"`
     timestamp=`echo "$item" |jq -r ".timestamp"`
     content=`echo "$item" |jq -r ".content"`
@@ -231,40 +322,10 @@ function HandlerSMS() {
 function BarkService() {
   BarkURL=`Config BarkURL`
   [ -n "$BarkURL" ] || return 1
-  echo "$(Now) SMS With Bark ..." |tee -a "$LOG"
+  Log "SMS With Bark ..."
   title=`echo "$1" |jq -sRr @uri`
   body=`echo "$2" |jq -sRr @uri`
   url="${BarkURL%/}/${title}/${body}"
   curl -ksSL --connect-timeout 5 -X GET "${url}" >/dev/null 2>&1 &
 }
 
-function LockNR5G() {
-  # pci:rfcn:band:scs
-  echo "$(Now) NR5G Lock ..." |tee -a "$LOG"
-  cell=`/bin/sendat "$PORT" 'AT+QENG="servingcell"'|grep '+QENG:' |cut -d',' -f8,10,16,11`
-  echo "$(Now) NR5G Cell: $cell" |tee -a "$LOG"
-  [ -n "$cell" ] || return 1
-  lock="${1:-$cell}"
-  echo "$(Now) NR5G Lock: $lock" |tee -a "$LOG"
-  pci=`echo "$lock" |cut -d',' -f1`
-  rfcn=`echo "$lock" |cut -d',' -f2`
-  band=`echo "$lock" |cut -d',' -f3`
-  scs=`echo "$lock" |cut -d',' -f4`
-  [ "$lock" != "$cell" ] && {
-      meas=`/bin/sendat "$PORT" 'AT+QNWCFG="nr5g_meas_info"' |grep '+QNWCFG:' |cut -d',' -f4,3`
-      echo "$meas" |grep -q "^${rfcn},${pci}$"
-      [ $? -eq 0 ] || {
-          echo "$(Now) NR5G Lock: NotFoundPCI" |tee -a "$LOG"
-          return 1
-      }
-  }
-  scsHz="$(($((2**${scs}))*15))"
-  /bin/sendat "$PORT" "AT+QNWLOCK=\"common/5g\",${pci},${rfcn},${scsHz},${band}" |grep -q "OK"
-  [ $? -eq 0 ] && {
-      echo "$(Now) NR5G: N${band}:${rfcn}:${pci}" |tee -a "$LOG"
-      return 0
-  } || {
-      echo "$(Now) NR5G Lock: Fail" |tee -a "$LOG"
-      return 1
-  }
-}
