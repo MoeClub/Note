@@ -12,7 +12,7 @@ int serial_init(char *device, int speed, int databits, int parity, int stopbits,
 int serial_write(int fd, void *src, int len);
 int serial_read(int fd, char *buf, int len);
 //串口默认初始化接口
-#define serial_default(device, speed) serial_init(device, speed, 8, 'n', 1, 0, 1)
+#define serial_default(device) serial_init(device, 1500000, 8, 'n', 1, 0, 1)
 #endif
 
 
@@ -213,26 +213,26 @@ int main(int argc, char **argv)
 
 	char device[16];
 	sprintf(device, "/dev/ttyUSB%s", argv[1]);
-	if(file_exist(device)==0)
-	{
-		fprintf(stderr, "ERROR: AT Device Absent.\n");
-   		return 1;
-	}
-	
 	char *message= argv[2];
+
 	if (*message=='\0')
 	{
 		fprintf(stderr, "ERROR: AT Command Absent.\n");
    		return 1;
 	}
 	
+	if(file_exist(device)==0)
+	{
+		fprintf(stderr, "ERROR: AT Device Absent.\n");
+   		return 1;
+	}
+
 	signal(SIGALRM, timeout);
 	alarm(5);
 	
-	int bps=1500000;
 	char *rn= "\r\n";
 	char buff[1024];
-	int fd = serial_default(device, bps);
+	int fd = serial_default(device);
 	if(fd < 0) return 1;
 	char *msg= strcat(message, rn);
 	serial_write(fd, msg, strlen(msg));
