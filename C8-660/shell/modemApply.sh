@@ -1,5 +1,8 @@
 #!/bin/sh
 
+delay=`echo "${1:-0}" |grep -o '[0-9]*'`
+[ -n "${delay}" ] && sleep "${delay}"
+
 execPath=`readlink -f "$0"`
 dirPath="${execPath%/*}"
 modemFunc="${dirPath}/modemFunc.sh"
