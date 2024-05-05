@@ -5,7 +5,7 @@ HostPort="443"
 LocalPort="443"
 LocalIf="eth0"
 
-RemoteHost=`curl -o /dev/null -sSL --connect-timeout 5 --retry-delay 3 --retry 5 -w %{remote_ip} "https://${HostName}:${HostPort}"`
+RemoteHost=`dig A +short @8.8.8.8 "${HostName}" |head -n1`
 [ -n "$RemoteHost" ] || exit 1
 
 Forward=`cat /proc/sys/net/ipv4/ip_forward`
