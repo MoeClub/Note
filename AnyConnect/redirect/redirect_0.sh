@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # apt-get -yqq install dnsutils iptables
+# ip route show default
 
 HostName="google.com"
 HostPort="443"
