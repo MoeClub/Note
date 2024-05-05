@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# apt-get -yqq install dnsutils iptables
+
 HostName="google.com"
 HostPort="443"
 LocalPort="443"
