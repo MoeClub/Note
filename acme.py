@@ -51,11 +51,14 @@ class DNS:
                 result[n_domain] = {"domain": domain, "name": n, "txt": []}
             result[n_domain]["txt"].append(str('"{}"').format(item["txt"]))
         urls = []
+        _urls = []
         for n_domain in result:
             data = base64.urlsafe_b64encode(json.dumps(result[n_domain]["txt"], separators=(",", ":"), ensure_ascii=False).encode()).decode()
             url = "https://api.moeclub.org/HWDNS?{}&action=add&target=record&domain={}&name={}&data={}&type={}&ttl={}".format(auth, result[n_domain]["domain"], result[n_domain]["name"], data, "TXT_BASE64", ttl)
             urls.append(url)
-        return urls
+            _url = "https://api.moeclub.org/HWDNS?{}&action=del&target=record&domain={}&name={}&type={}".format(auth, result[n_domain]["domain"], result[n_domain]["name"], "TXT")
+            _urls.append(_url)
+        return urls, _urls
 
 
 class ACME:
@@ -81,8 +84,9 @@ class ACME:
     SUBDOMAIN = list()
     KWARGS = dict()
 
-    def __init__(self, domain: (str, list), sub="", verify="dns", server="letsencrypt", rootData="acme", privKeyPath=None, privateKeyName="acme.key", ecc=True, **kwargs):
+    def __init__(self, domain: (str, list), sub="", verify="dns", server="letsencrypt", rootData="acme", privKeyPath=None, privateKeyName="acme.key", ecc=True, proxy=None, **kwargs):
         self.KWARGS = kwargs
+        self.Proxy = proxy
         self.server = server
         self.VerifyType = verify
         self.privKeyPath = privKeyPath
@@ -151,7 +155,7 @@ class ACME:
         body["protected"] = protected
         body["payload"] = payload
         body["signature"] = self.Sign(key=self.PrivKey, data=str("{}.{}").format(body["protected"], body["payload"]).encode())
-        resp = await self.HTTP("POST", url=url, headers=self.Headers(), data=json.dumps(body, separators=(',', ':'), ensure_ascii=False), redirect=False)
+        resp = await self.HTTP("POST", url=url, headers=self.Headers(), data=json.dumps(body, separators=(',', ':'), ensure_ascii=False), redirect=False, Proxy=self.Proxy)
         if resp["code"] in [200, 201]:
             if "Replay-Nonce" in resp["headers"]:
                 self.Nonce = resp["headers"]["Replay-Nonce"]
@@ -280,7 +284,7 @@ class ACME:
             if self.server not in self.ServerList:
                 return False
             server = self.ServerList[self.server]
-        resp = await self.HTTP("GET", url=server, headers=self.Headers(), redirect=False)
+        resp = await self.HTTP("GET", url=server, headers=self.Headers(), redirect=False, Proxy=self.Proxy)
         if resp["code"] == 200:
             self.Server = json.loads(resp["data"].decode())
             if "Replay-Nonce" in resp["headers"]:
@@ -297,7 +301,7 @@ class ACME:
     async def GetNonce(self):
         if self.Server is None or "newNonce" not in self.Server:
             return None
-        resp = await self.HTTP("HEAD", url=self.Server["newNonce"], headers=self.Headers(), redirect=False)
+        resp = await self.HTTP("HEAD", url=self.Server["newNonce"], headers=self.Headers(), redirect=False, Proxy=self.Proxy)
         if resp["code"] == 200 and "Replay-Nonce" in resp["headers"]:
             return resp["headers"]["Replay-Nonce"]
         return None
@@ -535,21 +539,29 @@ class ACME:
         if isinstance(order, list) and len(order) > 0:
             for _ in range(5):
                 # input("Wait...")
-                urls = DNS.HUAWEI(name=self.DNSHostValue, sub=self.SUBDOMAIN, order=order, ttl=15, **self.KWARGS)
+                urls, _urls = DNS.HUAWEI(name=self.DNSHostValue, sub=self.SUBDOMAIN, order=order, ttl=15, **self.KWARGS)
                 for url in urls:
-                    resp = await self.HTTP(method="GET", url=url, timeout=60)
+                    resp = await self.HTTP(method="GET", url=url, timeout=60, Proxy=self.Proxy)
                     print(json.dumps(json.loads(resp["data"].decode()), indent=4, ensure_ascii=False), flush=True)
                 await asyncio.sleep(delay=15)
                 status = await self.CheckChall()
                 if status is True:
+                    for url in _urls:
+                        resp = await self.HTTP(method="GET", url=url, timeout=60, Proxy=self.Proxy)
+                        print(json.dumps(json.loads(resp["data"].decode()), indent=4, ensure_ascii=False), flush=True)
                     break
         return await self.CheckOrder()
 
 
 
 if __name__ == "__main__":
-    # GTS: https://console.cloud.google.com/apis/library/publicca.googleapis.com
-    # GTS KEY: gcloud publicca external-account-keys create
+    # NewCrt: python3 acme.py -d "xxx.com,*.xxx.com"
+    # NewCrt: python3 acme.py -d "sub.xxx.com,*.sub.xxx.com" -v dns -s google -sub "xxx.com" -ecc
+
+    # Enable GTS: https://console.cloud.google.com/apis/library/publicca.googleapis.com
+    # GTS HMAC KEY: gcloud publicca external-account-keys create
+    # Register: python3 acme.py -register -mail "xyz@abc.com" -kid "<keyId>" -key "<hmacKEy>"
+
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', dest='domain', type=str, help='domains with comma separated.')
@@ -562,10 +574,11 @@ if __name__ == "__main__":
     parser.add_argument('-key', dest="key", type=str, help='aeb hmac key, register')
     parser.add_argument('-data', dest="data", type=str, default="acme", help='data directory')
     parser.add_argument('-sub', dest="sub", type=str, default="", help='declare sub domain with comma separated.')
+    parser.add_argument('-proxy', dest="proxy", type=str, default=None, help='declare sub domain with comma separated.')
     args = parser.parse_args()
 
     loop = asyncio.get_event_loop()
-    acme = ACME(domain=args.domain, sub=args.sub, verify=args.verify, server=args.server, rootData=args.data, ecc=args.ecc, **{"key": None, "secret": None})
+    acme = ACME(domain=args.domain, sub=args.sub, verify=args.verify, server=args.server, rootData=args.data, ecc=args.ecc, proxy=args.proxy, **{"key": None, "secret": None})
     if args.register is True:
         loop.run_until_complete(acme.Account(mail=args.mail, kid=args.kid, hmacKey=args.key))
     crt, key = loop.run_until_complete(acme.NewCrt())
