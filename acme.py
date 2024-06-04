@@ -574,7 +574,7 @@ if __name__ == "__main__":
     parser.add_argument('-key', dest="key", type=str, help='aeb hmac key, register')
     parser.add_argument('-data', dest="data", type=str, default="acme", help='data directory')
     parser.add_argument('-sub', dest="sub", type=str, default="", help='declare sub domain with comma separated.')
-    parser.add_argument('-proxy', dest="proxy", type=str, default=None, help='declare sub domain with comma separated.')
+    parser.add_argument('-proxy', dest="proxy", type=str, default=None, help='use proxy.')
     args = parser.parse_args()
 
     loop = asyncio.get_event_loop()
