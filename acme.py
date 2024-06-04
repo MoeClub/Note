@@ -39,7 +39,7 @@ class DNS:
         for item in order:
             if "domain" not in item or "txt" not in item:
                 continue
-            domain = str(item["domain"]).lstrip(name)
+            domain = str(item["domain"]).lstrip(name).strip(".")
             n = name
             for d in sub:
                 if str(domain).endswith(d):
