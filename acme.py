@@ -580,7 +580,10 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     acme = ACME(domain=args.domain, sub=args.sub, verify=args.verify, server=args.server, rootData=args.data, ecc=args.ecc, proxy=args.proxy, **{"key": None, "secret": None})
     if args.register is True:
-        loop.run_until_complete(acme.Account(mail=args.mail, kid=args.kid, hmacKey=args.key))
+        status = loop.run_until_complete(acme.Account(mail=args.mail, kid=args.kid, hmacKey=args.key))
+        print("Register Status: {}".format(status))
+        if len(acme.DOMAIN) == 0:
+            os._exit(0)
     crt, key = loop.run_until_complete(acme.NewCrt())
     print(crt)
     print(key)
