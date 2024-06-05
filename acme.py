@@ -560,7 +560,7 @@ if __name__ == "__main__":
 
     # Enable GTS: https://console.cloud.google.com/apis/library/publicca.googleapis.com
     # GTS HMAC KEY: gcloud publicca external-account-keys create
-    # Register: python3 acme.py -register -mail "xyz@abc.com" -kid "<keyId>" -key "<hmacKEy>"
+    # Register: python3 acme.py -register -mail "xyz@abc.com" -kid "<keyId>" -key "<hmacKey>"
 
     import argparse
     parser = argparse.ArgumentParser()
