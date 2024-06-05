@@ -2,7 +2,7 @@
 
 DOMAIN=()
 DOMAIN+=("moeclub.org,*.moeclub.org")
-# DOMAIN+=("test.moeclub.org,*.test.moeclub.org;moeclub.org")
+# DOMAIN+=("sub.moeclub.org,*.sub.moeclub.org;moeclub.org")
 
 cd $(dirname `readlink -f "$0"`)
 [ -f "./acme.py" ] || exit 1
