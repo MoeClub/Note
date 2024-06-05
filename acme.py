@@ -568,7 +568,7 @@ if __name__ == "__main__":
     parser.add_argument('-d', dest='domain', type=str, help='domains with comma separated.')
     parser.add_argument('-v', dest="verify", type=str, default="dns", help='http, dns.')
     parser.add_argument('-s', dest="server", type=str, default="letsencrypt", help='ca directory.')
-    parser.add_argument('-ecc', dest="ecc", action="store_false", help='use ecc, default rsa.')
+    parser.add_argument('-ecc', dest="ecc", action="store_true", help='use ecc, default rsa.')
     parser.add_argument('-register', dest="register", action="store_true", help='register')
     parser.add_argument('-mail', dest="mail", type=str, help='mail, register')
     parser.add_argument('-kid', dest="kid", type=str, help='eab kid, register.')
