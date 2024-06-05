@@ -582,6 +582,8 @@ if __name__ == "__main__":
     if args.register is True:
         status = loop.run_until_complete(acme.Account(mail=args.mail, kid=args.kid, hmacKey=args.key))
         print("Register Status: {}".format(status))
+        if status is True:
+            print("Private Key: {}".format(acme.PrivateKeyPath))
     if len(acme.DOMAIN) == 0:
         os._exit(0)
     crt, key = loop.run_until_complete(acme.NewCrt())
