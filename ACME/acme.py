@@ -39,12 +39,14 @@ class DNS:
         for item in order:
             if "domain" not in item or "txt" not in item:
                 continue
-            domain = str(item["domain"]).lstrip(name).strip(".")
+            if not str(item["domain"]).startswith(name):
+                continue
+            domain = str(item["domain"]).replace(name, "", 1).strip(".")
             n = name
             for d in sub:
                 if str(domain).endswith(d):
                     domain = d
-                    n = str(item["domain"]).rstrip(d).strip(".")
+                    n = str(item["domain"]).replace(d, "", -1).strip(".")
                     break
             n_domain = str("{}_{}").format(n, domain)
             if n_domain not in result:
