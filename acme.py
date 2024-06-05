@@ -558,9 +558,10 @@ if __name__ == "__main__":
     # NewCrt: python3 acme.py -d "xxx.com,*.xxx.com"
     # NewCrt: python3 acme.py -d "sub.xxx.com,*.sub.xxx.com" -v dns -s google -sub "xxx.com" -ecc
 
+    # Register: python3 acme.py -register -s google -mail "xyz@abc.com" -kid "<keyId>" -key "<hmacKey>"
     # Enable GTS: https://console.cloud.google.com/apis/library/publicca.googleapis.com
     # GTS HMAC KEY: gcloud publicca external-account-keys create
-    # Register: python3 acme.py -register -s google -mail "xyz@abc.com" -kid "<keyId>" -key "<hmacKey>"
+    ## gcloud config set project <project-name>; gcloud services enable publicca.googleapis.com
 
     import argparse
     parser = argparse.ArgumentParser()
