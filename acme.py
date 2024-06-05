@@ -525,7 +525,7 @@ class ACME:
         if self.Crt is not None and self.CrtKey is not None:
             # CrtMark = "{}_{}_{}".format(time.strftime("%Y%m%d%H%M%S", time.localtime()), "ecc" if self.ECC is True else "rsa", self.DOMAIN[0].replace("*", "").replace(".", "_").strip("_"))
             CrtMark = self.DOMAIN[0].replace("*", "").strip(".")
-            CrtPath = os.path.join(self.Root, self.RootData, CrtMark)
+            CrtPath = os.path.join(self.Root, self.RootData, "crt", CrtMark)
             if not os.path.exists(CrtPath):
                 os.makedirs(CrtPath)
             self.WriteFile(f=os.path.join(CrtPath, "server.crt.pem"), d=self.Crt, o=True)
