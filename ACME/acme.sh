@@ -9,7 +9,7 @@ DOMAIN+=("moeclub.org,*.moeclub.org")
 
 cd $(dirname `readlink -f "$0"`)
 [ -f "./acme.py" ] || exit 1
-[ -f "./dv.acme-v02.api.pki.goog/acme.key" ] && s="google" || s="letsencrypt"
+[ -f "./acme/dv.acme-v02.api.pki.goog/acme.key" ] && s="google" || s="letsencrypt"
 
 for domain in "${DOMAIN[@]}"; do
   _domain="${domain};"
