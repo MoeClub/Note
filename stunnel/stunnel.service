@@ -6,6 +6,7 @@ After=dbus.service
 
 [Service]
 Type=simple
+ExecStartPre=/usr/bin/chmod 600 /etc/stunnel/server.crt.pem /etc/stunnel/server.key.pem
 ExecStart=/usr/bin/stunnel /etc/stunnel/stunnel.conf 
 RestartSec=3s
 Restart=always
