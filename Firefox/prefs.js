@@ -111,4 +111,5 @@ user_pref("xpinstall.signatures.required", false);
 user_pref("full-screen-api.macos-native-full-screen", true);
 user_pref("gfx.webrender.all", true);
 user_pref("gfx.webrender.software", false);
+user_pref("accessibility.typeaheadfind.matchesCountLimit", 99999999);
 
