@@ -5,11 +5,13 @@ After=dbus.service
 
 [Service]
 Type=simple
-ExecStart=/usr/sbin/vlmcsdmulti vlmcsd -D -d -q
+ExecStart=/usr/sbin/vlmcsdmulti vlmcsd -D -d -v
 ExecStop=/bin/kill -KILL $MAINPID
 ExecStartPost=/bin/bash -c "sleep 3 && /usr/sbin/vlmcsdmulti vlmcs && exit 0 || exit 1"
 RestartSec=3s
 Restart=always
+MemoryMax=4M
+TasksMax=512
 
 [Install]
 WantedBy=multi-user.target
