@@ -304,7 +304,7 @@ function build_ocserv(){
 	make DESTDIR="${TARGET}" install
 	[ $? -eq 0 ] || return 1
 	cd "${TARGET}"
-	FILE="/tmp/ocserv_${ARCH}_v${VERSION_OCSERV}.tar.gz"
+	FILE="/mnt/ocserv_${ARCH}_v${VERSION_OCSERV}.tar.gz"
 	tar -czvf "${FILE}" ./
 	return $?
 }
