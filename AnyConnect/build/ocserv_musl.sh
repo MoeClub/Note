@@ -16,7 +16,7 @@ VERSION_GMP="6.3.0"
 VERSION_NETTLE="3.7.3"
 VERSION_IDN2="2.3.4"
 VERSION_UNISTRING="1.1"
-VERSION_DNSMASQ="2.90"
+#VERSION_DNSMASQ="2.90"
 
 
 function musl_cross(){
@@ -182,11 +182,9 @@ function build_unistring(){
 # gnutls
 function build_gnutls(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; #trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
 	wget --no-check-certificate -qO- "https://www.gnupg.org/ftp/gcrypt/gnutls/v${VERSION_GNUTLS%.*}/gnutls-${VERSION_GNUTLS}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
 	cd "$TMP"
-#	./configure -h 
-#	return 1
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
 	NETTLE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
@@ -266,7 +264,7 @@ EOF
 
 function build_ocserv(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; #trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
 	wget --no-check-certificate -qO- "ftp://ftp.infradead.org/pub/ocserv/ocserv-${VERSION_OCSERV}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
 	cd "$TMP"
 	sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
