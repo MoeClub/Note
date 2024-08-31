@@ -1,71 +1,8 @@
-# Build On Debian 9
+# Build
 
 ```
-apt-get update
-apt-get install -y gcc make autoconf pkg-config xz-utils
-apt-get install -y libgnutls28-dev libev-dev
-apt-get install -y libwrap0-dev libpam0g-dev liblz4-dev libseccomp-dev libreadline-dev libnl-route-3-dev libkrb5-dev
-apt-get install -y libradcli-dev
+ver=1.3.0 && rm -rf ./ocserv/tmp/* && sed -i "s/^Version: .*/Version: ${ver}/" ./ocserv/DEBIAN/control &&  cp -rf dnsmasq_*.tar.gz ./ocserv/tmp && mv ./ocserv/tmp/dnsmasq_aarch64_v2.90.tar.gz ./ocserv/tmp/dnsmasq_arm64.tar.gz && mv ./ocserv/tmp/dnsmasq_x86_64_v2.90.tar.gz ./ocserv/tmp/dnsmasq_amd64.tar.gz && cp -rf ocserv_*_v${ver}.tar.gz ./ocserv/tmp && mv ./ocserv/tmp/ocserv_x86_64_v${ver}.tar.gz ./ocserv/tmp/ocserv_amd64.tar.gz && mv ./ocserv/tmp/ocserv_aarch64_v${ver}.tar.gz ./ocserv/tmp/ocserv_arm64.tar.gz && chmod -R 755 ocserv && find ocserv |xargs touch && dpkg -b ocserv ../ocserv_v${ver}.deb && cat ./ocserv/DEBIAN/control
 
-version=1.1.0
-wget --no-check-certificate -qO ocserv.tar.xz ftp://ftp.infradead.org/pub/ocserv/ocserv-${version}.tar.xz
-
-rm -rf ocserv
-mkdir -p ocserv
-tar -xvf ocserv.tar.xz -C ocserv --strip-components=1
-cd ocserv
-autoreconf -fvi
-
-CFLAGS="-fPIC -I." LDFLAGS="-L." \
-./configure \
---prefix=/usr \
---disable-rpath \
---without-protobuf \
---without-root-tests \
---without-docker-tests \
---without-nuttcp-tests \
---without-maxmind \
---without-geoip \
---without-liboath \
---without-pam \
---without-radius \
---without-utmp \
---without-lz4 \
---without-http-parser \
---without-gssapi \
---without-pcl-lib \
---with-local-talloc
-
-make && make DESTDIR=/tmp install
-
-```
-
-# Build ocserv
-```
-bash <(wget --no-check-certificate -4 -qO- 'https://raw.githubusercontent.com/MoeClub/Note/master/AnyConnect/build/static_ocserv.sh')
-
-```
-
-# Install ocserv v0.12.3
-```
-wget --no-check-certificate -qO ocserv.tar 'https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv_v0.12.3.tar'
-tar --overwrite -xvf ocserv.tar -C /
-
-# Config
-mkdir -p /etc/ocserv
-chmod -R 755 /etc/ocserv
-
-# Debug
-/usr/sbin/ocserv -c /etc/ocserv/ocserv.conf -f -d 9 
-
-# Sysctl
-sed -i '/^net\.ipv4\.ip_forward/d' /etc/sysctl.conf
-while [ -z "$(sed -n '$p' /etc/sysctl.conf)" ]; do sed -i '$d' /etc/sysctl.conf; done
-sed -i '$a\net.ipv4.ip_forward = 1\n\n' /etc/sysctl.conf
-sysctl -p
-
-# Iptables
-bash /etc/ocserv/iptables.rules
 
 ```
 
