@@ -318,10 +318,10 @@ function build_dnsmasq(){
 	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "http://www.thekelleys.org.uk/dnsmasq/dnsmasq-${VERSION_DNSMASQ}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
-	make CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -s" -j`nproc`
+	make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -s" -j`nproc`
 	[ $? -eq 0 ] || return 1
 	TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
-	make PREFIX="/usr" DESTDIR="${TARGET}" install
+	make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" PREFIX="/usr" DESTDIR="${TARGET}" install
 	[ $? -eq 0 ] || return 1
 	cd "${TARGET}"
 	FILE="/mnt/dnsmasq_${ARCH}_v${VERSION_DNSMASQ}.tar.gz"
