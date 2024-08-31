@@ -16,8 +16,11 @@ VERSION_GMP="6.3.0"
 VERSION_NETTLE="3.7.3"
 VERSION_IDN2="2.3.4"
 VERSION_UNISTRING="1.1"
-#VERSION_DNSMASQ="2.90"
+VERSION_DNSMASQ="2.90"
 
+
+TRAPRM=""
+TARPKG=""
 
 function musl_cross(){
 	muslHome="/usr/local/musl"
@@ -38,7 +41,7 @@ function musl_cross(){
 # libev
 function build_libev(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "http://dist.schmorp.de/libev/Attic/libev-${VERSION_LIBEV}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
@@ -60,7 +63,7 @@ function build_libev(){
 # libseccomp
 function build_libseccomp(){
  	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "https://github.com/seccomp/libseccomp/releases/download/v${VERSION_LIBSECCOMP}/libseccomp-${VERSION_LIBSECCOMP}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
@@ -80,7 +83,7 @@ function build_libseccomp(){
 # lz4
 function build_lz4(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "https://github.com/lz4/lz4/archive/refs/tags/v${VERSION_LZ4}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
@@ -95,7 +98,7 @@ function build_lz4(){
 # gmp
 function build_gmp(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "https://gmplib.org/download/gmp/gmp-${VERSION_GMP}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
@@ -116,7 +119,7 @@ function build_gmp(){
 # nettle
 function build_nettle(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/nettle/nettle-${VERSION_NETTLE}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
@@ -140,7 +143,7 @@ function build_nettle(){
 # idn2
 function build_idn2(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/libidn/libidn2-${VERSION_IDN2}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
@@ -161,7 +164,7 @@ function build_idn2(){
 # unistring
 function build_unistring(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/libunistring/libunistring-${VERSION_UNISTRING}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
@@ -182,7 +185,7 @@ function build_unistring(){
 # gnutls
 function build_gnutls(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "https://www.gnupg.org/ftp/gcrypt/gnutls/v${VERSION_GNUTLS%.*}/gnutls-${VERSION_GNUTLS}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
@@ -215,7 +218,7 @@ function build_gnutls(){
 # readline
 function build_readline(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	# readline.h
 	cat >"$TMP/readline.h" <<EOF
 #ifndef READLINE_H
@@ -264,12 +267,12 @@ EOF
 
 function build_ocserv(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; trap "rm -rf $TMP" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "ftp://ftp.infradead.org/pub/ocserv/ocserv-${VERSION_OCSERV}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
 	cd "$TMP"
 	sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
 	sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN) {\n\t\t\tcstp_cork(ws);\n\t\t\tret = (cstp_printf(ws, "HTTP\/1.%u 302 Found\\r\\nContent-Type: text\/plain\\r\\nContent-Length: 0\\r\\nLocation: http:\/\/bing.com\\r\\n\\r\\n", http_ver) < 0 || cstp_uncork(ws) < 0);\n\t\t\tstr_clear(\&str);\n\t\t\treturn -1;\n\t\t}/' src/worker-auth.c
-	#sed -i 's/c_isspace/isspace/' src/occtl/occtl.c
+	sed -i 's/c_isspace/isspace/' src/occtl/occtl.c
 	#sed -i 's/case AC_PKT_DPD_OUT:/&\n\t\tws->last_nc_msg = now;/' src/worker-auth.c
 	
 	sed -i '/AC_CHECK_FILE/d' ./configure.ac
@@ -298,18 +301,40 @@ function build_ocserv(){
 	[ $? -eq 0 ] || return 1
 	make -j`nproc`
 	[ $? -eq 0 ] || return 1
-	TARGET=`mktemp -d`; trap "rm -rf $TARGET" EXIT
+	TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
 	make DESTDIR="${TARGET}" install
 	[ $? -eq 0 ] || return 1
 	cd "${TARGET}"
 	FILE="/mnt/ocserv_${ARCH}_v${VERSION_OCSERV}.tar.gz"
 	tar -czvf "${FILE}" ./
-	return $?
+	[ $? -eq 0 ] || return 1
+	TARPKG="${TARPKG} ${FILE}"
+	return 0
 }
 
+function build_dnsmasq(){
+	ARCH="${1:-x86_64}"
+	[ -n "$VERSION_DNSMASQ" ] || return 0
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+	wget --no-check-certificate -qO- "http://www.thekelleys.org.uk/dnsmasq/dnsmasq-${VERSION_DNSMASQ}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+	cd "$TMP"
+	make CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -s" -j`nproc`
+	[ $? -eq 0 ] || return 1
+	TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
+	make PREFIX="/usr" DESTDIR="${TARGET}" install
+	[ $? -eq 0 ] || return 1
+	cd "${TARGET}"
+	FILE="/mnt/dnsmasq_${ARCH}_v${VERSION_DNSMASQ}.tar.gz"
+	tar -czvf "${FILE}" ./
+	[ $? -eq 0 ] || return 1
+	TARPKG="${TARPKG} ${FILE}"
+	return 0
+}
 
 function build() {
 	ARCH="${1:-x86_64}"
+	build_dnsmasq "${ARCH}"
+	[ $? -eq 0 ] || return 1
 	build_libev "${ARCH}"
 	[ $? -eq 0 ] || return 1
 	build_libseccomp "${ARCH}"
@@ -329,7 +354,7 @@ function build() {
 	build_readline "${ARCH}"
 	[ $? -eq 0 ] || return 1
 	build_ocserv "${ARCH}"
-	return $?
+	[ $? -eq 0 ] || return 1
 }
 
 
@@ -338,4 +363,9 @@ for arch in "x86_64" "aarch64"; do
 	build "${arch}"
 	[ "$?" -eq 0 ] || exit 1
 done
+
+for tarpkg in `echo "${TARPKG# }"`; do
+	echo "--> ${tarpkg}"
+done
+
 
