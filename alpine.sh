@@ -23,3 +23,5 @@ for usr in `cat /etc/passwd |cut -d':' -f1,6`; do
   }
 done
 
+rc-service sshd restart
+
