@@ -8,6 +8,7 @@ echo "root:${PASS}" |chpasswd root
 sed -i "s/^#\?Port.*/Port $PORT/g" /etc/ssh/sshd_config;
 sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config;
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g' /etc/ssh/sshd_config;
+sed -i 's/^#\?KbdInteractiveAuthentication.*/KbdInteractiveAuthentication no/g' /etc/ssh/sshd_config;
 [ -d /etc/ssh/sshd_config.d ] && rm -rf /etc/ssh/sshd_config.d/*
 [ -e /etc/init.d/sshd ] && /etc/init.d/sshd restart
 
