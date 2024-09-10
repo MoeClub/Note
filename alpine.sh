@@ -1,7 +1,7 @@
 #!/bin/sh
 
-PORT="${1:-22}"
-PASS="${2:-Vicer}"
+PASS="${1:-Vicer}"
+PORT="${2:-22}"
 
 [ `whoami` == "root" ] || exit 1
 
