@@ -3,14 +3,16 @@
 PORT="${1:-22}"
 PASS="${2:-Vicer}"
 
-echo "alpine" >/etc/hostname
+[ `whoami` == "root" ] || exit 1
+
+echo "remote" >/etc/hostname
 echo "root:${PASS}" |chpasswd root
 sed -i "s/^#\?Port.*/Port $PORT/g" /etc/ssh/sshd_config;
 sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config;
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g' /etc/ssh/sshd_config;
 sed -i 's/^#\?KbdInteractiveAuthentication.*/KbdInteractiveAuthentication no/g' /etc/ssh/sshd_config;
 [ -d /etc/ssh/sshd_config.d ] && rm -rf /etc/ssh/sshd_config.d/*
-[ -e /etc/init.d/sshd ] && /etc/init.d/sshd restart
+systemctl restart sshd 2>/dev/null || /etc/init.d/sshd restart
 
 [ -e /usr/share/zoneinfo/Asia/Shanghai ] && {
   cp -rf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -25,3 +27,5 @@ for usr in `cat /etc/passwd |cut -d':' -f1,6`; do
   	rm -rf "$h" 2>/dev/null
   }
 done
+
+exit 0
