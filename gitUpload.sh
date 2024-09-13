@@ -4,10 +4,9 @@ target="${1:-}"
 repo="${2:-}"
 branch="${3:-main}"
 clone="${4:-}"
-pause="${5:-0}"
 
 [ -n "${target}" ] && [ -n "${repo}" ] || exit 1
-[ -e "${target}" ] || exit 1
+# [ -e "${target}" ] || exit 1
 tmp=$(mktemp -d)
 trap "rm -rf ${tmp}" EXIT
 cd "$tmp"
@@ -36,15 +35,17 @@ git remote add origin "$repo"
 }
 
 git pull origin "$branch"
-[ -n "${target}" ] && {
+[ -n "${target}" ] && [ "${target}" != "-" ] && {
   [ -f "${target}" ] && cp -rf "${target}" "${tmp}"
   [ -d "${target}" ] && cp -rf "${target%/}/." "${tmp}"
 }
 
-[ "$pause" != "0" ] && read -p "Pause <${tmp}> ..."
+[ "${target}" == "-" ] && read -p "Pause <${tmp}> ..."
 
 git add .
 git commit -m `date +'%Y%m%d%H%M%S'`
 
 # git config http.postBuffer 524288000
 [ -n "$clone" ] && git push clone "$branch" -f || git push origin "$branch" -f
+
+
