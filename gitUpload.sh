@@ -28,13 +28,16 @@ git init
 git checkout -b "$branch"
 git remote rm origin >/dev/null 2>&1
 git remote rm clone >/dev/null 2>&1
-git remote add origin "$repo"
+[ "$repo" != "-" ] && {
+  git remote add origin "$repo"
+  git pull origin "$branch"
+}
 [ -n "$clone" ] && {
   git remote add clone "$clone"
   createRepo "$clone"
 }
 
-git pull origin "$branch"
+
 [ -n "${target}" ] && [ "${target}" != "-" ] && {
   [ -f "${target}" ] && cp -rf "${target}" "${tmp}"
   [ -d "${target}" ] && cp -rf "${target%/}/." "${tmp}"
