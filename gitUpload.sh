@@ -6,8 +6,7 @@ branch="${3:-main}"
 clone="${4:-}"
 
 [ -n "${target}" ] && [ -n "${repo}" ] || exit 1
-# [ -e "${target}" ] || exit 1
-tmp=$(mktemp -d)
+tmp="$(mktemp -d)"
 trap "rm -rf ${tmp}" EXIT
 cd "$tmp"
 
