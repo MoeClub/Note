@@ -2,6 +2,7 @@
 
 apt-get install -y openssl net-tools dnsutils screen nload wget curl lsof p7zip-full python3-pip libffi-dev build-essential
 python3 -m pip install --upgrade --force-reinstall pip
+pip3 install aiohttp aiohttp_socks xmltodict
 
 # root
 sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config;
