@@ -25,5 +25,7 @@ https://cloud.oracle.com/identity/domains/<ocid1.domain...>/settings/password-po
 ```
 https://idcs-<IDCS>.identity.oraclecloud.com/ui/v1/adminconsole?root=security&security=sign-on-policy
 
+https://cloud.oracle.com/identity/domains/<ocid1.domain...>/security/sign-on-policies
+
 ```
 
