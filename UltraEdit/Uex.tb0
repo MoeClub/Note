@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="ASCII"?>
 <TOOLBARS>
   <Toolbar Name="Main" User="false">
-    <Button Name="&#26032;&#24314;">ID_FILE_NEW</Button>
-    <Button Name="&#25171;&#24320;">ID_FILE_OPEN</Button>
-    <Button Name="&#20851;&#38381;">ID_FILE_CLOSE</Button>
-    <Button Name="&#20445;&#23384;">ID_FILE_SAVE</Button>
+    <Button Name="New">ID_FILE_NEW</Button>
+    <Button Name="Open">ID_FILE_OPEN</Button>
+    <Button Name="Save">ID_FILE_SAVE</Button>
     <Sep/>
-    <Button Name="&#21462;&#28040;">ID_EDIT_UNDO</Button>
-    <Button Name="&#37325;&#20570;">ID_EDIT_REDO</Button>
+    <Button Name="Undo">ID_EDIT_UNDO</Button>
+    <Button Name="Redo">ID_EDIT_REDO</Button>
     <Sep/>
-    <Check Name="&#33258;&#21160;&#25442;&#34892;">ID_WORD_WRAP</Check>
+    <Check Name="Wrap">ID_WORD_WRAP</Check>
     <Sep/>
-    <Check Name="&#21313;&#20845;&#36827;&#21046;">ID_HEX_EDIT</Check>
+    <Check Name="Column">ID_COLUMN_MODE</Check>
     <Sep/>
-    <Button Name="&#26597;&#25214;">ID_FIND</Button>
-    <Button Name="&#26367;&#25442;">ID_REPLACE</Button>
+    <Check Name="Hex">ID_HEX_EDIT</Check>
     <Sep/>
-    <Check Name="&#39640;&#20142;&#26174;&#31034;&#25152;&#26377;">ID_HIGHLIGHT_ALL</Check>
+    <Button Name="Find">ID_FIND</Button>
+    <Button Name="Replace">ID_REPLACE</Button>
     <Sep/>
-    <Button Name="&#22797;&#21046;">ID_WINDOW_NEW</Button>
-    <Check Name="&#27700;&#24179;&#25286;&#20998;&#31383;&#21475;">ID_SPLIT_WINDOW</Check>
-    <Check Name="&#22402;&#30452;&#25286;&#20998;&#31383;&#21475;">ID_SPLIT_VERTICAL</Check>
-    <Check Name="&#21098;&#36148;&#26495;">CG_ID_VIEW_CLIPLIST</Check>
+    <Check Name="Horizontal">ID_SPLIT_WINDOW</Check>
+    <Check Name="Vertical">ID_SPLIT_VERTICAL</Check>
     <Sep/>
-    <Button Name="&#32534;&#30721; Base64">ID_EDIT_ENCODE64</Button>
-    <Button Name="&#35299;&#30721; Base64">ID_EDIT_DECODE64</Button>
+    <Button Name="Decode Base64">ID_EDIT_DECODE64</Button>
+    <Button Name="Encode Base64">ID_EDIT_ENCODE64</Button>
     <Sep/>
-    <Check Name="ASCII &#23383;&#31526;&#34920;">ID_ASCII_TABLE</Check>
-    <Check Name="&#25991;&#26723;&#22320;&#22270;">ID_DISPLAY_DOCUMENTMAP</Check>
+    <Check Name="ASCII Table">ID_ASCII_TABLE</Check>
+    <Check Name="Live preview">ID_VIEW_LIVE_PREVIEW</Check>
+    <Check Name="Map">ID_DISPLAY_DOCUMENTMAP</Check>
   </Toolbar>
 </TOOLBARS>
