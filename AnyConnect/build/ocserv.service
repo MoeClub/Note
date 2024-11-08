@@ -1,8 +1,7 @@
 [Unit]
 Description=OpenConnect SSL VPN server
 Documentation=man:ocserv(8)
-After=network-online.target
-After=dbus.service
+After=dbus.service local-fs.target network.target
 
 [Service]
 Type=simple
