@@ -43,7 +43,7 @@ BindAddress = 0.0.0.0:${PORT}
 
 EOF
 
-./wireproxy -c "./wireproxy.conf"
+./wireproxy -c ./wireproxy.conf
 
 
 
