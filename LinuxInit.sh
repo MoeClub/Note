@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt-get install -y openssl net-tools dnsutils screen nload wget curl lsof p7zip-full python3-pip libffi-dev build-essential
+apt-get install -y openssl net-tools dnsutils psmisc screen nload wget curl lsof p7zip-full python3-pip libffi-dev build-essential
 python3 -m pip install --upgrade --force-reinstall pip
 pip3 install aiohttp aiohttp_socks xmltodict
 
@@ -67,7 +67,7 @@ net.ipv4.tcp_timestamps = 1
 net.ipv4.tcp_slow_start_after_idle = 0
 net.ipv4.ip_forward = 1
 
-net.ipv4.icmp_echo_ignore_all = 1
+net.ipv4.icmp_echo_ignore_all = 0
 net.ipv6.conf.all.disable_ipv6 = 1
 
 net.ipv4.tcp_fastopen = 0
