@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt-get install -y openssl net-tools dnsutils psmisc screen nload wget curl lsof p7zip-full python3-pip libffi-dev build-essential
+apt-get install -y openssl net-tools dnsutils psmisc screen nload wget curl lsof p7zip-full python3-pip libffi-dev build-essential systemd-timesyncd
 python3 -m pip install --upgrade --force-reinstall pip
 pip3 install aiohttp aiohttp_socks xmltodict curl_cffi
 
