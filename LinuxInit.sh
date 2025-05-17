@@ -3,6 +3,15 @@
 apt-get install -y openssl net-tools dnsutils nload curl wget lsof psmisc iptables
 
 if [ -d /etc/systemd ]; then
+  # systemd-journald
+  if [ -f /etc/systemd/journald.conf ]; then
+    sed -i 's/^#\?Storage=.*/Storage=volatile/' /etc/systemd/journald.conf
+    sed -i 's/^#\?SystemMaxUse=.*/SystemMaxUse=8M/' /etc/systemd/journald.conf
+    sed -i 's/^#\?RuntimeMaxUse=.*/RuntimeMaxUse=8M/' /etc/systemd/journald.conf
+    sed -i 's/^#\?ForwardToSyslog=.*/ForwardToSyslog=no/' /etc/systemd/journald.conf
+    systemctl restart systemd-journald
+  fi
+  # systemd-timesyncd
   apt-get install -y systemd-timesyncd
   if [ -f /etc/systemd/timesyncd.conf ]; then
     echo -ne "[Time]\nNTP=time.apple.com time.windows.com pool.ntp.org ntp.ntsc.ac.cn\nRootDistanceMaxSec=3\nPollIntervalMinSec=24\nPollIntervalMaxSec=512\n\n" >/etc/systemd/timesyncd.conf
@@ -26,15 +35,6 @@ sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g' /etc/ssh/ss
 
 # timezone
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" >/etc/timezone
-
-# systemd-journald
-if [ -f /etc/systemd/journald.conf ]; then
-  sed -i 's/^#\?Storage=.*/Storage=volatile/' /etc/systemd/journald.conf
-  sed -i 's/^#\?SystemMaxUse=.*/SystemMaxUse=8M/' /etc/systemd/journald.conf
-  sed -i 's/^#\?RuntimeMaxUse=.*/RuntimeMaxUse=8M/' /etc/systemd/journald.conf
-  sed -i 's/^#\?ForwardToSyslog=.*/ForwardToSyslog=no/' /etc/systemd/journald.conf
-  systemctl restart systemd-journald
-fi
 
 # ssh
 [ -d ~/.ssh ] || mkdir -p ~/.ssh
