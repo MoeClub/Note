@@ -8,8 +8,15 @@ BDP=`echo "${Bandwidth} ${RTT}" |awk '{printf "%d", ($1 * $2) * ((1024 * 1024) /
 cat >/etc/sysctl.conf<<EOF
 # This line below add by user.
 
+kernel.pid_max = 65536
+
 fs.file-max = 104857600
+fs.aio-max-nr = 104857600
 fs.nr_open = 1048576
+fs.aio-nr = 1048576
+fs.inotify.max_user_instances = 10240
+fs.inotify.max_user_watches = 1048576
+fs.inotify.max_queued_events = 32768
 
 vm.overcommit_memory = 1
 
