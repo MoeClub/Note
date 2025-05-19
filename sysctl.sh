@@ -9,6 +9,7 @@ cat >/etc/sysctl.conf<<EOF
 # This line below add by user.
 
 kernel.pid_max = 65536
+kernel.sched_autogroup_enabled = 0
 
 fs.file-max = 104857600
 fs.aio-max-nr = 104857600
@@ -18,7 +19,20 @@ fs.inotify.max_user_instances = 10240
 fs.inotify.max_user_watches = 1048576
 fs.inotify.max_queued_events = 32768
 
-vm.overcommit_memory = 1
+vm.page-cluster = 0
+vm.overcommit_memory = 0
+vm.oom_kill_allocating_task = 1
+vm.max_map_count = 1048576
+vm.vfs_cache_pressure = 256
+vm.min_free_kbytes = 16384
+vm.zone_reclaim_mode = 0
+vm.dirty_writeback_centisecs = 100
+vm.dirty_expire_centisecs = 1000
+vm.dirty_background_ratio = 5
+vm.dirty_ratio = 25
+vm.swappiness = 10
+
+net.netfilter.nf_conntrack_max = 1048576
 
 net.core.somaxconn = 1048576
 net.core.optmem_max = 7864320
@@ -28,6 +42,8 @@ net.core.rmem_default = 7864320
 net.core.wmem_default = 7864320
 net.core.netdev_max_backlog = 1048576
 net.core.default_qdisc = fq_codel
+net.core.busy_poll = 0
+net.core.busy_read = 0
 
 net.ipv4.tcp_congestion_control = bbr
 net.ipv4.tcp_mem = 32768 49152 65536
