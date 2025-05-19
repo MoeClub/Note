@@ -3,7 +3,7 @@
 Bandwidth="${1:-1000}"   # MB
 RTT="${2:-60}"           # ms
 BDP=`echo "${Bandwidth} ${RTT}" |awk '{printf "%d", ($1 * $2) * ((1024 * 1024) / (1000 * 8))}' 2>/dev/null`
-[ -n "$BDP" ] && [ "$BDP" -gt 0 ] || exit 1
+[ -n "$BDP" ] && [ "$BDP" -gt 0 ] || BDP="7864320"
 
 cat >/etc/sysctl.conf<<EOF
 # This line below add by user.
