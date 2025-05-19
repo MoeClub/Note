@@ -35,13 +35,13 @@ vm.swappiness = 10
 net.netfilter.nf_conntrack_max = 1048576
 
 net.core.default_qdisc = fq_codel
-net.core.somaxconn = 1048576
-net.core.optmem_max = 7864320
-net.core.rmem_max = 7864320
-net.core.wmem_max = 7864320
-net.core.rmem_default = 7864320
-net.core.wmem_default = 7864320
 net.core.netdev_max_backlog = 1048576
+net.core.somaxconn = 1048576
+net.core.optmem_max = ${BDP}
+net.core.rmem_max = ${BDP}
+net.core.wmem_max = ${BDP}
+net.core.rmem_default = ${BDP}
+net.core.wmem_default = ${BDP}
 net.core.busy_poll = 0
 net.core.busy_read = 0
 
@@ -51,8 +51,8 @@ net.ipv4.udp_rmem_min = 8192
 net.ipv4.udp_wmem_min = 8192
 net.ipv4.udp_mem = 32768 49152 65536
 net.ipv4.tcp_mem = 32768 49152 65536
-net.ipv4.tcp_rmem = 4096 87380 7864320
-net.ipv4.tcp_wmem = 4096 16384 7864320
+net.ipv4.tcp_rmem = 4096 87380 ${BDP}
+net.ipv4.tcp_wmem = 4096 16384 ${BDP}
 net.ipv4.tcp_syncookies = 1
 net.ipv4.tcp_syn_retries = 3
 net.ipv4.tcp_synack_retries = 2
@@ -87,3 +87,7 @@ net.ipv6.conf.all.proxy_ndp = 1
 
 
 EOF
+sysctl -p
+sysctl -w net.ipv4.route.flush=1
+
+
