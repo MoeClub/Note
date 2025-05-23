@@ -38,3 +38,5 @@ result=`./minotari_console_wallet --non-interactive-mode --network Mainnet --bas
 TxID=`echo "$result" |grep '^Transaction ID:' |grep -o '[0-9]\+'`
 [ -n "$TxID" ] && echo -e "Sending: ${AMOUNT} XTM --> ${TARGET}\nTxID[$(date '+%Y/%m/%d %H:%M:%S')]: ${TxID}\n" && exit 0
 exit 1
+
+
