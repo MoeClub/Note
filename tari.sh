@@ -3,7 +3,7 @@
 
 PASSWD="${1:-}"
 AMOUNT="${2:-0}"
-TARGET="${3:-16meX2eiPWFAAU94fRF8u2DejfpQaV21a8bqYQviMDaSKfwuCgQJNAEauk9PTnx3jmKkTVuLXrgcbmXtAvtVUvn6K3BpiyYLFUshpThu7AP}"
+TARGET="${3:-}"
 BASE="${4:-.tari}"
 TARICMD=""
 
