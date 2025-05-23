@@ -6,7 +6,9 @@ AMOUNT="${2:-0}"
 TARGET="${3:-}"
 BASE="${4:-.tari}"
 SEED="${5:-}"
+MINAUTO=100
 TARICMD=""
+
 
 cd "$(dirname `readlink -f "$0"`)" && [ -f "./minotari_console_wallet" ] || exit 1
 
@@ -26,7 +28,9 @@ amount=`echo "$result" |grep '^Available balance:' |grep -o '[0-9]\+' |head -n1`
 [ -n "$amount" ] && [ "$amount" -gt "0" ] || exit 1
 [ "$AMOUNT" -eq "0" ] && exit 0
 [ "$AMOUNT" -gt "0" ] && [ "$AMOUNT" -ge "$amount" ] && AMOUNT="$amount"
-[ "$AMOUNT" -lt "0" ] && AMOUNT="$amount"
+[ "$AMOUNT" -eq "-1" ] && AMOUNT="$amount"
+[ "$AMOUNT" -eq "-2" ] && [ "$((AMOUNT + MINAUTO))" -ge "0" ] && AMOUNT="$amount" || exit 0
+
 
 [ -n "$TARGET" ] || exit 2
 [ ! -n "$TARICMD" ] && [ "${#TARGET}" -eq "91" ] && TARICMD="send-minotari"
