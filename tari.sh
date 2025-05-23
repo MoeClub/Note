@@ -3,17 +3,16 @@
 
 PASSWD="${1:-}"
 AMOUNT="${2:-0}"
-TARGET="${3:-}"
+TARGET="${3:-16meX2eiPWFAAU94fRF8u2DejfpQaV21a8bqYQviMDaSKfwuCgQJNAEauk9PTnx3jmKkTVuLXrgcbmXtAvtVUvn6K3BpiyYLFUshpThu7AP}"
 BASE="${4:-.tari}"
-SEED="${5:-}"
 MINAUTO=100
 TARICMD=""
 
 
 cd "$(dirname `readlink -f "$0"`)" && [ -f "./minotari_console_wallet" ] || exit 1
 
-[ -n "${SEED}" ] && {
-  ./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --recovery --seed-words "${SEED}" 2>/dev/null
+[ "$AMOUNT" == "seed" ] && {
+  ./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --recovery --seed-words "${TARGET}"
   exit "$?"
 }
 
@@ -40,5 +39,3 @@ result=`./minotari_console_wallet --non-interactive-mode --network Mainnet --bas
 TxID=`echo "$result" |grep '^Transaction ID:' |grep -o '[0-9]\+'`
 [ -n "$TxID" ] && echo -e "Sending: ${AMOUNT} XTM --> ${TARGET}\nTxID[$(date '+%Y/%m/%d %H:%M:%S')]: ${TxID}\n" && exit 0
 exit 1
-
-
