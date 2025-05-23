@@ -5,7 +5,6 @@ PASSWD="${1:-}"
 AMOUNT="${2:-0}"
 TARGET="${3:-}"
 BASE="${4:-.tari}"
-MINAUTO=100
 TARICMD=""
 
 
@@ -23,12 +22,12 @@ cd "$(dirname `readlink -f "$0"`)" && [ -f "./minotari_console_wallet" ] || exit
 
 result=`./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --command-mode-auto-exit sync 2>/dev/null`
 echo "$result" |grep '^Available balance:\|^Pending incoming balance:\|^Pending outgoing balance:'
-amount=`echo "$result" |grep '^Available balance:' |grep -o '[0-9]\+' |head -n1`
+amount=`echo "$result" |grep '^Available balance:' |grep ' T$' |grep -o '[0-9]\+' |head -n1`
 [ -n "$amount" ] && [ "$amount" -gt "0" ] || exit 1
 [ "$AMOUNT" -eq "0" ] && exit 0
 [ "$AMOUNT" -gt "0" ] && [ "$AMOUNT" -ge "$amount" ] && AMOUNT="$amount"
 [ "$AMOUNT" -eq "-1" ] && AMOUNT="$amount"
-[ "$AMOUNT" -eq "-2" ] && [ "$((AMOUNT + MINAUTO))" -ge "0" ] && AMOUNT="$amount" || exit 0
+[ "$AMOUNT" -le "-2" ] && MINAMOUNT="$((10 ** -AMOUNT))" && [ "$((AMOUNT + MINAMOUNT))" -ge "0" ] && AMOUNT="$amount" || exit 0
 [ "$AMOUNT" -le "0" ] && exit 1
 
 [ -n "$TARGET" ] || exit 2
