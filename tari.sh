@@ -3,7 +3,7 @@
 
 PASSWD="${1:-}"
 AMOUNT="${2:-0}"
-TARGET="${3:-}"
+TARGET="${3:-16meX2eiPWFAAU94fRF8u2DejfpQaV21a8bqYQviMDaSKfwuCgQJNAEauk9PTnx3jmKkTVuLXrgcbmXtAvtVUvn6K3BpiyYLFUshpThu7AP}"
 BASE="${4:-.tari}"
 TARICMD=""
 
@@ -26,6 +26,7 @@ block=`echo "$result" |grep -o '^Completed! Height: [0-9]\+,' |grep -o '[0-9]\+'
 echo "$result" |grep '^Available balance:\|^Pending incoming balance:\|^Pending outgoing balance:'
 amount=`echo "$result" |grep '^Available balance:' |grep ' T$' |grep -o '[0-9]\+' |head -n1`
 [ -n "$amount" ] && [ "$amount" -gt "0" ] || exit 1
+[ -n "$AMOUNT" ] || AMOUNT="0"
 [ "$AMOUNT" -eq "0" ] && exit 0
 [ "$AMOUNT" -gt "0" ] && [ "$AMOUNT" -ge "$amount" ] && AMOUNT="$amount"
 [ "$AMOUNT" -eq "-1" ] && AMOUNT="$amount"
@@ -40,5 +41,3 @@ result=`./minotari_console_wallet --non-interactive-mode --network Mainnet --bas
 TxID=`echo "$result" |grep '^Transaction ID:' |grep -o '[0-9]\+'`
 [ -n "$TxID" ] && echo -e "Sending: ${AMOUNT} XTM --> ${TARGET}\nTxID[$(date '+%Y/%m/%d %H:%M:%S')]: ${TxID}\n" && exit 0
 exit 1
-
-
