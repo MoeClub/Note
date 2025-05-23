@@ -21,6 +21,8 @@ cd "$(dirname `readlink -f "$0"`)" && [ -f "./minotari_console_wallet" ] || exit
 }
 
 result=`./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --command-mode-auto-exit sync 2>/dev/null`
+block=`echo "$result" |grep -o '^Completed! Height: [0-9]\+,' |grep -o '[0-9]\+'`
+echo "Block Height: ${block}"
 echo "$result" |grep '^Available balance:\|^Pending incoming balance:\|^Pending outgoing balance:'
 amount=`echo "$result" |grep '^Available balance:' |grep ' T$' |grep -o '[0-9]\+' |head -n1`
 [ -n "$amount" ] && [ "$amount" -gt "0" ] || exit 1
