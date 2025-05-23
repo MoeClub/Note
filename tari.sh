@@ -30,7 +30,7 @@ amount=`echo "$result" |grep '^Available balance:' |grep -o '[0-9]\+' |head -n1`
 [ "$AMOUNT" -gt "0" ] && [ "$AMOUNT" -ge "$amount" ] && AMOUNT="$amount"
 [ "$AMOUNT" -eq "-1" ] && AMOUNT="$amount"
 [ "$AMOUNT" -eq "-2" ] && [ "$((AMOUNT + MINAUTO))" -ge "0" ] && AMOUNT="$amount" || exit 0
-
+[ "$AMOUNT" -le "0" ] && exit 1
 
 [ -n "$TARGET" ] || exit 2
 [ ! -n "$TARICMD" ] && [ "${#TARGET}" -eq "91" ] && TARICMD="send-minotari"
