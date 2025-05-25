@@ -8,7 +8,31 @@ BASE="${4:-.tari}"
 TARICMD=""
 
 
-cd "$(dirname `readlink -f "$0"`)" && [ -f "./minotari_console_wallet" ] || exit 1
+cd "$(dirname `readlink -f "$0"`)" || exit 1
+[ -d "${BASE}/mainnet/libtor" ] && rm -rf "${BASE}/mainnet/libtor"
+[ -d "${BASE}/mainnet/log" ] && rm -rf "${BASE}/mainnet/log"
+[ -d "${BASE}/mainnet/peer_db" ] && rm -rf "${BASE}/mainnet/peer_db"
+
+
+[ "$AMOUNT" == "update" ] && {
+  command -v wget >/dev/null || exit 1
+  command -v 7z >/dev/null || exit 1
+  case `uname -m` in aarch64|arm64) ARCH="arm64";; x86_64|amd64) ARCH="x86_64";; *) exit 1;; esac;
+  result=`wget --no-check-certificate -qO- "https://api.github.com/repos/tari-project/tari/releases/latest"`
+  url=`echo "$result" |grep '"browser_download_url":' |grep 'tari_suite-[0-9]' |grep 'linux' |grep -v '.sha256' |grep "${ARCH}" |cut -d'"' -f4`
+  [ -n "$url" ] || exit 1
+  tmpPath=`mktemp -d`
+  trap "rm -rf ${tmpPath}" EXIT
+  wget --no-check-certificate -qO "${tmpPath}/tari_suite.zip" "${url}" || exit 1
+  7z e "${tmpPath}/tari_suite.zip" "minotari_console_wallet" -o"${tmpPath}"
+  [ -f "${tmpPath}/minotari_console_wallet" ] || exit 1
+  cp -rf "${tmpPath}/minotari_console_wallet" "./minotari_console_wallet" || exit 1
+  chmod 777 "./minotari_console_wallet"
+  exit "$?"
+}
+
+
+[ -f "./minotari_console_wallet" ] || exit 1
 
 [ "$AMOUNT" == "seed" ] && {
   ./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --recovery --seed-words "${TARGET}"
@@ -41,3 +65,5 @@ result=`./minotari_console_wallet --non-interactive-mode --network Mainnet --bas
 TxID=`echo "$result" |grep '^Transaction ID:' |grep -o '[0-9]\+'`
 [ -n "$TxID" ] && echo -e "Sending: ${AMOUNT} XTM --> ${TARGET}\nTxID[$(date '+%Y/%m/%d %H:%M:%S')]: ${TxID}\n" && exit 0
 exit 1
+
+
