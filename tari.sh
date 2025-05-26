@@ -37,8 +37,8 @@ cd "$(dirname `readlink -f "$0"`)" || exit 1
 [ "$AMOUNT" == "new" ] && {
   walletFile="./wallet_seed.txt"
   ./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" --seed-words-file-name "${walletFile}" --password "${PASSWD}"
-  [ $? -eq 0 ] || exit 1
-  ./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --recovery --seed-words `cat "${walletFile}"`
+  [ $? -eq 0 ] && rm -rf "${BASE}" || exit 1
+  ./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --recovery --seed-words "$(cat ${walletFile})"
   exit "$?"
 }
 
