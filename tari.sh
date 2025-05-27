@@ -35,13 +35,11 @@ cd "$(dirname `readlink -f "$0"`)" || exit 1
 [ -f "./minotari_console_wallet" ] || exit 1
 
 [ "$AMOUNT" == "new" ] && {
-  walletFile=`mktemp`; trap "rm -rf ${walletFile}" EXIT
+  walletFile="./wallet_seed.txt"
   ./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" --seed-words-file-name "${walletFile}" --password "${PASSWD}"
   [ $? -eq 0 ] || exit 1
-  rm -rf "${BASE}"
-  TARGET=`cat "${walletFile}"`
-  ./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --recovery --seed-words "${TARGET}"
-  [ $? -eq 0 ] && echo -e "\n\n\033[32mNew Wallet Seed\033[0m: \033[31m${TARGET}\033[0m\n\n\n" && exit 0 || exit 1
+  ./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --recovery --seed-words `cat "${walletFile}"`
+  exit "$?"
 }
 
 [ "$AMOUNT" == "seed" ] && {
@@ -64,8 +62,9 @@ amount=`echo "$result" |grep '^Available balance:' |grep ' T$' |grep -o '[0-9]\+
 [ "$AMOUNT" -eq "0" ] && exit 0
 [ "$AMOUNT" -gt "0" ] && [ "$AMOUNT" -ge "$amount" ] && AMOUNT="$amount"
 [ "$AMOUNT" -eq "-1" ] && AMOUNT="$amount"
-[ "$AMOUNT" -le "-2" ] && MINAMOUNT="$((10 ** -AMOUNT))" && [ "$((AMOUNT + MINAMOUNT))" -ge "0" ] && AMOUNT="$amount" || exit 0
+[ "$AMOUNT" -le "-2" ] && MINAMOUNT="$((10 ** -AMOUNT))" && [ "$((amount - MINAMOUNT))" -ge "0" ] && AMOUNT="$amount" || exit 0
 [ "$AMOUNT" -le "0" ] && exit 1
+
 
 [ -n "$TARGET" ] || exit 2
 [ ! -n "$TARICMD" ] && [ "${#TARGET}" -eq "91" ] && TARICMD="send-minotari"
