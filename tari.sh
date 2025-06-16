@@ -6,6 +6,7 @@ AMOUNT="${2:-0}"
 TARGET="${3:-}"
 BASE="${4:-.tari}"
 TARICMD=""
+TXSEND=""
 
 
 cd "$(dirname `readlink -f "$0"`)" || exit 1
@@ -18,7 +19,9 @@ cd "$(dirname `readlink -f "$0"`)" || exit 1
   command -v wget >/dev/null || exit 1
   command -v 7z >/dev/null || exit 1
   case `uname -m` in aarch64|arm64) ARCH="arm64";; x86_64|amd64) ARCH="x86_64";; *) exit 1;; esac;
-  result=`wget --no-check-certificate -qO- "https://api.github.com/repos/tari-project/tari/releases/latest"`
+  version=`echo "$TARGET" |grep -o '^v[0-9]\+\.[0-9]\+\.[0-9]\+'`
+  [ -n "$version" ] && version="tags/${version}" || version="latest"
+  result=`wget --no-check-certificate -qO- "https://api.github.com/repos/tari-project/tari/releases/${version}"`
   url=`echo "$result" |grep '"browser_download_url":' |grep 'tari_suite-[0-9]' |grep 'linux' |grep -v '.sha256' |grep "${ARCH}" |cut -d'"' -f4`
   [ -n "$url" ] || exit 1
   tmpPath=`mktemp -d`
@@ -56,7 +59,8 @@ cd "$(dirname `readlink -f "$0"`)" || exit 1
 
 result=`./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --command-mode-auto-exit sync 2>/dev/null`
 block=`echo "$result" |grep -o '^Completed! Height: [0-9]\+,' |grep -o '[0-9]\+'`
-[ -n "$block" ] && [ "$block" -gt "0"  ] && echo "Sync Block Height: ${block}"
+echo "[$(date '+%Y/%m/%d %H:%M:%S')]"
+[ -n "$block" ] && [ "$block" -gt "0"  ] && echo "Sync Block: ${block}"
 echo "$result" |grep '^Available balance:\|^Pending incoming balance:\|^Pending outgoing balance:'
 amount=`echo "$result" |grep '^Available balance:' |grep ' T$' |grep -o '[0-9]\+' |head -n1`
 [ -n "$amount" ] && [ "$amount" -gt "0" ] || exit 1
@@ -74,7 +78,10 @@ amount=`echo "$result" |grep '^Available balance:' |grep ' T$' |grep -o '[0-9]\+
 [ -n "$TARICMD" ] || exit 2
 result=`./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --command-mode-auto-exit "${TARICMD}" "${AMOUNT}T" "${TARGET}" 2>&1`
 TxID=`echo "$result" |grep '^Transaction ID:' |grep -o '[0-9]\+'`
-[ -n "$TxID" ] && echo -e "Sending: ${AMOUNT} XTM --> ${TARGET}\nTxID[$(date '+%Y/%m/%d %H:%M:%S')]: ${TxID}\n" && exit 0
+[ -n "$TxID" ] && {
+  echo -e "Sending: ${AMOUNT} XTM --> ${TARGET}\nTxID[$(date '+%Y/%m/%d %H:%M:%S')]: ${TxID}\n"
+  [ -n "${TXSEND}" ] && echo "[$(date '+%Y/%m/%d %H:%M:%S')] ${block} ${TxID} ${AMOUNT} ${TARGET}" >>"${TXSEND}"
+  exit 0
+}
 exit 1
-
 
