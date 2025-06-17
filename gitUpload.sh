@@ -6,7 +6,8 @@ branch="${3:-main}"
 clone="${4:-}"
 
 [ -n "${target}" ] && [ -n "${repo}" ] || exit 1
-tmp="$(mktemp -d)"
+# [ -e "${target}" ] || exit 1
+tmp=$(mktemp -d)
 trap "rm -rf ${tmp}" EXIT
 cd "$tmp"
 
@@ -27,19 +28,20 @@ git init
 git checkout -b "$branch"
 git remote rm origin >/dev/null 2>&1
 git remote rm clone >/dev/null 2>&1
-[ "$repo" != "-" ] && {
-  git remote add origin "$repo"
-  git pull origin "$branch"
-}
-[ -n "$clone" ] && {
-  git remote add clone "$clone"
-  createRepo "$clone"
-}
+git remote add origin "$repo"
 
-
+git pull origin "$branch"
 [ -n "${target}" ] && [ "${target}" != "-" ] && {
   [ -f "${target}" ] && cp -rf "${target}" "${tmp}"
   [ -d "${target}" ] && cp -rf "${target%/}/." "${tmp}"
+}
+
+[ -n "$clone" ] && {
+  rm -rf .git
+  git init
+  git checkout -b "$branch"
+  git remote add clone "$clone"
+  createRepo "$clone"
 }
 
 [ "${target}" == "-" ] && read -p "Pause <${tmp}> ..."
