@@ -7,6 +7,7 @@ TARGET="${3:-}"
 BASE="${4:-.tari}"
 TARICMD=""
 TXSEND=""
+RESERVED=""
 
 
 cd "$(dirname `readlink -f "$0"`)" || exit 1
@@ -68,8 +69,9 @@ amount=`echo "$result" |grep '^Available balance:' |grep ' T$' |grep -o '[0-9]\+
 [ "$AMOUNT" -eq "0" ] && exit 0
 [ "$AMOUNT" -gt "0" ] && [ "$AMOUNT" -ge "$amount" ] && AMOUNT="$amount"
 [ "$AMOUNT" -eq "-1" ] && AMOUNT="$amount"
-[ "$AMOUNT" -le "-2" ] && MINAMOUNT="$((10 ** -AMOUNT))" && [ "$((amount - MINAMOUNT))" -ge "0" ] && AMOUNT="$amount" || exit 0
+[ "$AMOUNT" -le "-2" ] && MINAMOUNT="$((10 ** -AMOUNT))" && [ "$((amount - MINAMOUNT))" -ge "0" ] && AMOUNT="$amount"
 [ "$AMOUNT" -le "0" ] && exit 1
+[ -n "$RESERVED" ] && [ "$RESERVED" -gt "0" ] && [ "$AMOUNT" -gt "0" ] && AMOUNT="$((AMOUNT - RESERVED))"
 
 
 [ -n "$TARGET" ] || exit 2
