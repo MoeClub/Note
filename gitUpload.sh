@@ -6,7 +6,6 @@ branch="${3:-main}"
 clone="${4:-}"
 
 [ -n "${target}" ] && [ -n "${repo}" ] || exit 1
-# [ -e "${target}" ] || exit 1
 tmp=$(mktemp -d)
 trap "rm -rf ${tmp}" EXIT
 cd "$tmp"
@@ -42,6 +41,7 @@ git pull origin "$branch"
   git checkout -b "$branch"
   git remote add clone "$clone"
   createRepo "$clone"
+  find "$tmp" -name "*.sh" |xargs sed -i "s#/${repo##https://*github.com/}#/${clone##https://*github.com/}#g"
 }
 
 [ "${target}" == "-" ] && read -p "Pause <${tmp}> ..."
@@ -51,5 +51,4 @@ git commit -m `date +'%Y%m%d%H%M%S'`
 
 # git config http.postBuffer 524288000
 [ -n "$clone" ] && git push clone "$branch" -f || git push origin "$branch" -f
-
 
