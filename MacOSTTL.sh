@@ -4,7 +4,6 @@
 
 targetService="com.sysctl.ttl.plist"
 
-
 cat <<EOF> "/tmp/$targetService"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -21,7 +20,7 @@ cat <<EOF> "/tmp/$targetService"
     <array>
         <string>sysctl</string>
         <string>-w</string>
-        <string>net.inet.ip.ttl=128</string>
+        <string>net.inet.ip.ttl=96</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
