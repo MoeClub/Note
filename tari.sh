@@ -70,12 +70,12 @@ amount=`echo "$result" |grep '^Available balance:' |grep ' T$' |grep -o '[0-9]\+
 [ "$AMOUNT" -gt "0" ] && [ "$AMOUNT" -ge "$amount" ] && AMOUNT="$amount"
 [ "$AMOUNT" -eq "-1" ] && AMOUNT="$amount"
 [ "$AMOUNT" -le "-2" ] && MINAMOUNT="$((10 ** -AMOUNT))" && [ "$((amount - MINAMOUNT))" -ge "0" ] && AMOUNT="$amount"
-[ "$AMOUNT" -le "0" ] && exit 1
 [ -n "$RESERVED" ] && [ "$RESERVED" -gt "0" ] && [ "$AMOUNT" -gt "0" ] && AMOUNT="$((AMOUNT - RESERVED))"
+[ "$AMOUNT" -le "0" ] && exit 1
 
 
 [ -n "$TARGET" ] || exit 2
-[ ! -n "$TARICMD" ] && [ "${#TARGET}" -eq "91" ] && TARICMD="send-minotari"
+[ ! -n "$TARICMD" ] && [ "${#TARGET}" -eq "91" ] && TARICMD="send-one-sided-to-stealth-address"
 [ ! -n "$TARICMD" ] && [ "${#TARGET}" -gt "91" ] && TARICMD="send-one-sided-to-stealth-address"
 [ -n "$TARICMD" ] || exit 2
 result=`./minotari_console_wallet --non-interactive-mode --network Mainnet --base-path "${BASE}" -p base_node.mining_enabled=false -p wallet.grpc_enabled=false --password "${PASSWD}" --command-mode-auto-exit "${TARICMD}" "${AMOUNT}T" "${TARGET}" 2>&1`
