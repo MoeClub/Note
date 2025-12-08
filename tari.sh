@@ -17,13 +17,13 @@ cd "$(dirname `readlink -f "$0"`)" || exit 1
 
 
 [ "$AMOUNT" == "update" ] && {
-  command -v wget >/dev/null || exit 1
-  command -v 7z >/dev/null || exit 1
+  command -v wget >/dev/null || { apt -qqy update && apt install -qqy wget || exit 1; }
+  command -v 7z >/dev/null || { apt -qqy update && apt install -qqy p7zip-full || exit 1; }
   case `uname -m` in aarch64|arm64) ARCH="arm64";; x86_64|amd64) ARCH="x86_64";; *) exit 1;; esac;
   version=`echo "$TARGET" |grep -o '^v[0-9]\+\.[0-9]\+\.[0-9]\+'`
   [ -n "$version" ] && version="tags/${version}" || version="latest"
   result=`wget --no-check-certificate -qO- "https://api.github.com/repos/tari-project/tari/releases/${version}"`
-  url=`echo "$result" |grep '"browser_download_url":' |grep 'tari_suite-[0-9]' |grep 'linux' |grep -v '.sha256' |grep "${ARCH}" |cut -d'"' -f4`
+  url=`echo "$result" |grep '"browser_download_url":' |grep 'tari_suite-[0-9]' |grep 'mainnet' |grep 'linux' |grep -v '.sha256' |grep "${ARCH}" |cut -d'"' -f4`
   [ -n "$url" ] || exit 1
   tmpPath=`mktemp -d`
   trap "rm -rf ${tmpPath}" EXIT
