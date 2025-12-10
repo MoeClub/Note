@@ -65,6 +65,7 @@ echo "[$(date '+%Y/%m/%d %H:%M:%S')]"
 echo "$result" |grep '^Available balance:\|^Pending incoming balance:\|^Pending outgoing balance:'
 amount=`echo "$result" |grep '^Available balance:' |grep ' T$' |grep -o '[0-9]\+' |head -n1`
 [ -n "$amount" ] && [ "$amount" -gt "0" ] || exit 1
+AMOUNT=`echo "$AMOUNT" |grep -o '[0-9\.\-]*' |head -n1`
 [ -n "$AMOUNT" ] || AMOUNT="0"
 [ "$AMOUNT" -eq "0" ] && exit 0
 [ "$AMOUNT" -gt "0" ] && [ "$AMOUNT" -ge "$amount" ] && AMOUNT="$amount"
