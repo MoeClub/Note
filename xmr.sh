@@ -1,11 +1,12 @@
 #!/bin/bash
 ## https://github.com/monero-project/monero-gui/releases
 
+
 PASSWD="${1:-}"
 AMOUNT="${2:-0}"
 TARGET="${3:-}"
 BASE="${4:-Wallet}"
-DECIMAL="1000"
+DECIMAL="100"
 TXSEND=""
 RPC="xmr.support:18081"
 
@@ -14,8 +15,8 @@ cd "$(dirname `readlink -f "$0"`)" || exit 1
 
 
 [ "$AMOUNT" == "update" ] && {
-  command -v wget >/dev/null || { apt -qqy update && apt install -qqy wget || exit 1; }
-  command -v bzip2 >/dev/null || { apt -qqy update && apt install -qqy bzip2 || exit 1; }
+  command -v wget >/dev/null || { apt -qqy update && apt install -qqy wget >/dev/null 2>&1 || exit 1; }
+  command -v bzip2 >/dev/null || { apt -qqy update && apt install -qqy bzip2 >/dev/null 2>&1 || exit 1; }
   case `uname -m` in aarch64|arm64) ARCH="arm8";; x86_64|amd64) ARCH="64";; *) exit 1;; esac;
   [ -n "$ARCH" ] || exit 1
   url="https://downloads.getmonero.org/cli/linux${ARCH}"
@@ -41,36 +42,52 @@ cd "$(dirname `readlink -f "$0"`)" || exit 1
 }
 
 [ "$AMOUNT" == "seed" ] && {
-  ./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --generate-new-wallet "${BASE}" --password "${PASSWD}" --command="refresh" --restore-deterministic-wallet --electrum-seed="${TARGET}"
+  echo -e "\n" |./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --generate-new-wallet "${BASE}" --password "${PASSWD}" --command="refresh" --restore-deterministic-wallet --electrum-seed="${TARGET}"
   exit "$?"
 }
 
-result=`./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="refresh" 2>/dev/null`
-amount=`echo "$result" |grep '^Balance:' |cut -d',' -f1 |cut -d':' -f2 |sed 's/[[:space:]]//g' |head -n1`
-unlock=`echo "$result" |grep '^Balance:' |cut -d',' -f2 |cut -d':' -f2 |sed 's/[[:space:]]//g' |head -n1`
-echo -e "Balance:: ${amount}\nUnlock: ${unlock}"
+[ -f "./${BASE}" ] && [ -f "./${BASE}.keys" ] || exit 1
+[ -n "${DECIMAL}" ] && [ "${DECIMAL}" -ge "1" ] || DECIMAL=1
+
+
+result=`echo -e "${PASSWD}" | ./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="refresh" 2>/dev/null`
+amount=`echo "$result" |grep '^Balance:' |cut -d',' -f2 |cut -d':' -f2 |grep -o '[0-9\.]*' |head -n1`
+balance=`echo "$result" |grep '^Balance:' |cut -d',' -f1 |cut -d':' -f2 |grep -o '[0-9\.]*' |head -n1`
+echo -e "[$(date '+%Y/%m/%d %H:%M:%S')]\nBalance: ${balance}\nUnlock: ${amount}"
 [ -n "$amount" ] || exit 1
 [ -n "$TARGET" ] || exit 2
+AMOUNT=`echo "$AMOUNT" |grep -o '[0-9\.\-]*' |head -n1`
 [ -n "$AMOUNT" ] || AMOUNT="0"
+[ "$AMOUNT" == "0" ] && exit 0
 _amount=`echo "${amount} ${DECIMAL}" |awk '{printf "%d", $1 * $2}'`
-_AMOUNT=`echo "${AMOUNT} ${DECIMAL}" |awk '{printf "%d", $1 * $2}'`
 [ "$_amount" -eq "0" ] && exit 0
+_AMOUNT=`echo "${AMOUNT} ${DECIMAL}" |awk '{printf "%d", $1 * $2}'`
 [ "$_AMOUNT" -eq "0" ] && exit 0
 
-[ "$AMOUNT" -eq "-1" ] && {
-  result=`echo "${PASSWD}" |./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="sweep_all" "${TARGET}"`
+
+[ "$AMOUNT" == "-1" ] && {
+  txResult=`echo -e "${PASSWD}\nY" |./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="sweep_all" "${TARGET}"`
+  realAMOUNT=`echo "$txResult" |grep -o '^Sweeping [0-9\.]*' |grep -o '[0-9\.]*' |head -n1`
 }
 
-[ "$_AMOUNT" -gt "0" ] && [ "$_AMOUNT" -le "$_amount" ] && {
+[ "$AMOUNT" == "-2" ] && {
+  realAMOUNT=`echo "${_amount} ${DECIMAL}" |awk '{printf "%.03f", $1 / $2}'`
+  txResult=`echo -e "${PASSWD}\nY" |./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="transfer" "${TARGET}" "${realAMOUNT}"`
+}
+
+[ "$_AMOUNT" -gt "0" ] && {
+  [ "$_AMOUNT" -le "$_amount" ] || exit 1
   realAMOUNT=`echo "${_AMOUNT} ${DECIMAL}" |awk '{printf "%.03f", $1 / $2}'`
-  result=`echo "${PASSWD}" |./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="transfer" "${TARGET}" "${realAMOUNT}"`
+  txResult=`echo -e "${PASSWD}\nY" |./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="transfer" "${TARGET}" "${realAMOUNT}"`
 }
 
-echo "$result"
-TxID=`echo "$result" |grep '^Transaction ID:' |grep -o '[0-9]\+'`
-[ -n "$TxID" ] && {
-  echo -e "Sending: ${AMOUNT} XTM --> ${TARGET}\nTxID[$(date '+%Y/%m/%d %H:%M:%S')]: ${TxID}\n"
-  [ -n "${TXSEND}" ] && echo "[$(date '+%Y/%m/%d %H:%M:%S')] ${block} ${TxID} ${AMOUNT} ${TARGET}" >>"${TXSEND}"
+[ -n "$txResult" ] && {
+  ErrorMSG=`echo "$txResult" |grep -o 'Error:.*'`
+  [ -n "$ErrorMSG" ] && echo "$ErrorMSG" && exit 1
+  TxID=`echo "$txResult" |grep -o 'Transaction successfully.*' |grep -o '<[0-9a-z]*>' |head -n1 |grep -o '[0-9a-z]*'`
+  [ -n "$TxID" ] || exit 1
+  echo -e "Sending: ${realAMOUNT} XMR --> ${TARGET}\nTxID[$(date '+%Y/%m/%d %H:%M:%S')]: ${TxID}\n"
+  [ -n "${TXSEND}" ] && echo "[$(date '+%Y/%m/%d %H:%M:%S')] ${TxID} ${realAMOUNT} ${TARGET}" >>"${TXSEND}"
   exit 0
 }
 exit 1
