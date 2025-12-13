@@ -55,11 +55,13 @@ cd "$(dirname `readlink -f "$0"`)" || exit 1
 }
 
 [ "$AMOUNT" == "out" ] && {
+  echo -e "${PASSWD}" | ./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="refresh" >/dev/null 2>&1
   echo -e "${PASSWD}" | ./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="show_transfers" "out"  2>/dev/null |grep '[[:space:]]\+[0-9]\+[[:space:]]\+out[[:space:]]\+' |tail -n5
   exit $?
 }
 
 [ "$AMOUNT" == "in" ] && {
+  echo -e "${PASSWD}" | ./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="refresh" >/dev/null 2>&1
   echo -e "${PASSWD}" | ./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --wallet-file "${BASE}" --password "${PASSWD}" --command="show_transfers" "in"  2>/dev/null |grep '[[:space:]]\+[0-9]\+[[:space:]]\+in[[:space:]]\+' |tail -n5
   exit $?
 }
