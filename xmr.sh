@@ -8,7 +8,7 @@ TARGET="${3:-}"
 BASE="${4:-Wallet}"
 DECIMAL="100"
 TXSEND=""
-RPC="xmr.support:18081"
+RPCList=("xmr.support:18081" "nodes.hashvault.pro:18081" "moneronode.org:18081" "node1.xmr-tw.org:18081")
 
 
 cd "$(dirname `readlink -f "$0"`)" || exit 1
@@ -32,6 +32,22 @@ cd "$(dirname `readlink -f "$0"`)" || exit 1
 
 
 [ -f "./monero-wallet-cli" ] || exit 1
+
+CheckRPC() {
+  s="${1:-}"
+  [ -n "$s" ] || return 2
+  h=`echo "$s" |cut -d':' -f1 |sed 's/[[:space:]]//g'`
+  p=`echo "$s" |cut -d':' -f2 |sed 's/[[:space:]]//g'`
+  [ -n "$h" ] && [ -n "$p" ] || return 2
+  nc -w 1 -z "$h" "$p" >/dev/nyll 2>&1
+  return $?
+}
+
+RPC=""
+for rpc in ${RPCList[@]}; do 
+  CheckRPC "$rpc" && RPC="$rpc" && break
+done
+[ -n "$RPC" ] || exit 1
 
 [ "$AMOUNT" == "new" ] && {
   result=`./monero-wallet-cli --mnemonic-language English --use-english-language-names --trusted-daemon --allow-mismatched-daemon-version --daemon-address "${RPC}" --log-file /dev/null --generate-new-wallet "${BASE}" --password "${PASSWD}" --command="status"`
