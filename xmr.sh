@@ -39,7 +39,7 @@ CheckRPC() {
   h=`echo "$s" |cut -d':' -f1 |sed 's/[[:space:]]//g'`
   p=`echo "$s" |cut -d':' -f2 |sed 's/[[:space:]]//g'`
   [ -n "$h" ] && [ -n "$p" ] || return 2
-  nc -w 1 -z "$h" "$p" >/dev/nyll 2>&1
+  nc -w 1 -z "$h" "$p" >/dev/null 2>&1
   return $?
 }
 
