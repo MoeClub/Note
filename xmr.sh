@@ -8,7 +8,7 @@ TARGET="${3:-}"
 BASE="${4:-Wallet}"
 DECIMAL="100"
 TXSEND=""
-RPCList=("xmr.support:18081" "nodes.hashvault.pro:18081" "moneronode.org:18081" "node1.xmr-tw.org:18081")
+RPCServer=("xmr.support:18081" "nodes.hashvault.pro:18081" "moneronode.org:18081" "node1.xmr-tw.org:18081")
 
 
 cd "$(dirname `readlink -f "$0"`)" || exit 1
@@ -44,7 +44,7 @@ CheckRPC() {
 }
 
 RPC=""
-for rpc in ${RPCList[@]}; do CheckRPC "$rpc" && RPC="$rpc" && break; done
+for rpc in ${RPCServer[@]}; do CheckRPC "$rpc" && RPC="$rpc" && break; done
 [ -n "$RPC" ] || exit 1
 
 [ "$AMOUNT" == "new" ] && {
