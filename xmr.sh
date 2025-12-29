@@ -44,9 +44,7 @@ CheckRPC() {
 }
 
 RPC=""
-for rpc in ${RPCList[@]}; do 
-  CheckRPC "$rpc" && RPC="$rpc" && break
-done
+for rpc in ${RPCList[@]}; do CheckRPC "$rpc" && RPC="$rpc" && break; done
 [ -n "$RPC" ] || exit 1
 
 [ "$AMOUNT" == "new" ] && {
