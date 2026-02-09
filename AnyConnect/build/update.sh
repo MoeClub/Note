@@ -1,22 +1,25 @@
-#!/bin/bash
+#!/bin/sh
 
-wget -O /tmp/ocserv.deb https://github.com/MoeClub/Note/raw/master/AnyConnect/build/ocserv.deb
-[ "$?" -eq 0 ] || exit 1
+ver="${1:-1.4.0}"
 
+case `uname -m` in aarch64|arm64) arch="aarch64";; x86_64|amd64) arch="x86_64";; *) arch="";; esac
+[ -n "$arch" ] || exit 1
 
-mv /etc/dnsmasq.d /etc/dnsmasq.d.bak
-mv /etc/ocserv /etc/ocserv.bak
-mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
+tarfile=`mktemp -u`
+wget -qO- "${tarfile}" "https://github.com/MoeClub/Note/raw/refs/heads/master/AnyConnect/build/ocserv_${arch}_v${ver}.tar.gz"
+[ $? -eq 0 ] || exit 1
 
-dpkg -i /tmp/ocserv.deb
-rm -rf /etc/ocserv /etc/dnsmasq.d /etc/dnsmasq.conf
+tar --overwrite -xvf "${tarfile}" -C /
 
-mv /etc/dnsmasq.d.bak /etc/dnsmasq.d
-mv /etc/ocserv.bak /etc/ocserv
-mv /etc/dnsmasq.conf.bak /etc/dnsmasq.conf
+rm -rf /usr/bin/occtl
+rm -rf /usr/bin/ocpasswd
+rm -rf /usr/bin/ocserv-fw
+rm -rf /usr/libexec/ocserv-fw
+rm -rf /usr/sbin/ocserv
+rm -rf /usr/sbin/ocserv-worker
+rm -rf /usr/share/man/man8/occtl.8
+rm -rf /usr/share/man/man8/ocpasswd.8
+rm -rf /usr/share/man/man8/ocserv.8
 
-systemctl restart dnsmasq
 systemctl restart ocserv
-
 ocserv -v
-dnsmasq -v
