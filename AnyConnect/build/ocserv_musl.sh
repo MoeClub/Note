@@ -7,16 +7,17 @@
 apk update
 apk add wget xz sed openssl gcc autoconf automake make linux-headers gperf musl-dev gnutls-dev gnutls-utils
 
+
 VERSION_OCSERV="1.4.0"
-VERSION_GNUTLS="3.8.11"
+VERSION_DNSMASQ="2.92"
 VERSION_LIBEV="4.33"
-VERSION_LIBSECCOMP="2.5.6"
 VERSION_LZ4="1.10.0"
+VERSION_LIBSECCOMP="2.5.6"
+VERSION_GNUTLS="3.8.11"
 VERSION_GMP="6.3.0"
-VERSION_NETTLE="3.7.3"
-VERSION_IDN2="2.3.4"
-VERSION_UNISTRING="1.1"
-VERSION_DNSMASQ="2.90"
+VERSION_NETTLE="3.10.2"
+VERSION_IDN2="2.3.8"
+VERSION_UNISTRING="1.3"
 
 
 TRAPRM=""
@@ -207,6 +208,7 @@ function build_gnutls(){
 		--enable-openssl-compatibility \
 		--with-included-libtasn1 \
 		--without-p11-kit --without-tpm --without-tpm2 \
+		--without-zlib --without-brotli --without-zstd \
 		--disable-doc --disable-tools --disable-cxx --disable-tests --disable-nls --disable-libdane --disable-gost --disable-guile --disable-rpath
 	[ $? -eq 0 ] || return 1
 	make -j`nproc`
@@ -306,6 +308,7 @@ function build_ocserv(){
 	[ $? -eq 0 ] || return 1
 	cd "${TARGET}"
 	FILE="/mnt/ocserv_${ARCH}_v${VERSION_OCSERV}.tar.gz"
+	[ -f "${FILE}" ] && rm -rf "${FILE}"
 	tar -czvf "${FILE}" ./
 	[ $? -eq 0 ] || return 1
 	TARPKG="${TARPKG} ${FILE}"
@@ -325,6 +328,7 @@ function build_dnsmasq(){
 	[ $? -eq 0 ] || return 1
 	cd "${TARGET}"
 	FILE="/mnt/dnsmasq_${ARCH}_v${VERSION_DNSMASQ}.tar.gz"
+	[ -f "${FILE}" ] && rm -rf "${FILE}"
 	tar -czvf "${FILE}" ./
 	[ $? -eq 0 ] || return 1
 	TARPKG="${TARPKG} ${FILE}"
@@ -334,12 +338,6 @@ function build_dnsmasq(){
 function build() {
 	ARCH="${1:-x86_64}"
 	build_dnsmasq "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_libev "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_libseccomp "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_lz4 "${ARCH}"
 	[ $? -eq 0 ] || return 1
 	build_gmp "${ARCH}"
 	[ $? -eq 0 ] || return 1
@@ -353,6 +351,12 @@ function build() {
 	[ $? -eq 0 ] || return 1
 	build_readline "${ARCH}"
 	[ $? -eq 0 ] || return 1
+	build_libev "${ARCH}"
+	[ $? -eq 0 ] || return 1
+	build_libseccomp "${ARCH}"
+	[ $? -eq 0 ] || return 1
+	build_lz4 "${ARCH}"
+	[ $? -eq 0 ] || return 1
 	build_ocserv "${ARCH}"
 	[ $? -eq 0 ] || return 1
 }
@@ -361,7 +365,7 @@ function build() {
 for arch in "x86_64" "aarch64"; do
 	eval `musl_cross "${arch}"`
 	build "${arch}"
-	[ "$?" -eq 0 ] || exit 1
+	[ "$?" -ne 0 ] && exit 1
 done
 
 for tarpkg in `echo "${TARPKG# }"`; do
