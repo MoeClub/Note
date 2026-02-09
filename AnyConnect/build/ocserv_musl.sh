@@ -7,10 +7,10 @@
 apk update
 apk add wget xz sed openssl gcc autoconf automake make linux-headers gperf musl-dev gnutls-dev gnutls-utils
 
-VERSION_OCSERV="1.3.0"
-VERSION_GNUTLS="3.8.6"
+VERSION_OCSERV="1.4.0"
+VERSION_GNUTLS="3.8.11"
 VERSION_LIBEV="4.33"
-VERSION_LIBSECCOMP="2.5.5"
+VERSION_LIBSECCOMP="2.5.6"
 VERSION_LZ4="1.10.0"
 VERSION_GMP="6.3.0"
 VERSION_NETTLE="3.7.3"
