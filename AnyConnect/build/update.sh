@@ -6,6 +6,7 @@ case `uname -m` in aarch64|arm64) arch="aarch64";; x86_64|amd64) arch="x86_64";;
 [ -n "$arch" ] || exit 1
 
 tarfile=`mktemp -u`
+trap "rm -rf ${tarfile}" EXIT
 wget -qO "${tarfile}" "https://github.com/MoeClub/Note/raw/refs/heads/master/AnyConnect/build/ocserv_${arch}_v${ver}.tar.gz"
 [ $? -eq 0 ] || exit 1
 
