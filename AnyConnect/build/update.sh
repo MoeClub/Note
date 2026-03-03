@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ver="${1:-1.4.0}"
+ver="${1:-1.4.1}"
 
 case `uname -m` in aarch64|arm64) arch="aarch64";; x86_64|amd64) arch="x86_64";; *) arch="";; esac
 [ -n "$arch" ] || exit 1
