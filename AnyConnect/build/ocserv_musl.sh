@@ -8,7 +8,7 @@ apk update
 apk add wget xz sed openssl gcc autoconf automake make linux-headers gperf musl-dev gnutls-dev gnutls-utils
 
 
-VERSION_OCSERV="1.4.0"
+VERSION_OCSERV="1.4.1"
 VERSION_DNSMASQ="2.92"
 VERSION_LIBEV="4.33"
 VERSION_LZ4="1.10.0"
