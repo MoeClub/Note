@@ -19,6 +19,7 @@ defaults write com.apple.loginwindow SHOWOTHERUSERS_MANAGED -bool FALSE
 
 ### Clear system update red notice
 ```
+sudo defaults write com.apple.SoftwareUpdate MajorOSUserNotificationDate -date "2099-01-01 00:00:00 +0000"
 defaults delete com.apple.systempreferences AttentionPrefBundleIDs && killall Dock
 ```
 
