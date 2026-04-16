@@ -291,10 +291,12 @@ function build_ocserv(){
 	LIBLZ4_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
 	LIBLZ4_LIBS="-L/usr/local/cross/${ARCH}/lib -llz4" \
 	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0 --static" \
-	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -s -w -static" \
+	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -s -w -static -no-pie" \
 	./configure \
 		--host="${ARCH}-linux-musl" \
 		--prefix="/usr" \
+		--enable-static \
+		--disable-shared \
 		--with-local-talloc \
 		--disable-dependency-tracking \
 		--without-root-tests --without-docker-tests --without-nuttcp-tests --without-tun-tests \
