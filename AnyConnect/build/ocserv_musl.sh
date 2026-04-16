@@ -264,8 +264,8 @@ function build_readline(){
 	[ $? -eq 0 ] || return 1
 	make install
 	[ $? -eq 0 ] || return 1
-	[ -f "/usr/local/cross/${ARCH}/include/readline/readline.h" ] && ln -sf "/usr/local/cross/${ARCH}/include/readline/readline.h" "/usr/local/cross/${ARCH}/include/readline/readline.h"
-	[ -f "/usr/local/cross/${ARCH}/include/readline/history.h" ] && ln -sf "/usr/local/cross/${ARCH}/include/readline/history.h" "/usr/local/cross/${ARCH}/include/readline/history.h"
+	[ -f "/usr/local/cross/${ARCH}/include/readline/readline.h" ] && ln -sf "/usr/local/cross/${ARCH}/include/readline/readline.h" "/usr/local/cross/${ARCH}/include/readline.h"
+	[ -f "/usr/local/cross/${ARCH}/include/readline/history.h" ] && ln -sf "/usr/local/cross/${ARCH}/include/readline/history.h" "/usr/local/cross/${ARCH}/include/history.h"
 	return $?
 }
 
