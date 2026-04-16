@@ -285,7 +285,7 @@ function build_ocserv(){
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
 	LIBREADLINE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	LIBREADLINE_LIBS="-L/usr/local/cross/${ARCH}/lib -lreadline" \
+	LIBREADLINE_LIBS="-L/usr/local/cross/${ARCH}/lib -lreadline -ltinfow -lncursesw" \
 	LIBSECCOMP_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
 	LIBSECCOMP_LIBS="-L/usr/local/cross/${ARCH}/lib -lseccomp" \
 	LIBNETTLE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
