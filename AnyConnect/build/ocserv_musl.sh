@@ -295,8 +295,7 @@ function build_ocserv(){
 	./configure \
 		--host="${ARCH}-linux-musl" \
 		--prefix="/usr" \
-		--enable-static \
-		--disable-shared \
+		--disable-seccomp \
 		--with-local-talloc \
 		--disable-dependency-tracking \
 		--without-root-tests --without-docker-tests --without-nuttcp-tests --without-tun-tests \
