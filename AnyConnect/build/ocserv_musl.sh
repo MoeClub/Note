@@ -221,8 +221,8 @@ function build_gnutls(){
 # ncurses
 function build_ncurses(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/ncurses/ncurses-${VERSION_NCURSES}.tar.gz" |tar -xJ -C "$TMP" --strip-components=1
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; # trap "rm -rf ${TRAPRM# }" EXIT
+	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/ncurses/ncurses-${VERSION_NCURSES}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
@@ -231,12 +231,15 @@ function build_ncurses(){
 	./configure \
 		--host="${ARCH}-linux-musl" \
 		--prefix="/usr/local/cross/${ARCH}" \
-		--without-ada --without-cxx --without-cxx-binding --without-debug --without-manpages --without-progs --without-tests 
-		--disable-shared --enable-static --enable-widec --with-normal --with-termlib --with-ticlib
+		--without-ada --without-cxx --without-cxx-binding --without-debug --without-manpages --without-progs --without-tests \
+		--with-normal --with-termlib --with-ticlib \
+		--disable-shared --enable-static --enable-widec
 	[ $? -eq 0 ] || return 1
 	make -j`nproc`
 	[ $? -eq 0 ] || return 1
-	make install
+	make install.libs
+	[ $? -eq 0 ] || return 1
+	make install.includes
 	return $?
 }
 
@@ -244,7 +247,7 @@ function build_ncurses(){
 function build_readline(){
 	ARCH="${1:-x86_64}"
 	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/readline/readline-${VERSION_READLINE}.tar.gz" |tar -xJ -C "$TMP" --strip-components=1
+	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/readline/readline-${VERSION_READLINE}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
@@ -336,6 +339,10 @@ function build() {
 	ARCH="${1:-x86_64}"
 	build_dnsmasq "${ARCH}"
 	[ $? -eq 0 ] || return 1
+	build_ncurses "${ARCH}"
+	[ $? -eq 0 ] || return 1
+	build_readline "${ARCH}"
+	[ $? -eq 0 ] || return 1
 	build_gmp "${ARCH}"
 	[ $? -eq 0 ] || return 1
 	build_nettle "${ARCH}"
@@ -345,8 +352,6 @@ function build() {
 	build_unistring "${ARCH}"
 	[ $? -eq 0 ] || return 1
 	build_gnutls "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_readline "${ARCH}"
 	[ $? -eq 0 ] || return 1
 	build_libev "${ARCH}"
 	[ $? -eq 0 ] || return 1
