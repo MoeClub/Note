@@ -275,6 +275,7 @@ function build_ocserv(){
 	sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
 	sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN) {\n\t\t\tcstp_cork(ws);\n\t\t\tret = (cstp_printf(ws, "HTTP\/1.%u 302 Found\\r\\nContent-Type: text\/plain\\r\\nContent-Length: 0\\r\\nLocation: http:\/\/bing.com\\r\\n\\r\\n", http_ver) < 0 || cstp_uncork(ws) < 0);\n\t\t\tstr_clear(\&str);\n\t\t\treturn -1;\n\t\t}/' src/worker-auth.c
 	sed -i 's/c_isspace/isspace/' src/occtl/occtl.c
+	sed -i 's/umask(066);/umask(007);/' src/sec-mod.c
 	#sed -i 's/case AC_PKT_DPD_OUT:/&\n\t\tws->last_nc_msg = now;/' src/worker-auth.c
 	
 	sed -i '/AC_CHECK_FILE/d' ./configure.ac
@@ -284,6 +285,8 @@ function build_ocserv(){
 	CXX="${ARCH}-linux-musl-g++" \
 	LIBREADLINE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
 	LIBREADLINE_LIBS="-L/usr/local/cross/${ARCH}/lib -lreadline" \
+	LIBSECCOMP_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
+	LIBSECCOMP_LIBS="-L/usr/local/cross/${ARCH}/lib -lseccomp" \
 	LIBNETTLE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
 	LIBNETTLE_LIBS="-L/usr/local/cross/${ARCH}/lib -lgmp -lnettle -lhogweed" \
 	LIBGNUTLS_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
@@ -295,7 +298,6 @@ function build_ocserv(){
 	./configure \
 		--host="${ARCH}-linux-musl" \
 		--prefix="/usr" \
-		--disable-seccomp \
 		--with-local-talloc \
 		--disable-dependency-tracking \
 		--without-root-tests --without-docker-tests --without-nuttcp-tests --without-tun-tests \
