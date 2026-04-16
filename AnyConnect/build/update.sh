@@ -1,6 +1,6 @@
 #!/bin/sh
 
-oVer="${1:-1.41}"
+oVer="${1:-0}"
 dVer="${2:-0}"
 
 case `uname -m` in aarch64|arm64) arch="aarch64";; x86_64|amd64) arch="x86_64";; *) arch="";; esac
@@ -29,7 +29,7 @@ if [ "$oVer" != "0" ]; then
 
   systemctl restart ocserv
   ocserv -v
-if
+fi
 
 if [ "$dVer" != "0" ]; then
   dnsmasqFile="dnsmasq_${arch}_v${dVer}.tar.gz"
@@ -47,6 +47,5 @@ if [ "$dVer" != "0" ]; then
 
   systemctl restart dnsmasq
   dnsmasq -v
-if
-
+fi
 
