@@ -1,6 +1,6 @@
 #!/bin/sh
 
-oVer="${1:-0}"
+oVer="${1:-1.41}"
 dVer="${2:-0}"
 
 case `uname -m` in aarch64|arm64) arch="aarch64";; x86_64|amd64) arch="x86_64";; *) arch="";; esac
