@@ -263,6 +263,9 @@ function build_readline(){
 	make -j`nproc`
 	[ $? -eq 0 ] || return 1
 	make install
+	[ $? -eq 0 ] || return 1
+	[ -f "/usr/local/cross/${ARCH}/include/readline/readline.h" ] && ln -sf "/usr/local/cross/${ARCH}/include/readline/readline.h" "/usr/local/cross/${ARCH}/include/readline/readline.h"
+	[ -f "/usr/local/cross/${ARCH}/include/readline/history.h" ] && ln -sf "/usr/local/cross/${ARCH}/include/readline/history.h" "/usr/local/cross/${ARCH}/include/readline/history.h"
 	return $?
 }
 
