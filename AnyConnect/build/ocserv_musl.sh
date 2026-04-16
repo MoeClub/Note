@@ -5,7 +5,7 @@
 # docker exec -it alpine /bin/sh
 
 apk update
-apk add wget xz sed openssl gcc autoconf automake make linux-headers gperf musl-dev gnutls-dev gnutls-utils
+apk add wget xz sed openssl gcc coreutils patch autoconf automake make linux-headers gperf musl-dev gnutls-dev gnutls-utils
 
 
 VERSION_OCSERV="1.4.1"
@@ -318,17 +318,16 @@ function build_ocserv(){
 function build_dnsmasq(){
 	ARCH="${1:-x86_64}"
 	[ -n "$VERSION_DNSMASQ" ] || return 0
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "http://www.thekelleys.org.uk/dnsmasq/dnsmasq-${VERSION_DNSMASQ}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
-	make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -s" -j`nproc`
-	[ $? -eq 0 ] || return 1
-	TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
-	make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" PREFIX="/usr" DESTDIR="${TARGET}" install
+	# wget --no-check-certificate -qO- "http://lib.mk/dnsmasq/${VERSION_DNSMASQ}.patch" 2>/dev/null |patch -p1 -N
+	make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -no-pie -s" PREFIX="/usr" DESTDIR="${TARGET}" -j`nproc` install
 	[ $? -eq 0 ] || return 1
 	cd "${TARGET}"
 	FILE="/mnt/dnsmasq_${ARCH}_v${VERSION_DNSMASQ}.tar.gz"
 	[ -f "${FILE}" ] && rm -rf "${FILE}"
+	file ./usr/sbin/dnsmasq
 	tar -czvf "${FILE}" ./
 	[ $? -eq 0 ] || return 1
 	TARPKG="${TARPKG} ${FILE}"
