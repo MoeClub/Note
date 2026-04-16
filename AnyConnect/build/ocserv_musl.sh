@@ -27,9 +27,9 @@ function musl_cross(){
 	muslHome="/usr/local/musl"
 	mkdir -p "${muslHome}"
 	for arch in "$@" ; do
-		wget --no-check-certificate -qO- "http://musl.cc/${arch}-linux-musl-cross.tgz" |tar -zx --overwrite -C "${muslHome}";
+      PATH="$PATH" which "${arch}-linux-musl-gcc" >/dev/null 2>&1 || wget --no-check-certificate -qO- "http://musl.cc/${arch}-linux-musl-cross.tgz" |tar -zx --overwrite -C "${muslHome}";
 	done
-	
+
 	newPATH=""
 	for path in `echo "$PATH" |sed 's/:/\n/g'`; do echo "$path" |grep -q "musl" || newPATH="${newPATH}:${path}"; done
 	for path in `find "${muslHome}" -name "*-cc" 2>/dev/null`; do newPATH="${newPATH}:$(dirname ${path})"; done
