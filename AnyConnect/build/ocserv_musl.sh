@@ -5,7 +5,7 @@
 # docker exec -it alpine /bin/sh
 
 apk update
-apk add wget xz sed openssl gcc coreutils patch autoconf automake make linux-headers gperf musl-dev gnutls-dev gnutls-utils
+apk add wget xz sed openssl gcc coreutils patch file autoconf automake make linux-headers gperf musl-dev gnutls-dev gnutls-utils
 
 
 VERSION_OCSERV="1.4.1"
@@ -47,7 +47,7 @@ function build_libev(){
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0 --static" \
+	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 	./configure \
 		--host="${ARCH}-linux-musl" \
@@ -69,7 +69,7 @@ function build_libseccomp(){
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0 --static" \
+	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 	./configure \
 		--host="${ARCH}-linux-musl" \
@@ -104,12 +104,13 @@ function build_gmp(){
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0 --static" \
+	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 	./configure \
-		--host="${ARCH}-linux-musl" \
-		--prefix="/usr/local/cross/${ARCH}" \
-		--enable-static=yes --enable-shared=no
+	--host="${ARCH}-linux-musl" \
+	--prefix="/usr/local/cross/${ARCH}" \
+	--enable-static=yes \
+	--enable-shared=no
 	[ $? -eq 0 ] || return 1
 	make -j`nproc`
 	[ $? -eq 0 ] || return 1
@@ -125,7 +126,7 @@ function build_nettle(){
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0 --static" \
+	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 	./configure \
 		--host="${ARCH}-linux-musl" \
@@ -133,8 +134,6 @@ function build_nettle(){
 		--enable-x86-aesni --enable-arm-neon --enable-static \
 		--disable-documentation --disable-shared --disable-rpath
 	[ $? -eq 0 ] || return 1
-	[ -f ./cnd-memcpy.c ] && sed -i 's/cnd-copy\.c /&cnd-memcpy.c /' Makefile
-	[ -f ./shake256.c ] && sed -i 's/cnd-copy\.c /&shake256.c /' Makefile
 	make -j`nproc`
 	[ $? -eq 0 ] || return 1
 	make install
@@ -149,7 +148,7 @@ function build_idn2(){
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0 --static" \
+	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 	./configure \
 		--host="${ARCH}-linux-musl" \
@@ -170,7 +169,7 @@ function build_unistring(){
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0 --static" \
+	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 	./configure \
 		--host="${ARCH}-linux-musl" \
@@ -199,7 +198,7 @@ function build_gnutls(){
 	GMP_LIBS="-L/usr/local/cross/${ARCH}/lib -lgmp" \
 	LIBIDN2_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
 	LIBIDN2_LIBS="-L/usr/local/cross/${ARCH}/lib -lidn2" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0 --static" \
+	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 	./configure \
 	    --host="${ARCH}-linux-musl" \
@@ -220,9 +219,7 @@ function build_gnutls(){
 # readline
 function build_readline(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	# readline.h
-	cat >"$TMP/readline.h" <<EOF
+	cat >"/usr/local/cross/${ARCH}/include/readline.h" <<EOF
 #ifndef READLINE_H
 #define READLINE_H
 typedef char *rl_compentry_func_t(const char*, int);
@@ -237,35 +234,13 @@ void add_history(const char *string);
 int rl_reset_terminal(const char *terminal_name);
 char **rl_completion_matches(const char *text, void *entry_func);
 void rl_redisplay(void);
+
+# define c_isspace(x) isspace(x)
+
 #endif
 EOF
-	# readline.c
-	"${ARCH}-linux-musl-gcc" -xc - -c -o "$TMP/readline.o" -ffloat-store -O0 <<EOF
-#include <stdio.h>
-#include <string.h>
-char *rl_line_buffer = NULL;
-char *rl_readline_name;
-void *rl_attempted_completion_function;
-void *rl_completion_entry_function;
-int rl_completion_query_items;
-char *readline(const char *prompt) {
-	char buf[512], *ptr;
-	if(prompt) printf("%s", prompt);
-	fflush(stdout); ptr = buf;
-	while((*ptr = getchar()) != '\n') ptr++;
-	*ptr = '\0';
-	return strdup(buf);
 }
-void add_history(const char *string) {}
-int rl_reset_terminal(const char *terminal_name) {return 0;}
-char **rl_completion_matches(const char *text, void *entry_func) {return NULL;}
-void rl_redisplay(void) {}
-EOF
-	# readline.a
-	ar rcs "$TMP/libreadline.a" "$TMP/readline.o"
-	install "$TMP/libreadline.a" "/usr/local/cross/${ARCH}/lib"
-	install "$TMP/readline.h" "/usr/local/cross/${ARCH}/include"
-}
+
 
 function build_ocserv(){
 	ARCH="${1:-x86_64}"
@@ -275,7 +250,6 @@ function build_ocserv(){
 	sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
 	sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN) {\n\t\t\tcstp_cork(ws);\n\t\t\tret = (cstp_printf(ws, "HTTP\/1.%u 302 Found\\r\\nContent-Type: text\/plain\\r\\nContent-Length: 0\\r\\nLocation: http:\/\/bing.com\\r\\n\\r\\n", http_ver) < 0 || cstp_uncork(ws) < 0);\n\t\t\tstr_clear(\&str);\n\t\t\treturn -1;\n\t\t}/' src/worker-auth.c
 	sed -i 's/c_isspace/isspace/' src/occtl/occtl.c
-	sed -i 's/umask(066);/umask(022);/' src/sec-mod.c
 	#sed -i 's/case AC_PKT_DPD_OUT:/&\n\t\tws->last_nc_msg = now;/' src/worker-auth.c
 	
 	sed -i '/AC_CHECK_FILE/d' ./configure.ac
@@ -293,7 +267,7 @@ function build_ocserv(){
 	LIBGNUTLS_LIBS="-L/usr/local/cross/${ARCH}/lib -lgnutls -lgmp -lnettle -lhogweed -lidn2 -lunistring" \
 	LIBLZ4_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
 	LIBLZ4_LIBS="-L/usr/local/cross/${ARCH}/lib -llz4" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0 --static" \
+	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -s -w -static -no-pie" \
 	./configure \
 		--host="${ARCH}-linux-musl" \
