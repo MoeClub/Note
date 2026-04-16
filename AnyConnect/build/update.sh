@@ -9,6 +9,7 @@ tarfile=`mktemp -u`
 trap "rm -rf ${tarfile}" EXIT
 wget -qO "${tarfile}" "https://github.com/MoeClub/Note/raw/refs/heads/master/AnyConnect/build/ocserv_${arch}_v${ver}.tar.gz"
 [ $? -eq 0 ] || exit 1
+md5sum "${tarfile}"
 
 rm -rf /usr/bin/occtl
 rm -rf /usr/bin/ocpasswd
