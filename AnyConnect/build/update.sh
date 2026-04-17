@@ -40,7 +40,7 @@ if [ "$dVer" != "0" ]; then
     [ $? -eq 0 ] || exit 1
   }
 
-  rm -rf /usr/sbin/ocserv
+  rm -rf /usr/sbin/dnsmasq
   rm -rf /usr/share/man/man8/dnsmasq.8
 
   tar --overwrite -xvf "${dnsmasqFile}" -C /
