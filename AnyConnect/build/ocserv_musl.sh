@@ -17,9 +17,6 @@ VERSION_GNUTLS="3.8.11"
 VERSION_GMP="6.3.0"
 VERSION_NETTLE="3.10.2"
 VERSION_IDN2="2.3.8"
-VERSION_UNISTRING="1.3"
-VERSION_NCURSES="6.5"
-VERSION_READLINE="8.2"
 
 
 TRAPRM=""
@@ -37,8 +34,9 @@ function musl_cross(){
 	for path in `find "${muslHome}" -name "*-cc" 2>/dev/null`; do newPATH="${newPATH}:$(dirname ${path})"; done
 	newPATH="${newPATH#:}"
 
-	[ -f "$HOME/.bashrc" ] && sed -i '/^PATH=/d' "$HOME/.bashrc"
-	echo "PATH=${newPATH}" |tee -a "$HOME/.bashrc"
+	[ -f "$HOME/.bashrc" ] && sed -i "s/^PATH=.*/PATH=${newPATH////\\/}/" "$HOME/.bashrc"
+	[ -f "/etc/profile" ] && sed -i "s/^export PATH=.*/export PATH=${newPATH////\\/}/" "/etc/profile"
+	echo "export PATH=${newPATH}"
 }
 
 # libev
@@ -163,27 +161,6 @@ function build_idn2(){
 	return $?
 }
 
-# unistring
-function build_unistring(){
-	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/libunistring/libunistring-${VERSION_UNISTRING}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
-	cd "$TMP"
-	CC="${ARCH}-linux-musl-gcc" \
-	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
-	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
-	./configure \
-		--host="${ARCH}-linux-musl" \
-		--prefix="/usr/local/cross/${ARCH}" \
-		--enable-static=yes --enable-shared=no --disable-rpath
-	[ $? -eq 0 ] || return 1
-	make -j`nproc`
-	[ $? -eq 0 ] || return 1
-	make install
-	return $?
-}
-
 # gnutls
 function build_gnutls(){
 	ARCH="${1:-x86_64}"
@@ -203,70 +180,110 @@ function build_gnutls(){
 	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 	./configure \
-	    --host="${ARCH}-linux-musl" \
-		--prefix="/usr/local/cross/${ARCH}" \
-		--enable-static=yes --enable-shared=no \
-		--enable-openssl-compatibility \
-		--with-included-libtasn1 \
-		--without-p11-kit --without-tpm --without-tpm2 \
-		--without-zlib --without-brotli --without-zstd \
-		--disable-doc --disable-tools --disable-cxx --disable-tests --disable-nls --disable-libdane --disable-gost --disable-guile --disable-rpath
+--host="${ARCH}-linux-musl" \
+--prefix="/usr/local/cross/${ARCH}" \
+--enable-static=yes --enable-shared=no \
+--with-included-libtasn1 --with-included-unistring \
+--without-brotli --without-zstd --without-zlib \
+--without-p11-kit --without-tpm --without-tpm2 \
+--disable-doc --disable-tools --disable-cxx --disable-tests --disable-nls --disable-libdane --disable-gost --disable-guile --disable-rpath
 	[ $? -eq 0 ] || return 1
 	make -j`nproc`
 	[ $? -eq 0 ] || return 1
 	make install
-	return $?
-}
-
-# ncurses
-function build_ncurses(){
-	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; # trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/ncurses/ncurses-${VERSION_NCURSES}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
-	cd "$TMP"
-	CC="${ARCH}-linux-musl-gcc" \
-	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
-	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
-	./configure \
-		--host="${ARCH}-linux-musl" \
-		--prefix="/usr/local/cross/${ARCH}" \
-		--without-ada --without-cxx --without-cxx-binding --without-debug --without-manpages --without-progs --without-tests \
-		--with-normal --with-termlib --with-ticlib \
-		--disable-shared --enable-static --enable-widec
-	[ $? -eq 0 ] || return 1
-	make -j`nproc`
-	[ $? -eq 0 ] || return 1
-	make install.libs
-	[ $? -eq 0 ] || return 1
-	make install.includes
 	return $?
 }
 
 # readline
 function build_readline(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/readline/readline-${VERSION_READLINE}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
-	cd "$TMP"
-	CC="${ARCH}-linux-musl-gcc" \
-	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
-	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
-	TERMCAP_LIB="-L${CROSS_HOME}/${ARCH}/lib -ltinfow -lncursesw" \
-	./configure \
-		--host="${ARCH}-linux-musl" \
-		--prefix="/usr/local/cross/${ARCH}" \
-		--enable-static \
-		--disable-shared
-	[ $? -eq 0 ] || return 1
-	make -j`nproc`
-	[ $? -eq 0 ] || return 1
-	make install
-	[ $? -eq 0 ] || return 1
-	[ -f "/usr/local/cross/${ARCH}/include/readline/readline.h" ] && ln -sf "/usr/local/cross/${ARCH}/include/readline/readline.h" "/usr/local/cross/${ARCH}/include/readline.h"
-	[ -f "/usr/local/cross/${ARCH}/include/readline/history.h" ] && ln -sf "/usr/local/cross/${ARCH}/include/readline/history.h" "/usr/local/cross/${ARCH}/include/history.h"
-	return $?
+	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; # trap "rm -rf ${TRAPRM# }" EXIT
+  # history.h
+	cat >"$TMP/history.h" <<EOF
+#ifndef HISTORY_H
+#define HISTORY_H
+void add_history(const char *string);
+#endif
+EOF
+	# readline.h
+	cat >"$TMP/readline.h" <<EOF
+#ifndef READLINE_H
+#define READLINE_H
+#include <ctype.h>
+typedef char *rl_compentry_func_t(const char*, int);
+typedef char **rl_completion_func_t(const char*, int, int);
+extern char *rl_line_buffer;
+extern char *rl_readline_name;
+extern rl_completion_func_t *rl_attempted_completion_function;
+extern rl_compentry_func_t *rl_completion_entry_function;
+extern int rl_completion_query_items;
+char *readline(const char *prompt);
+void add_history(const char *string);
+void rl_reset_line_state(void);
+int rl_reset_terminal(const char *terminal_name);
+int rl_replace_line(const char *text, int clear_undo);
+int rl_crlf(void);
+int rl_clear_signals(void);
+char **rl_completion_matches(const char *text, void *entry_func);
+void rl_reset_screen_size(void);
+void rl_redisplay(void);
+#ifndef whitespace
+# define whitespace(c) isspace((unsigned char)(c))
+#endif
+
+#ifndef c_isspace
+# define c_isspace(c) isspace((unsigned char)(c))
+#endif
+#endif
+EOF
+	# readline.c
+	"${ARCH}-linux-musl-gcc" -xc - -c -o "$TMP/readline.o" -ffloat-store -O0 <<EOF
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+char *rl_line_buffer = NULL;
+char *rl_readline_name;
+void *rl_attempted_completion_function;
+void *rl_completion_entry_function;
+int rl_completion_query_items;
+int rl_replace_line(const char *text, int clear_undo) {
+	(void)clear_undo;
+	free(rl_line_buffer);
+	rl_line_buffer = strdup(text ? text : "");
+	return 0;
+}
+char *readline(const char *prompt) {
+	char buf[512], *ptr;
+	if(prompt) printf("%s", prompt);
+	fflush(stdout); ptr = buf;
+	while((*ptr = getchar()) != '\n') ptr++;
+	*ptr = '\0';
+
+	free(rl_line_buffer);
+	rl_line_buffer = strdup(buf);
+	return strdup(buf);
+}
+int rl_crlf(void) {
+	putchar('\n');
+	fflush(stdout);
+	return 0;
+}
+void add_history(const char *string) {}
+int rl_reset_terminal(const char *terminal_name) {return 0;}
+int rl_clear_signals(void) {return 0;}
+char **rl_completion_matches(const char *text, void *entry_func) {return NULL;}
+void rl_redisplay(void) {}
+void rl_reset_line_state(void) {}
+void rl_reset_screen_size(void) {}
+EOF
+	# readline.a
+	ar rcs "$TMP/libreadline.a" "$TMP/readline.o"
+  install -d "/usr/local/cross/${ARCH}/lib" "/usr/local/cross/${ARCH}/include/readline"
+	install "$TMP/libreadline.a" "/usr/local/cross/${ARCH}/lib"
+	install "$TMP/readline.h" "/usr/local/cross/${ARCH}/include"
+	install "$TMP/readline.h" "/usr/local/cross/${ARCH}/include/readline"
+	install "$TMP/history.h" "/usr/local/cross/${ARCH}/include"
+	install "$TMP/history.h" "/usr/local/cross/${ARCH}/include/readline"
 }
 
 function build_ocserv(){
@@ -276,33 +293,31 @@ function build_ocserv(){
 	cd "$TMP"
 	sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
 	sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN) {\n\t\t\tcstp_cork(ws);\n\t\t\tret = (cstp_printf(ws, "HTTP\/1.%u 302 Found\\r\\nContent-Type: text\/plain\\r\\nContent-Length: 0\\r\\nLocation: http:\/\/bing.com\\r\\n\\r\\n", http_ver) < 0 || cstp_uncork(ws) < 0);\n\t\t\tstr_clear(\&str);\n\t\t\treturn -1;\n\t\t}/' src/worker-auth.c
-	sed -i 's/c_isspace/isspace/' src/occtl/occtl.c
-	#sed -i 's/case AC_PKT_DPD_OUT:/&\n\t\tws->last_nc_msg = now;/' src/worker-auth.c
-	
-	sed -i '/AC_CHECK_FILE/d' ./configure.ac
+
 	autoreconf -fvi
 	
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
 	LIBREADLINE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	LIBREADLINE_LIBS="-L/usr/local/cross/${ARCH}/lib -lreadline -ltinfow -lncursesw" \
+	LIBREADLINE_LIBS="-L/usr/local/cross/${ARCH}/lib -lreadline" \
 	LIBSECCOMP_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
 	LIBSECCOMP_LIBS="-L/usr/local/cross/${ARCH}/lib -lseccomp" \
 	LIBNETTLE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
 	LIBNETTLE_LIBS="-L/usr/local/cross/${ARCH}/lib -lgmp -lnettle -lhogweed" \
 	LIBGNUTLS_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	LIBGNUTLS_LIBS="-L/usr/local/cross/${ARCH}/lib -lgnutls -lgmp -lnettle -lhogweed -lidn2 -lunistring" \
+	LIBGNUTLS_LIBS="-L/usr/local/cross/${ARCH}/lib -lgnutls -lgmp -lnettle -lhogweed -lidn2" \
 	LIBLZ4_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
 	LIBLZ4_LIBS="-L/usr/local/cross/${ARCH}/lib -llz4" \
 	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -s -w -static -no-pie" \
+  ac_cv_file__proc_self_exe=yes \
 	./configure \
-		--host="${ARCH}-linux-musl" \
-		--prefix="/usr" \
-		--with-local-talloc \
-		--disable-dependency-tracking \
-		--without-root-tests --without-docker-tests --without-nuttcp-tests --without-tun-tests \
-		--without-protobuf --without-maxmind --without-geoip --without-liboath --without-pam --without-radius --without-utmp --without-http-parser --without-gssapi --without-pcl-lib --without-libwrap
+--host="${ARCH}-linux-musl" \
+--prefix="/usr" \
+--with-local-talloc \
+--disable-dependency-tracking \
+--without-root-tests --without-docker-tests --without-nuttcp-tests --without-tun-tests \
+--without-protobuf --without-maxmind --without-geoip --without-liboath --without-pam --without-radius --without-utmp --without-http-parser --without-gssapi --without-pcl-lib --without-libwrap --without-llhttp
 
 	[ $? -eq 0 ] || return 1
 	make -j`nproc`
@@ -342,19 +357,15 @@ function build() {
 	ARCH="${1:-x86_64}"
 	build_dnsmasq "${ARCH}"
 	[ $? -eq 0 ] || return 1
-	build_ncurses "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_readline "${ARCH}"
-	[ $? -eq 0 ] || return 1
 	build_gmp "${ARCH}"
 	[ $? -eq 0 ] || return 1
 	build_nettle "${ARCH}"
 	[ $? -eq 0 ] || return 1
 	build_idn2 "${ARCH}"
 	[ $? -eq 0 ] || return 1
-	build_unistring "${ARCH}"
-	[ $? -eq 0 ] || return 1
 	build_gnutls "${ARCH}"
+	[ $? -eq 0 ] || return 1
+	build_readline "${ARCH}"
 	[ $? -eq 0 ] || return 1
 	build_libev "${ARCH}"
 	[ $? -eq 0 ] || return 1
