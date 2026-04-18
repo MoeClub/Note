@@ -27,7 +27,6 @@ if [ "$oVer" != "0" ]; then
 
   tar --overwrite -xvf "${ocservFile}" -C /
 
-  systemctl restart ocserv
   ocserv -v
 fi
 
@@ -45,7 +44,6 @@ if [ "$dVer" != "0" ]; then
 
   tar --overwrite -xvf "${dnsmasqFile}" -C /
 
-  systemctl restart dnsmasq
   dnsmasq -v
 fi
 
