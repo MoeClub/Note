@@ -6,7 +6,6 @@ dnsVer="${2:-2.92}"
 dockerName="ocserv_build"
 
 docker rm -f "${dockerName}" >/dev/null 2>&1;
-# docker run --name "${dockerName}" -it -v /mnt:/mnt alpine:3.20 /bin/sh /mnt/commit.sh "${ocVer}" "${dnsVer}"
 docker run --name "${dockerName}" -id -v /mnt:/mnt alpine:3.20
 docker exec "${dockerName}" /bin/sh /mnt/commit.sh "${ocVer}" "${dnsVer}"
 docker commit --change 'CMD ["/bin/sh", "/run.sh"]' "${dockerName}" "ocserv:${ocVer}"
