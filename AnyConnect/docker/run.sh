@@ -5,15 +5,21 @@ device=`ls -1 /sys/class/net| grep -v '^lo$' |head -n 1`
 [ -n "$device" ] || exit 1
 addr=`wget -qO- https://checkip.amazonaws.com/`
 [ -n "$addr" ] || addr=`ip -4 addr show "$net" | awk '/inet /{print $2}' | cut -d/ -f1`
-
+[ -n "$addr" ] && echo "Addr: ${addr}"
 
 ocPath=`find /mnt -type f -name "ocserv.conf"`
+[ -n "$ocPath" ] || ocPath=`find /etc/ocserv -type f -name "ocserv.conf"`
 [ -n "$ocPath" ] && ocDir=`dirname "$ocPath"` || ocDir=""
-[ -n "$ocDir" ] && ln -sf "$ocDir" "/etc/ocserv"
+[ -n "$ocDir" ] && [ "$ocDir" != "/etc/ocserv" ] && echo "Path: ${ocDir} --> /etc/ocserv" && rm -rf "/etc/ocserv" && ln -sf "${ocDir}" "/etc/ocserv"
 
 dnsPath=`find /mnt -type f -name "dnsmasq.conf"`
-[ -n "$dnsPath" ] && cp -rf "$dnsPath" "/etc/dnsmasq.conf"
-[ -d "/mnt/dnsmasq.d" ] && ln -sf "/mnt/dnsmasq.d" "/etc/dnsmasq.d"
+[ -n "$dnsPath" ] || dnsPath=`find /etc/ocserv -type f -name "dnsmasq.conf"`
+[ -n "$dnsPath" ] && echo "Path: ${dnsPath} --> /etc/dnsmasq.conf" && cp -rf "${dnsPath}" "/etc/dnsmasq.conf"
+
+dnsDir=`find /mnt -type d -name "dnsmasq.d"`
+[ -n "$dnsDir" ] || dnsDir=`find /etc/ocserv -type f -name "dnsmasq.d"`
+[ -n "$dnsDir" ] && [ "$dnsDir" != "/etc/dnsmasq.d" ] && echo "Path: ${dnsDir} --> /etc/dnsmasq.d" && rm -rf "/etc/dnsmasq.d" && ln -sf "${dnsDir}" "/etc/dnsmasq.d"
+
 
 [ -f "/etc/ocserv/group/NoRoute" ] && sed -i "s/^no-route =.*\/255\.255\.255\.255/no-route = ${addr}\/255.255.255.255/" "/etc/ocserv/group/NoRoute"
 [ -f "/etc/ocserv/ocpasswd" ] || {
@@ -22,7 +28,7 @@ dnsPath=`find /mnt -type f -name "dnsmasq.conf"`
     user=`openssl rand -base64 32 | tr -dc 'a-z' | head -c 3`
     passwd=`openssl rand -base64 32 | tr -dc 'a-z' | head -c 3`
     encpwd=`openssl passwd "${passwd}"`
-    echo -ne "${gn}--> ${user}:${passwd}\n"
+    echo -ne "${gn} --> ${user}:${passwd}\n"
     echo -ne "${user}:${gn}:${encpwd}\n" >>/etc/ocserv/ocpasswd
   done
 }
