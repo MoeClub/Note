@@ -8,7 +8,7 @@ docker run --privileged --rm -it -p 443:443/tcp -p 443:443/udp ocserv:latest
 
 # Build
 ```
-bash /mnt/build.sh
+bash /mnt/build.sh 1.4.1 2.92
 
 ```
 
