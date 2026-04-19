@@ -293,6 +293,8 @@ function build_ocserv(){
 	cd "$TMP"
 	sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
 	sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN) {\n\t\t\tcstp_cork(ws);\n\t\t\tret = (cstp_printf(ws, "HTTP\/1.%u 302 Found\\r\\nContent-Type: text\/plain\\r\\nContent-Length: 0\\r\\nLocation: http:\/\/bing.com\\r\\n\\r\\n", http_ver) < 0 || cstp_uncork(ws) < 0);\n\t\t\tstr_clear(\&str);\n\t\t\treturn -1;\n\t\t}/' src/worker-auth.c
+	sed -i 's/^#define WORKER_MAINTENANCE_TIME .*/#define WORKER_MAINTENANCE_TIME (4.)/' src/worker-vpn.c
+	sed -i 's/^#define PERIODIC_CHECK_TIME .*/#define PERIODIC_CHECK_TIME 3/' src/worker-vpn.c
 
 	autoreconf -fvi
 	
