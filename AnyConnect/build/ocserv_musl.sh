@@ -227,13 +227,13 @@ function build_gnutls(){
 	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
 	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
 	./configure \
-	--host="${ARCH}-linux-musl" \
-	--prefix="/usr/local/cross/${ARCH}" \
-	--enable-static=yes --enable-shared=no \
-	--with-included-libtasn1 --with-included-unistring \
-	--without-brotli --without-zstd --without-zlib \
-	--without-p11-kit --without-tpm --without-tpm2 \
-	--disable-doc --disable-tools --disable-cxx --disable-tests --disable-nls --disable-libdane --disable-gost --disable-guile --disable-rpath
+	  --host="${ARCH}-linux-musl" \
+	  --prefix="/usr/local/cross/${ARCH}" \
+	  --enable-static=yes --enable-shared=no \
+	  --with-included-libtasn1 --with-included-unistring \
+	  --without-brotli --without-zstd --without-zlib \
+	  --without-p11-kit --without-tpm --without-tpm2 \
+	  --disable-doc --disable-tools --disable-cxx --disable-tests --disable-nls --disable-libdane --disable-gost --disable-guile --disable-rpath
 	[ $? -eq 0 ] || return 1
 	make -j`nproc`
 	[ $? -eq 0 ] || return 1
@@ -451,5 +451,3 @@ done
 for tarpkg in `echo "${TARPKG# }"`; do
 	echo "--> ${tarpkg}"
 done
-
-
