@@ -419,8 +419,8 @@ function build_dnsmasq(){
 
 function build() {
   ARCH="${1:-x86_64}"
-  # build_dnsmasq "${ARCH}"
-  # [ $? -eq 0 ] || return 1
+  build_dnsmasq "${ARCH}"
+  [ $? -eq 0 ] || return 1
   build_gmp "${ARCH}"
   [ $? -eq 0 ] || return 1
   build_nettle "${ARCH}"
