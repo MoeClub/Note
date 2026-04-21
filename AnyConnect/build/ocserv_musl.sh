@@ -5,7 +5,7 @@
 # docker exec -it alpine /bin/sh
 
 apk update
-apk add wget xz sed openssl gcc coreutils patch file autoconf automake make linux-headers gperf musl-dev gnutls-dev gnutls-utils
+apk add wget xz sed openssl gcc coreutils patch file autoconf automake make pkg-config linux-headers gperf musl-dev gnutls-dev gnutls-utils 
 
 
 VERSION_OCSERV="1.4.1"
@@ -84,16 +84,13 @@ function build_libseccomp(){
 # lz4
 function build_lz4(){
 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+	TMP=`mktemp -d`; # TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
 	wget --no-check-certificate -qO- "https://github.com/lz4/lz4/archive/refs/tags/v${VERSION_LZ4}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
 	cd "$TMP"
 	CC="${ARCH}-linux-musl-gcc" \
 	CXX="${ARCH}-linux-musl-g++" \
-	make -j`nproc` liblz4.a
-	[ $? -eq 0 ] || return 1
-	install lib/liblz4.a "/usr/local/cross/${ARCH}/lib"
-	install lib/lz4*.h "/usr/local/cross/${ARCH}/include"
-	return 0
+	make -j`nproc` BUILD_STATIC=yes BUILD_SHARED=no prefix="/usr/local/cross/${ARCH}" libdir="/usr/local/cross/${ARCH}/lib" includedir="/usr/local/cross/${ARCH}/include" pkgconfigdir="/usr/local/cross/${ARCH}/lib/pkgconfig" install
+	return $?
 }
 
 # gmp
