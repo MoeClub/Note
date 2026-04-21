@@ -5,7 +5,7 @@
 # docker exec -it alpine /bin/sh
 
 apk update
-apk add wget xz sed openssl gcc coreutils patch file autoconf automake pkgconfig make linux-headers gperf musl-dev gnutls-dev gnutls-utils meson
+apk add wget xz sed openssl gcc coreutils patch file autoconf automake pkgconfig make linux-headers gperf musl-dev gnutls-dev gnutls-utils protobuf-c-compiler meson
 
 
 VERSION_OCSERV="1.4.2"
@@ -419,8 +419,8 @@ function build_dnsmasq(){
 
 function build() {
   ARCH="${1:-x86_64}"
-  build_dnsmasq "${ARCH}"
-  [ $? -eq 0 ] || return 1
+  # build_dnsmasq "${ARCH}"
+  # [ $? -eq 0 ] || return 1
   build_gmp "${ARCH}"
   [ $? -eq 0 ] || return 1
   build_nettle "${ARCH}"
