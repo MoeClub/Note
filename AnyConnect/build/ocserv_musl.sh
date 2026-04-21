@@ -5,7 +5,7 @@
 # docker exec -it alpine /bin/sh
 
 apk update
-apk add wget xz sed openssl gcc coreutils patch file autoconf automake make linux-headers gperf musl-dev gnutls-dev gnutls-utils meson
+apk add wget xz sed openssl gcc coreutils patch file autoconf automake pkgconfig make linux-headers gperf musl-dev gnutls-dev gnutls-utils meson
 
 
 VERSION_OCSERV="1.4.2"
@@ -348,44 +348,45 @@ function build_ocserv(){
     corss=`CC="${ARCH}-linux-musl-gcc" meson_cross`
     echo "cross: ${corss}"
     PKG_CONFIG_LIBDIR="/usr/local/cross/${ARCH}/lib/pkgconfig" meson setup build \
-    --prefix "/usr" --cross-file "$corss" \
-    -Dlocal-talloc=true -Dlocal-llhttp=true -Dlocal-protobuf=true -Dlocal-pcl=true \
-    -Droot-tests=false -Dtun-tests=false -Dkerberos-tests=false -Dradius=disabled -Dgssapi=disabled -Dliboath=disabled -Dlibnl=disabled -Dmaxmind=disabled -Dgeoip=disabled -Dsystemd=disabled \
-    -Danyconnect-compat=enabled -Dcompression=enabled -Dseccomp=enabled -Dlz4=enabled
+      --prefix "/usr" --cross-file "$corss" \
+      -Db_pie=false -Dstrip=true -Dbuildtype=release \
+      -Dlocal-talloc=true -Dlocal-llhttp=true -Dlocal-protobuf=true -Dlocal-pcl=true \
+      -Droot-tests=false -Dtun-tests=false -Dkerberos-tests=false -Dradius=disabled -Dgssapi=disabled -Dliboath=disabled -Dlibnl=disabled -Dmaxmind=disabled -Dgeoip=disabled -Dsystemd=disabled \
+      -Danyconnect-compat=enabled -Dcompression=enabled -Dseccomp=enabled -Dlz4=enabled
     [ $? -eq 0 ] || return 1
     meson compile -C build
     [ $? -eq 0 ] || return 1
     DESTDIR="${TARGET}" meson install -C build
     [ $? -eq 0 ] || return 1
   else
-	  autoreconf -fvi
-	  CC="${ARCH}-linux-musl-gcc" \
-	  CXX="${ARCH}-linux-musl-g++" \
-	  LIBREADLINE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	  LIBREADLINE_LIBS="-L/usr/local/cross/${ARCH}/lib -lreadline" \
-	  LIBSECCOMP_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	  LIBSECCOMP_LIBS="-L/usr/local/cross/${ARCH}/lib -lseccomp" \
-	  LIBNETTLE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	  LIBNETTLE_LIBS="-L/usr/local/cross/${ARCH}/lib -lgmp -lnettle -lhogweed" \
-	  LIBGNUTLS_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	  LIBGNUTLS_LIBS="-L/usr/local/cross/${ARCH}/lib -lgnutls -lgmp -lnettle -lhogweed -lidn2" \
-	  LIBLZ4_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	  LIBLZ4_LIBS="-L/usr/local/cross/${ARCH}/lib -llz4" \
-	  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
-	  LDFLAGS="-L/usr/local/cross/${ARCH}/lib -s -w -static -no-pie" \
+    autoreconf -fvi
+    CC="${ARCH}-linux-musl-gcc" \
+    CXX="${ARCH}-linux-musl-g++" \
+    LIBREADLINE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
+    LIBREADLINE_LIBS="-L/usr/local/cross/${ARCH}/lib -lreadline" \
+    LIBSECCOMP_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
+    LIBSECCOMP_LIBS="-L/usr/local/cross/${ARCH}/lib -lseccomp" \
+    LIBNETTLE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
+    LIBNETTLE_LIBS="-L/usr/local/cross/${ARCH}/lib -lgmp -lnettle -lhogweed" \
+    LIBGNUTLS_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
+    LIBGNUTLS_LIBS="-L/usr/local/cross/${ARCH}/lib -lgnutls -lgmp -lnettle -lhogweed -lidn2" \
+    LIBLZ4_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
+    LIBLZ4_LIBS="-L/usr/local/cross/${ARCH}/lib -llz4" \
+    CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
+    LDFLAGS="-L/usr/local/cross/${ARCH}/lib -s -w -static -no-pie" \
     ac_cv_file__proc_self_exe=yes \
-	  ./configure \
-	    --host="${ARCH}-linux-musl" \
-	    --prefix="/usr" \
-	    --with-local-talloc \
-	    --disable-dependency-tracking \
-	    --without-root-tests --without-docker-tests --without-nuttcp-tests --without-tun-tests \
-	    --without-protobuf --without-maxmind --without-geoip --without-liboath --without-pam --without-radius --without-utmp --without-http-parser --without-gssapi --without-pcl-lib --without-libwrap --without-llhttp
-	  [ $? -eq 0 ] || return 1
-	  make -j`nproc`
-	  [ $? -eq 0 ] || return 1
-	  make DESTDIR="${TARGET}" install
-	  [ $? -eq 0 ] || return 1
+    ./configure \
+      --host="${ARCH}-linux-musl" \
+      --prefix="/usr" \
+      --with-local-talloc \
+      --disable-dependency-tracking \
+      --without-root-tests --without-docker-tests --without-nuttcp-tests --without-tun-tests \
+      --without-protobuf --without-maxmind --without-geoip --without-liboath --without-pam --without-radius --without-utmp --without-http-parser --without-gssapi --without-pcl-lib --without-libwrap --without-llhttp
+    [ $? -eq 0 ] || return 1
+    make -j`nproc`
+    [ $? -eq 0 ] || return 1
+    make DESTDIR="${TARGET}" install
+    [ $? -eq 0 ] || return 1
   fi
 
 	cd "${TARGET}"
@@ -441,11 +442,10 @@ function build() {
 }
 
 
-for arch in "aarch64" "x86_64"; do
+for arch in "x86_64" "aarch64"; do
 	eval `musl_cross "${arch}"`
 	build "${arch}"
 	[ "$?" -ne 0 ] && exit 1
-  break
 done
 
 for tarpkg in `echo "${TARPKG# }"`; do
