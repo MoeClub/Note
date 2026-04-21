@@ -23,20 +23,20 @@ TRAPRM=""
 TARPKG=""
 
 function musl_cross(){
-	muslHome="/usr/local/musl"
-	mkdir -p "${muslHome}"
-	for arch in "$@" ; do
-	  PATH="$PATH" which "${arch}-linux-musl-gcc" >/dev/null 2>&1 || wget --no-check-certificate -qO- "http://musl.cc/${arch}-linux-musl-cross.tgz" |tar -zx --overwrite -C "${muslHome}";
-	done
+  muslHome="/usr/local/musl"
+  mkdir -p "${muslHome}"
+  for arch in "$@" ; do
+    PATH="$PATH" which "${arch}-linux-musl-gcc" >/dev/null 2>&1 || wget --no-check-certificate -qO- "http://musl.cc/${arch}-linux-musl-cross.tgz" |tar -zx --overwrite -C "${muslHome}";
+  done
 
-	newPATH=""
-	for path in `echo "$PATH" |sed 's/:/\n/g'`; do echo "$path" |grep -q "musl" || newPATH="${newPATH}:${path}"; done
-	for path in `find "${muslHome}" -name "*-cc" 2>/dev/null`; do newPATH="${newPATH}:$(dirname ${path})"; done
-	newPATH="${newPATH#:}"
+  newPATH=""
+  for path in `echo "$PATH" |sed 's/:/\n/g'`; do echo "$path" |grep -q "musl" || newPATH="${newPATH}:${path}"; done
+  for path in `find "${muslHome}" -name "*-cc" 2>/dev/null`; do newPATH="${newPATH}:$(dirname ${path})"; done
+  newPATH="${newPATH#:}"
 
-	[ -f "$HOME/.bashrc" ] && sed -i "s/^PATH=.*/PATH=${newPATH////\\/}/" "$HOME/.bashrc"
-	[ -f "/etc/profile" ] && sed -i "s/^export PATH=.*/export PATH=${newPATH////\\/}/" "/etc/profile"
-	echo "export PATH=${newPATH}"
+  [ -f "$HOME/.bashrc" ] && sed -i "s/^PATH=.*/PATH=${newPATH////\\/}/" "$HOME/.bashrc"
+  [ -f "/etc/profile" ] && sed -i "s/^export PATH=.*/export PATH=${newPATH////\\/}/" "/etc/profile"
+  echo "export PATH=${newPATH}"
 }
 
 
@@ -91,169 +91,169 @@ function meson_cross(){
 
 # libev
 function build_libev(){
-	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "http://dist.schmorp.de/libev/Attic/libev-${VERSION_LIBEV}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
-	cd "$TMP"
-	CC="${ARCH}-linux-musl-gcc" \
-	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
-	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
-	./configure \
-		--host="${ARCH}-linux-musl" \
-		--prefix="/usr/local/cross/${ARCH}" \
-		--enable-static \
-		--disable-shared
-	[ $? -eq 0 ] || return 1
-	make -j`nproc`
-	[ $? -eq 0 ] || return 1
-	make install
-	return $?
+  ARCH="${1:-x86_64}"
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "http://dist.schmorp.de/libev/Attic/libev-${VERSION_LIBEV}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  cd "$TMP"
+  CC="${ARCH}-linux-musl-gcc" \
+  CXX="${ARCH}-linux-musl-g++" \
+  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
+  LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
+  ./configure \
+    --host="${ARCH}-linux-musl" \
+    --prefix="/usr/local/cross/${ARCH}" \
+    --enable-static \
+    --disable-shared
+  [ $? -eq 0 ] || return 1
+  make -j`nproc`
+  [ $? -eq 0 ] || return 1
+  make install
+  return $?
 }
 
 # libseccomp
 function build_libseccomp(){
- 	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://github.com/seccomp/libseccomp/releases/download/v${VERSION_LIBSECCOMP}/libseccomp-${VERSION_LIBSECCOMP}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
-	cd "$TMP"
-	CC="${ARCH}-linux-musl-gcc" \
-	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
-	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
-	./configure \
-		--host="${ARCH}-linux-musl" \
-		--prefix="/usr/local/cross/${ARCH}" \
-		--disable-shared \
-		--enable-static
-	sed -i 's/in_word_set/_in_word_set/g' src/syscalls.perf.c
-	make -j`nproc` install
-	return $?
+  ARCH="${1:-x86_64}"
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "https://github.com/seccomp/libseccomp/releases/download/v${VERSION_LIBSECCOMP}/libseccomp-${VERSION_LIBSECCOMP}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  cd "$TMP"
+  CC="${ARCH}-linux-musl-gcc" \
+  CXX="${ARCH}-linux-musl-g++" \
+  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
+  LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
+  ./configure \
+    --host="${ARCH}-linux-musl" \
+    --prefix="/usr/local/cross/${ARCH}" \
+    --disable-shared \
+    --enable-static
+  sed -i 's/in_word_set/_in_word_set/g' src/syscalls.perf.c
+  make -j`nproc` install
+  return $?
 }
 
 # lz4
 function build_lz4(){
-	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://github.com/lz4/lz4/archive/refs/tags/v${VERSION_LZ4}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
-	cd "$TMP"
-	CC="${ARCH}-linux-musl-gcc" \
-	CXX="${ARCH}-linux-musl-g++" \
-	make -j`nproc` BUILD_STATIC=yes BUILD_SHARED=no prefix="/usr/local/cross/${ARCH}" libdir="/usr/local/cross/${ARCH}/lib" includedir="/usr/local/cross/${ARCH}/include" pkgconfigdir="/usr/local/cross/${ARCH}/lib/pkgconfig" install
-	return $?
+  ARCH="${1:-x86_64}"
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "https://github.com/lz4/lz4/archive/refs/tags/v${VERSION_LZ4}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  cd "$TMP"
+  CC="${ARCH}-linux-musl-gcc" \
+  CXX="${ARCH}-linux-musl-g++" \
+  make -j`nproc` BUILD_STATIC=yes BUILD_SHARED=no prefix="/usr/local/cross/${ARCH}" libdir="/usr/local/cross/${ARCH}/lib" includedir="/usr/local/cross/${ARCH}/include" pkgconfigdir="/usr/local/cross/${ARCH}/lib/pkgconfig" install
+  return $?
 }
 
 # gmp
 function build_gmp(){
-	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://gmplib.org/download/gmp/gmp-${VERSION_GMP}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
-	cd "$TMP"
-	CC="${ARCH}-linux-musl-gcc" \
-	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
-	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
-	./configure \
-	--host="${ARCH}-linux-musl" \
-	--prefix="/usr/local/cross/${ARCH}" \
-	--enable-static=yes \
-	--enable-shared=no
-	[ $? -eq 0 ] || return 1
-	make -j`nproc`
-	[ $? -eq 0 ] || return 1
-	make install
-	return $?
+  ARCH="${1:-x86_64}"
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "https://gmplib.org/download/gmp/gmp-${VERSION_GMP}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
+  cd "$TMP"
+  CC="${ARCH}-linux-musl-gcc" \
+  CXX="${ARCH}-linux-musl-g++" \
+  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
+  LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
+  ./configure \
+    --host="${ARCH}-linux-musl" \
+    --prefix="/usr/local/cross/${ARCH}" \
+    --enable-static=yes \
+    --enable-shared=no
+  [ $? -eq 0 ] || return 1
+  make -j`nproc`
+  [ $? -eq 0 ] || return 1
+  make install
+  return $?
 }
 
 # nettle
 function build_nettle(){
-	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/nettle/nettle-${VERSION_NETTLE}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
-	cd "$TMP"
-	CC="${ARCH}-linux-musl-gcc" \
-	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
-	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
-	./configure \
-		--host="${ARCH}-linux-musl" \
-		--prefix="/usr/local/cross/${ARCH}" \
-		--enable-x86-aesni --enable-arm-neon --enable-static \
-		--disable-documentation --disable-shared --disable-rpath
-	[ $? -eq 0 ] || return 1
-	make -j`nproc`
-	[ $? -eq 0 ] || return 1
-	make install
-	return $?
+  ARCH="${1:-x86_64}"
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/nettle/nettle-${VERSION_NETTLE}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  cd "$TMP"
+  CC="${ARCH}-linux-musl-gcc" \
+  CXX="${ARCH}-linux-musl-g++" \
+  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
+  LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
+  ./configure \
+    --host="${ARCH}-linux-musl" \
+    --prefix="/usr/local/cross/${ARCH}" \
+    --enable-x86-aesni --enable-arm-neon --enable-static \
+    --disable-documentation --disable-shared --disable-rpath
+  [ $? -eq 0 ] || return 1
+  make -j`nproc`
+  [ $? -eq 0 ] || return 1
+  make install
+  return $?
 }
 
 # idn2
 function build_idn2(){
-	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/libidn/libidn2-${VERSION_IDN2}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
-	cd "$TMP"
-	CC="${ARCH}-linux-musl-gcc" \
-	CXX="${ARCH}-linux-musl-g++" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
-	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
-	./configure \
-		--host="${ARCH}-linux-musl" \
-		--prefix="/usr/local/cross/${ARCH}" \
-		--enable-static=yes --enable-shared=no --disable-rpath --disable-nls --disable-doc --disable-valgrind-tests
-	[ $? -eq 0 ] || return 1
-	make -j`nproc`
-	[ $? -eq 0 ] || return 1
-	make install
-	return $?
+  ARCH="${1:-x86_64}"
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/libidn/libidn2-${VERSION_IDN2}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  cd "$TMP"
+  CC="${ARCH}-linux-musl-gcc" \
+  CXX="${ARCH}-linux-musl-g++" \
+  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
+  LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
+  ./configure \
+    --host="${ARCH}-linux-musl" \
+    --prefix="/usr/local/cross/${ARCH}" \
+    --enable-static=yes --enable-shared=no --disable-rpath --disable-nls --disable-doc --disable-valgrind-tests
+  [ $? -eq 0 ] || return 1
+  make -j`nproc`
+  [ $? -eq 0 ] || return 1
+  make install
+  return $?
 }
 
 # gnutls
 function build_gnutls(){
-	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "https://www.gnupg.org/ftp/gcrypt/gnutls/v${VERSION_GNUTLS%.*}/gnutls-${VERSION_GNUTLS}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
-	cd "$TMP"
-	CC="${ARCH}-linux-musl-gcc" \
-	CXX="${ARCH}-linux-musl-g++" \
-	NETTLE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	NETTLE_LIBS="-L/usr/local/cross/${ARCH}/lib -lnettle" \
-	HOGWEED_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	HOGWEED_LIBS="-L/usr/local/cross/${ARCH}/lib -lhogweed" \
-	GMP_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	GMP_LIBS="-L/usr/local/cross/${ARCH}/lib -lgmp" \
-	LIBIDN2_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
-	LIBIDN2_LIBS="-L/usr/local/cross/${ARCH}/lib -lidn2" \
-	CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
-	LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
-	./configure \
-	  --host="${ARCH}-linux-musl" \
-	  --prefix="/usr/local/cross/${ARCH}" \
-	  --enable-static=yes --enable-shared=no \
-	  --with-included-libtasn1 --with-included-unistring \
-	  --without-brotli --without-zstd --without-zlib \
-	  --without-p11-kit --without-tpm --without-tpm2 \
-	  --disable-doc --disable-tools --disable-cxx --disable-tests --disable-nls --disable-libdane --disable-gost --disable-guile --disable-rpath
-	[ $? -eq 0 ] || return 1
-	make -j`nproc`
-	[ $? -eq 0 ] || return 1
-	make install
-	return $?
+  ARCH="${1:-x86_64}"
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "https://www.gnupg.org/ftp/gcrypt/gnutls/v${VERSION_GNUTLS%.*}/gnutls-${VERSION_GNUTLS}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
+  cd "$TMP"
+  CC="${ARCH}-linux-musl-gcc" \
+  CXX="${ARCH}-linux-musl-g++" \
+  NETTLE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
+  NETTLE_LIBS="-L/usr/local/cross/${ARCH}/lib -lnettle" \
+  HOGWEED_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
+  HOGWEED_LIBS="-L/usr/local/cross/${ARCH}/lib -lhogweed" \
+  GMP_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
+  GMP_LIBS="-L/usr/local/cross/${ARCH}/lib -lgmp" \
+  LIBIDN2_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
+  LIBIDN2_LIBS="-L/usr/local/cross/${ARCH}/lib -lidn2" \
+  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
+  LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -static-libgcc -static-libstdc++ -s -pthread -lpthread" \
+  ./configure \
+    --host="${ARCH}-linux-musl" \
+    --prefix="/usr/local/cross/${ARCH}" \
+    --enable-static=yes --enable-shared=no \
+    --with-included-libtasn1 --with-included-unistring \
+    --without-brotli --without-zstd --without-zlib \
+    --without-p11-kit --without-tpm --without-tpm2 \
+    --disable-doc --disable-tools --disable-cxx --disable-tests --disable-nls --disable-libdane --disable-gost --disable-guile --disable-rpath
+  [ $? -eq 0 ] || return 1
+  make -j`nproc`
+  [ $? -eq 0 ] || return 1
+  make install
+  return $?
 }
 
 # readline
 function build_readline(){
-	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; # trap "rm -rf ${TRAPRM# }" EXIT
+  ARCH="${1:-x86_64}"
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; # trap "rm -rf ${TRAPRM# }" EXIT
   # history.h
-	cat >"$TMP/history.h" <<EOF
+  cat >"$TMP/history.h" <<EOF
 #ifndef HISTORY_H
 #define HISTORY_H
 void add_history(const char *string);
 #endif
 EOF
-	# readline.h
-	cat >"$TMP/readline.h" <<EOF
+  # readline.h
+  cat >"$TMP/readline.h" <<EOF
 #ifndef READLINE_H
 #define READLINE_H
 #include <ctype.h>
@@ -283,8 +283,8 @@ void rl_redisplay(void);
 #endif
 #endif
 EOF
-	# readline.c
-	"${ARCH}-linux-musl-gcc" -xc - -c -o "$TMP/readline.o" -ffloat-store -O0 <<EOF
+  # readline.c
+  "${ARCH}-linux-musl-gcc" -xc - -c -o "$TMP/readline.o" -ffloat-store -O0 <<EOF
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -294,26 +294,26 @@ void *rl_attempted_completion_function;
 void *rl_completion_entry_function;
 int rl_completion_query_items;
 int rl_replace_line(const char *text, int clear_undo) {
-	(void)clear_undo;
-	free(rl_line_buffer);
-	rl_line_buffer = strdup(text ? text : "");
-	return 0;
+  (void)clear_undo;
+  free(rl_line_buffer);
+  rl_line_buffer = strdup(text ? text : "");
+  return 0;
 }
 char *readline(const char *prompt) {
-	char buf[512], *ptr;
-	if(prompt) printf("%s", prompt);
-	fflush(stdout); ptr = buf;
-	while((*ptr = getchar()) != '\n') ptr++;
-	*ptr = '\0';
+  char buf[512], *ptr;
+  if(prompt) printf("%s", prompt);
+  fflush(stdout); ptr = buf;
+  while((*ptr = getchar()) != '\n') ptr++;
+  *ptr = '\0';
 
-	free(rl_line_buffer);
-	rl_line_buffer = strdup(buf);
-	return strdup(buf);
+  free(rl_line_buffer);
+  rl_line_buffer = strdup(buf);
+  return strdup(buf);
 }
 int rl_crlf(void) {
-	putchar('\n');
-	fflush(stdout);
-	return 0;
+  putchar('\n');
+  fflush(stdout);
+  return 0;
 }
 void add_history(const char *string) {}
 int rl_reset_terminal(const char *terminal_name) {return 0;}
@@ -323,27 +323,27 @@ void rl_redisplay(void) {}
 void rl_reset_line_state(void) {}
 void rl_reset_screen_size(void) {}
 EOF
-	# readline.a
-	ar rcs "$TMP/libreadline.a" "$TMP/readline.o"
+  # readline.a
+  ar rcs "$TMP/libreadline.a" "$TMP/readline.o"
   install -d "/usr/local/cross/${ARCH}/lib" "/usr/local/cross/${ARCH}/include/readline"
-	install "$TMP/libreadline.a" "/usr/local/cross/${ARCH}/lib"
-	install "$TMP/readline.h" "/usr/local/cross/${ARCH}/include"
-	install "$TMP/readline.h" "/usr/local/cross/${ARCH}/include/readline"
-	install "$TMP/history.h" "/usr/local/cross/${ARCH}/include"
-	install "$TMP/history.h" "/usr/local/cross/${ARCH}/include/readline"
+  install "$TMP/libreadline.a" "/usr/local/cross/${ARCH}/lib"
+  install "$TMP/readline.h" "/usr/local/cross/${ARCH}/include"
+  install "$TMP/readline.h" "/usr/local/cross/${ARCH}/include/readline"
+  install "$TMP/history.h" "/usr/local/cross/${ARCH}/include"
+  install "$TMP/history.h" "/usr/local/cross/${ARCH}/include/readline"
 }
 
 function build_ocserv(){
-	ARCH="${1:-x86_64}"
-	TMP=`mktemp -d`; # TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "ftp://ftp.infradead.org/pub/ocserv/ocserv-${VERSION_OCSERV}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
-	cd "$TMP"
-	sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
-	sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN) {\n\t\t\tcstp_cork(ws);\n\t\t\tret = (cstp_printf(ws, "HTTP\/1.%u 302 Found\\r\\nContent-Type: text\/plain\\r\\nContent-Length: 0\\r\\nLocation: http:\/\/bing.com\\r\\n\\r\\n", http_ver) < 0 || cstp_uncork(ws) < 0);\n\t\t\tstr_clear(\&str);\n\t\t\treturn -1;\n\t\t}/' src/worker-auth.c
-	sed -i 's/^#define WORKER_MAINTENANCE_TIME .*/#define WORKER_MAINTENANCE_TIME (4.)/' src/worker-vpn.c
-	sed -i 's/^#define PERIODIC_CHECK_TIME .*/#define PERIODIC_CHECK_TIME 3/' src/worker-vpn.c
+  ARCH="${1:-x86_64}"
+  TMP=`mktemp -d`; # TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "ftp://ftp.infradead.org/pub/ocserv/ocserv-${VERSION_OCSERV}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
+  cd "$TMP"
+  sed -i 's/#define DEFAULT_CONFIG_ENTRIES 96/#define DEFAULT_CONFIG_ENTRIES 200/' src/vpn.h
+  sed -i 's/login_end = OC_LOGIN_END;/&\n\t\tif (ws->req.user_agent_type == AGENT_UNKNOWN) {\n\t\t\tcstp_cork(ws);\n\t\t\tret = (cstp_printf(ws, "HTTP\/1.%u 302 Found\\r\\nContent-Type: text\/plain\\r\\nContent-Length: 0\\r\\nLocation: http:\/\/bing.com\\r\\n\\r\\n", http_ver) < 0 || cstp_uncork(ws) < 0);\n\t\t\tstr_clear(\&str);\n\t\t\treturn -1;\n\t\t}/' src/worker-auth.c
+  sed -i 's/^#define WORKER_MAINTENANCE_TIME .*/#define WORKER_MAINTENANCE_TIME (4.)/' src/worker-vpn.c
+  sed -i 's/^#define PERIODIC_CHECK_TIME .*/#define PERIODIC_CHECK_TIME 3/' src/worker-vpn.c
 
-	TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
+  TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
   if [ -f "meson.build" ]; then
     corss=`CC="${ARCH}-linux-musl-gcc" meson_cross`
     echo "cross: ${corss}"
@@ -389,65 +389,65 @@ function build_ocserv(){
     [ $? -eq 0 ] || return 1
   fi
 
-	cd "${TARGET}"
-	FILE="/mnt/ocserv_${ARCH}_v${VERSION_OCSERV}.tar.gz"
-	[ -f "${FILE}" ] && rm -rf "${FILE}"
-	tar -czvf "${FILE}" ./
-	[ $? -eq 0 ] || return 1
-	TARPKG="${TARPKG} ${FILE}"
-	return 0
+  cd "${TARGET}"
+  FILE="/mnt/ocserv_${ARCH}_v${VERSION_OCSERV}.tar.gz"
+  [ -f "${FILE}" ] && rm -rf "${FILE}"
+  tar -czvf "${FILE}" ./
+  [ $? -eq 0 ] || return 1
+  TARPKG="${TARPKG} ${FILE}"
+  return 0
 }
 
 function build_dnsmasq(){
-	ARCH="${1:-x86_64}"
-	[ -n "$VERSION_DNSMASQ" ] || return 0
-	TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
-	wget --no-check-certificate -qO- "http://www.thekelleys.org.uk/dnsmasq/dnsmasq-${VERSION_DNSMASQ}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
-	cd "$TMP"
-	# wget --no-check-certificate -qO- "http://lib.mk/dnsmasq/${VERSION_DNSMASQ}.patch" 2>/dev/null |patch -p1 -N
-	make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -no-pie -s" PREFIX="/usr" DESTDIR="${TARGET}" -j`nproc` install
-	[ $? -eq 0 ] || return 1
-	cd "${TARGET}"
-	FILE="/mnt/dnsmasq_${ARCH}_v${VERSION_DNSMASQ}.tar.gz"
-	[ -f "${FILE}" ] && rm -rf "${FILE}"
-	file ./usr/sbin/dnsmasq
-	tar -czvf "${FILE}" ./
-	[ $? -eq 0 ] || return 1
-	TARPKG="${TARPKG} ${FILE}"
-	return 0
+  ARCH="${1:-x86_64}"
+  [ -n "$VERSION_DNSMASQ" ] || return 0
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "http://www.thekelleys.org.uk/dnsmasq/dnsmasq-${VERSION_DNSMASQ}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  cd "$TMP"
+  # wget --no-check-certificate -qO- "http://lib.mk/dnsmasq/${VERSION_DNSMASQ}.patch" 2>/dev/null |patch -p1 -N
+  make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -no-pie -s" PREFIX="/usr" DESTDIR="${TARGET}" -j`nproc` install
+  [ $? -eq 0 ] || return 1
+  cd "${TARGET}"
+  FILE="/mnt/dnsmasq_${ARCH}_v${VERSION_DNSMASQ}.tar.gz"
+  [ -f "${FILE}" ] && rm -rf "${FILE}"
+  file ./usr/sbin/dnsmasq
+  tar -czvf "${FILE}" ./
+  [ $? -eq 0 ] || return 1
+  TARPKG="${TARPKG} ${FILE}"
+  return 0
 }
 
 function build() {
-	ARCH="${1:-x86_64}"
-	build_dnsmasq "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_gmp "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_nettle "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_idn2 "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_gnutls "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_readline "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_libev "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_libseccomp "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_lz4 "${ARCH}"
-	[ $? -eq 0 ] || return 1
-	build_ocserv "${ARCH}"
-	[ $? -eq 0 ] || return 1
+  ARCH="${1:-x86_64}"
+  build_dnsmasq "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_gmp "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_nettle "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_idn2 "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_gnutls "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_readline "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_libev "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_libseccomp "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_lz4 "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_ocserv "${ARCH}"
+  [ $? -eq 0 ] || return 1
 }
 
 
 for arch in "x86_64" "aarch64"; do
-	eval `musl_cross "${arch}"`
-	build "${arch}"
-	[ "$?" -ne 0 ] && exit 1
+  eval `musl_cross "${arch}"`
+  build "${arch}"
+  [ "$?" -ne 0 ] && exit 1
 done
 
 for tarpkg in `echo "${TARPKG# }"`; do
-	echo "--> ${tarpkg}"
+  echo "--> ${tarpkg}"
 done
