@@ -449,7 +449,7 @@ function build_prce(){
     --host="${ARCH}-linux-musl" \
     --prefix="/usr/local/cross/${ARCH}" \
     --disable-shared --enable-static \
-    --disable-cpp --disable-pcre16 --disable-pcre32 --enable-utf --enable-unicode-properties
+    --disable-jit --disable-cpp --disable-pcre16 --disable-pcre32 --enable-utf --enable-unicode-properties
   [ $? -eq 0 ] || return 1
   make -j`nproc`
   [ $? -eq 0 ] || return 1
@@ -459,7 +459,7 @@ function build_prce(){
 function build_sniproxy(){
   ARCH="${1:-x86_64}"
   [ -n "$VERSION_SNIPROXY" ] || return 0
-  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; # trap "rm -rf ${TRAPRM# }" EXIT
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
   wget --no-check-certificate -qO- "https://github.com/dlundquist/sniproxy/archive/refs/tags/${VERSION_SNIPROXY}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
   cd "$TMP"
   mkdir -p "/usr/local/cross/${ARCH}/include/sys"
