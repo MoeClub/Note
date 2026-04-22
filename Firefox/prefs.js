@@ -84,6 +84,7 @@ user_pref("extensions.webcompat.perform_ua_overrides", true);
 user_pref("extensions.webextensions.uuids", "{\"formautofill@mozilla.org\":\"785fb11a-44f0-41d1-b4b2-f53ad97fc1d2\",\"fxmonitor@mozilla.org\":\"12130c83-2cc6-4064-8393-a4e8bd2a5aba\",\"screenshots@mozilla.org\":\"de78c2c4-7b05-48f9-b075-9e20234f63c7\",\"webcompat-reporter@mozilla.org\":\"f44146a7-b3d1-45d8-9de4-604be2972198\",\"webcompat@mozilla.org\":\"5848ab59-bb07-4281-8add-0a7922be5e46\",\"baidu@search.mozilla.org\":\"bd5b4767-b570-42fd-b1f7-88048a62e269\",\"google@search.mozilla.org\":\"edb137ac-25d9-441e-b6d7-efc902764717\",\"bing@search.mozilla.org\":\"f491c5ae-e86f-4440-8838-b85895ebf91e\",\"ddg@search.mozilla.org\":\"2dadff38-5f9d-46b2-95b6-c2869fa1b110\",\"wikipedia@search.mozilla.org\":\"fd6542df-a9b1-405c-8567-bb01db0ac8fe\",\"amazondotcn@search.mozilla.org\":\"2be72fca-1142-4d03-b5f0-16ffbef85b6b\",\"firefox-compact-dark@mozilla.org\":\"6b558234-d903-48b6-b512-91c611e26fd7\"}");
 user_pref("gfx.direct2d.disabled", true);
 user_pref("layers.acceleration.disabled", true);
+user_pref("media.hardware-video-decoding.enabled", false);
 user_pref("layers.mlgpu.sanity-test-failed", false);
 user_pref("layout.spellcheckDefault", 0);
 user_pref("media.peerconnection.enabled", false);
@@ -109,8 +110,6 @@ user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);
 user_pref("trailhead.firstrun.didSeeAboutWelcome", true);
 user_pref("xpinstall.signatures.required", false);
 user_pref("full-screen-api.macos-native-full-screen", true);
-user_pref("gfx.webrender.all", true);
-user_pref("gfx.webrender.software", false);
 user_pref("accessibility.typeaheadfind.matchesCountLimit", 99999999);
 user_pref("network.http.http3.enable", false);
 
