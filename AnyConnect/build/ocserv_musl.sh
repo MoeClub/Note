@@ -490,16 +490,16 @@ function build_sniproxy(){
 
 function build() {
   ARCH="${1:-x86_64}"
+  build_dnsmasq "${ARCH}"
+  [ $? -eq 0 ] || return 1
   build_libev "${ARCH}"
   [ $? -eq 0 ] || return 1
   # build_prce2 "${ARCH}"
   # [ $? -eq 0 ] || return 1
   # build_udns "${ARCH}"
   # [ $? -eq 0 ] || return 1
-  build_sniproxy "${ARCH}"
-  [ $? -eq 0 ] || return 1
-  build_dnsmasq "${ARCH}"
-  [ $? -eq 0 ] || return 1
+  # build_sniproxy "${ARCH}"
+  # [ $? -eq 0 ] || return 1
   build_gmp "${ARCH}"
   [ $? -eq 0 ] || return 1
   build_nettle "${ARCH}"
