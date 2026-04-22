@@ -477,6 +477,14 @@ function build_sniproxy(){
     --enable-dns
   make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" CFLAGS="-I/usr/local/cross/${ARCH}/include -Wall -W -fPIC -O2" LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -no-pie -s" PREFIX="/usr" DESTDIR="${TARGET}" -j`nproc` install
   [ $? -eq 0 ] || return 1
+  cd "${TARGET}"
+  FILE="/mnt/sniproxy_${ARCH}_v${VERSION_SNIPROXY}.tar.gz"
+  [ -f "${FILE}" ] && rm -rf "${FILE}"
+  file ./usr/sbin/sniproxy
+  tar -czvf "${FILE}" ./
+  [ $? -eq 0 ] || return 1
+  TARPKG="${TARPKG} ${FILE}"
+  return 0
 }
 
 
