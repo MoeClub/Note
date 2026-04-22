@@ -5,7 +5,7 @@
 # docker exec -it alpine /bin/sh
 
 apk update
-apk add wget xz sed openssl gcc coreutils patch file autoconf automake pkgconfig make linux-headers gperf musl-dev gnutls-dev gnutls-utils protobuf-c-compiler meson
+apk add wget xz sed openssl gcc coreutils patch file autoconf automake pkgconfig make linux-headers gperf musl-dev gnutls-dev gnutls-utils libbsd-dev protobuf-c-compiler meson
 
 
 VERSION_OCSERV="1.4.2"
@@ -416,6 +416,66 @@ function build_dnsmasq(){
   TARPKG="${TARPKG} ${FILE}"
   return 0
 }
+
+function build_udns(){
+  ARCH="${1:-x86_64}"
+  [ -n "$VERSION_UDNS" ] || return 0
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "https://www.corpit.ru/mjt/udns/udns-${VERSION_UDNS}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  cd "$TMP"
+  ./configure && make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -no-pie -s" -j`nproc`
+  [ $? -eq 0 ] || return 1
+  [ -d "/usr/local/cross/${ARCH}/include" ] || mkdir -p "/usr/local/cross/${ARCH}/include"
+  [ -d "/usr/local/cross/${ARCH}/lib" ] || mkdir -p "/usr/local/cross/${ARCH}/lib"
+  cp -rf *.h "/usr/local/cross/${ARCH}/include"
+  cp -rf *.a "/usr/local/cross/${ARCH}/lib"
+}
+
+function build_prce2(){
+  ARCH="${1:-x86_64}"
+  [ -n "$VERSION_PCRE2" ] || return 0
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-${VERSION_PCRE2}/pcre2-${VERSION_PCRE2}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  cd "$TMP"
+  CC="${ARCH}-linux-musl-gcc" \
+  CXX="${ARCH}-linux-musl-g++" \
+  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
+  LDFLAGS="-L/usr/local/cross/${ARCH}/lib -s -w -static -no-pie" \
+  ./configure \
+    --host="${ARCH}-linux-musl" \
+    --prefix="/usr/local/cross/${ARCH}" \
+    --disable-shared --enable-static \
+    --disable-jit --disable-pcre2-16 --disable-pcre2-32 --enable-pcre2-8
+  [ $? -eq 0 ] || return 1
+  make -j`nproc`
+  [ $? -eq 0 ] || return 1
+  make install
+}
+
+function build_sniproxy(){
+  ARCH="${1:-x86_64}"
+  [ -n "$VERSION_SNIPROXY" ] || return 0
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
+  wget --no-check-certificate -qO- "https://github.com/dlundquist/sniproxy/archive/refs/tags/${VERSION_SNIPROXY}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  cd "$TMP"
+  mkdir -p "/usr/local/cross/${ARCH}/include/sys"
+  cp -rf /usr/include/bsd "/usr/local/cross/${ARCH}/include"
+  cp -rf /usr/include/bsd/sys/queue.h "/usr/local/cross/${ARCH}/include/sys"
+  [ -f "./setver.sh" ] && sh ./setver.sh
+  autoreconf --install
+  automake --add-missing --copy > /dev/null 2>&1
+  CC="${ARCH}-linux-musl-gcc" \
+  CXX="${ARCH}-linux-musl-g++" \
+  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O2" \
+  LDFLAGS="-L/usr/local/cross/${ARCH}/lib -s -w -static -no-pie" \
+  ./configure \
+    --host="${ARCH}-linux-musl" \
+    --prefix="/usr" \
+    --enable-dns
+  make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" CFLAGS="-I/usr/local/cross/${ARCH}/include -Wall -W -fPIC -O2" LDFLAGS="-L/usr/local/cross/${ARCH}/lib -static -no-pie -s" PREFIX="/usr" DESTDIR="${TARGET}" -j`nproc` install
+  [ $? -eq 0 ] || return 1
+}
+
 
 function build() {
   ARCH="${1:-x86_64}"
