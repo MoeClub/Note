@@ -5,7 +5,7 @@
 # docker exec -it alpine /bin/sh
 
 apk update
-apk add wget xz sed openssl gcc coreutils patch file autoconf automake pkgconfig make linux-headers gperf musl-dev gnutls-dev gnutls-utils libbsd-dev protobuf-c-compiler meson
+apk add wget xz sed openssl gcc coreutils patch file autoconf automake pkgconfig make linux-headers gperf musl-dev gnutls-dev gnutls-utils libbsd-dev libarchive-tools libtool gettext-dev protobuf-c-compiler meson
 
 
 VERSION_OCSERV="1.4.2"
@@ -19,7 +19,7 @@ VERSION_NETTLE="3.10.2"
 VERSION_IDN2="2.3.8"
 VERSION_SNIPROXY="0.7.0"
 VERSION_UDNS="0.6"
-VERSION_PCRE2="10.47"
+VERSION_PCRE="8.45"
 
 
 TRAPRM=""
@@ -434,21 +434,22 @@ function build_udns(){
   cp -rf *.a "/usr/local/cross/${ARCH}/lib"
 }
 
-function build_prce2(){
+function build_prce(){
   ARCH="${1:-x86_64}"
-  [ -n "$VERSION_PCRE2" ] || return 0
+  [ -n "$VERSION_PCRE" ] || return 0
   TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-  wget --no-check-certificate -qO- "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-${VERSION_PCRE2}/pcre2-${VERSION_PCRE2}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  wget --no-check-certificate -qO- "https://github.com/PCRE2Project/pcre1/archive/refs/heads/trunk.zip" |bsdtar -xz -C "$TMP" --strip-components=1
   cd "$TMP"
+  autoreconf -fvi
   CC="${ARCH}-linux-musl-gcc" \
   CXX="${ARCH}-linux-musl-g++" \
-  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
+  CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O2" \
   LDFLAGS="-L/usr/local/cross/${ARCH}/lib -s -w -static -no-pie" \
   ./configure \
     --host="${ARCH}-linux-musl" \
     --prefix="/usr/local/cross/${ARCH}" \
     --disable-shared --enable-static \
-    --disable-jit --disable-pcre2-16 --disable-pcre2-32 --enable-pcre2-8
+    --disable-cpp --disable-pcre16 --disable-pcre32 --enable-utf --enable-unicode-properties
   [ $? -eq 0 ] || return 1
   make -j`nproc`
   [ $? -eq 0 ] || return 1
@@ -458,12 +459,13 @@ function build_prce2(){
 function build_sniproxy(){
   ARCH="${1:-x86_64}"
   [ -n "$VERSION_SNIPROXY" ] || return 0
-  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; trap "rm -rf ${TRAPRM# }" EXIT
+  TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; TARGET=`mktemp -d`; TRAPRM="${TRAPRM} ${TARGET}"; # trap "rm -rf ${TRAPRM# }" EXIT
   wget --no-check-certificate -qO- "https://github.com/dlundquist/sniproxy/archive/refs/tags/${VERSION_SNIPROXY}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
   cd "$TMP"
   mkdir -p "/usr/local/cross/${ARCH}/include/sys"
   cp -rf /usr/include/bsd "/usr/local/cross/${ARCH}/include"
   cp -rf /usr/include/bsd/sys/queue.h "/usr/local/cross/${ARCH}/include/sys"
+  find /usr/share \( -name 'lib-prefix.m4' -o -name 'lib-ld.m4' \) -exec cp -t m4/ {} +
   [ -f "./setver.sh" ] && sh ./setver.sh
   autoreconf --install
   automake --add-missing --copy > /dev/null 2>&1
@@ -494,7 +496,7 @@ function build() {
   [ $? -eq 0 ] || return 1
   build_libev "${ARCH}"
   [ $? -eq 0 ] || return 1
-  # build_prce2 "${ARCH}"
+  # build_prce "${ARCH}"
   # [ $? -eq 0 ] || return 1
   # build_udns "${ARCH}"
   # [ $? -eq 0 ] || return 1
