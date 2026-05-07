@@ -50,8 +50,6 @@ WantedBy=multi-user.target
 
 EOF
 
-# mkdir -p /usr/local/lib/docker/cli-plugins
-
 systemctl disable docker 2>/dev/null
 systemctl daemon-reload
 systemctl enable docker
