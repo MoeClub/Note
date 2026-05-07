@@ -29,6 +29,7 @@ wget --no-check-certificate -4 -qO- "https://download.docker.com/linux/static/st
 mkdir -p /usr/local/lib/docker/cli-plugins
 wget --no-check-certificate -4 -qO "/usr/local/lib/docker/cli-plugins/docker-compose" "https://github.com/docker/compose/releases/download/v${composeVer}/docker-compose-linux-${arch}"
 [ $? -eq 0 ] || exit 1
+chmod -R 777 /usr/local/lib/docker/cli-plugins
 
 cat >/etc/systemd/system/docker.service<<EOF
 [Unit]
