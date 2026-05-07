@@ -1,6 +1,7 @@
 #!/bin/bash
 
 dockerVer="${1:-20.10.24}"
+composeVer="${2:-2.39.2}"
 
 rm -rf /usr/bin/docker-init
 rm -rf /usr/bin/containerd
@@ -25,7 +26,9 @@ case `uname -m` in aarch64|arm64) arch="aarch64";; x86_64|amd64) arch="x86_64";;
 
 wget --no-check-certificate -4 -qO- "https://download.docker.com/linux/static/stable/${arch}/docker-${dockerVer}.tgz" |tar -xzv --strip-components=1 -C /usr/bin
 [ $? -eq 0 ] || exit 1
-
+mkdir -p /usr/local/lib/docker/cli-plugins
+wget --no-check-certificate -4 -qO "/usr/local/lib/docker/cli-plugins/docker-compose" "https://github.com/docker/compose/releases/download/v${composeVer}/docker-compose-linux-${arch}"
+[ $? -eq 0 ] || exit 1
 
 cat >/etc/systemd/system/docker.service<<EOF
 [Unit]
