@@ -38,7 +38,7 @@ After=local-fs.target network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/dockerd --log-driver=json-file --log-opt max-size=10m --log-opt max-file=2
+ExecStart=/usr/bin/dockerd --userland-proxy=false --log-driver=local --log-opt max-size=8m --log-opt max-file=2
 KillMode=process
 KillSignal=SIGINT
 TimeoutStopSec=3
