@@ -4,12 +4,11 @@
 # docker rm -f alpine >/dev/null 2>&1; docker run --name alpine -it -v /mnt:/mnt alpine:latest
 # docker exec -it alpine /bin/sh
 
-apk update
-apk add wget xz sed openssl gcc coreutils patch file autoconf automake pkgconfig make linux-headers gperf musl-dev gnutls-dev gnutls-utils libbsd-dev libarchive-tools libtool gettext-dev protobuf-c-compiler meson
+apk add --no-cache wget xz sed openssl gcc coreutils patch file autoconf automake pkgconfig make build-base linux-headers gperf musl-dev gnutls-dev gnutls-utils libbsd-dev libarchive-tools libtool gettext-dev protobuf-c-compiler meson
 
 
-VERSION_OCSERV="1.4.2"
-VERSION_DNSMASQ="2.92"
+VERSION_OCSERV="1.6.0"
+VERSION_DNSMASQ="2.93"
 VERSION_LIBEV="4.33"
 VERSION_LZ4="1.10.0"
 VERSION_LIBSECCOMP="2.5.6"
@@ -120,6 +119,7 @@ function build_libseccomp(){
   TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
   wget --no-check-certificate -qO- "https://github.com/seccomp/libseccomp/releases/download/v${VERSION_LIBSECCOMP}/libseccomp-${VERSION_LIBSECCOMP}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
   cd "$TMP"
+  CC_FOR_BUILD=cc \
   CC="${ARCH}-linux-musl-gcc" \
   CXX="${ARCH}-linux-musl-g++" \
   CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
@@ -140,6 +140,7 @@ function build_lz4(){
   TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
   wget --no-check-certificate -qO- "https://github.com/lz4/lz4/archive/refs/tags/v${VERSION_LZ4}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
   cd "$TMP"
+  CC_FOR_BUILD=cc \
   CC="${ARCH}-linux-musl-gcc" \
   CXX="${ARCH}-linux-musl-g++" \
   make -j`nproc` BUILD_STATIC=yes BUILD_SHARED=no prefix="/usr/local/cross/${ARCH}" libdir="/usr/local/cross/${ARCH}/lib" includedir="/usr/local/cross/${ARCH}/include" pkgconfigdir="/usr/local/cross/${ARCH}/lib/pkgconfig" install
@@ -152,6 +153,7 @@ function build_gmp(){
   TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
   wget --no-check-certificate -qO- "https://gmplib.org/download/gmp/gmp-${VERSION_GMP}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
   cd "$TMP"
+  CC_FOR_BUILD=cc \
   CC="${ARCH}-linux-musl-gcc" \
   CXX="${ARCH}-linux-musl-g++" \
   CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
@@ -174,6 +176,7 @@ function build_nettle(){
   TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
   wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/nettle/nettle-${VERSION_NETTLE}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
   cd "$TMP"
+  CC_FOR_BUILD=cc \
   CC="${ARCH}-linux-musl-gcc" \
   CXX="${ARCH}-linux-musl-g++" \
   CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
@@ -196,6 +199,7 @@ function build_idn2(){
   TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
   wget --no-check-certificate -qO- "https://ftp.gnu.org/gnu/libidn/libidn2-${VERSION_IDN2}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
   cd "$TMP"
+  CC_FOR_BUILD=cc \
   CC="${ARCH}-linux-musl-gcc" \
   CXX="${ARCH}-linux-musl-g++" \
   CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O0" \
@@ -217,6 +221,7 @@ function build_gnutls(){
   TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
   wget --no-check-certificate -qO- "https://www.gnupg.org/ftp/gcrypt/gnutls/v${VERSION_GNUTLS%.*}/gnutls-${VERSION_GNUTLS}.tar.xz" |tar -xJ -C "$TMP" --strip-components=1
   cd "$TMP"
+  CC_FOR_BUILD=cc \
   CC="${ARCH}-linux-musl-gcc" \
   CXX="${ARCH}-linux-musl-g++" \
   NETTLE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
@@ -363,6 +368,7 @@ function build_ocserv(){
     [ $? -eq 0 ] || return 1
   else
     autoreconf -fvi
+    CC_FOR_BUILD=cc \
     CC="${ARCH}-linux-musl-gcc" \
     CXX="${ARCH}-linux-musl-g++" \
     LIBREADLINE_CFLAGS="-I/usr/local/cross/${ARCH}/include" \
@@ -441,6 +447,7 @@ function build_prce(){
   wget --no-check-certificate -qO- "https://github.com/PCRE2Project/pcre1/archive/refs/heads/trunk.zip" |bsdtar -xz -C "$TMP" --strip-components=1
   cd "$TMP"
   autoreconf -fvi
+  CC_FOR_BUILD=cc \
   CC="${ARCH}-linux-musl-gcc" \
   CXX="${ARCH}-linux-musl-g++" \
   CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O2" \
@@ -469,6 +476,7 @@ function build_sniproxy(){
   [ -f "./setver.sh" ] && sh ./setver.sh
   autoreconf --install
   automake --add-missing --copy > /dev/null 2>&1
+  CC_FOR_BUILD=cc \
   CC="${ARCH}-linux-musl-gcc" \
   CXX="${ARCH}-linux-musl-g++" \
   CFLAGS="-I/usr/local/cross/${ARCH}/include -ffloat-store -O2" \
