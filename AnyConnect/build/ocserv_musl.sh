@@ -430,7 +430,7 @@ function build_udns(){
   ARCH="${1:-x86_64}"
   [ -n "$VERSION_UDNS" ] || return 0
   TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-  wget --no-check-certificate -qO- "https://www.corpit.ru/mjt/udns/udns-${VERSION_UDNS}.tar.gz" |tar -xz -C "$TMP" --strip-components=1
+  wget --no-check-certificate -qO- "http://file.lib.mk/SOURCE/udns-0.6.tar.gz" |tar -xz -C "$TMP" --strip-components=1
   cd "$TMP"
   ./configure && make CC="${ARCH}-linux-musl-gcc" CXX="${ARCH}-linux-musl-g++" CFLAGS="-I. -Wall -W -fPIC -O2" LDFLAGS="-L. -static -no-pie -s" -j`nproc`
   [ $? -eq 0 ] || return 1
@@ -444,7 +444,7 @@ function build_prce(){
   ARCH="${1:-x86_64}"
   [ -n "$VERSION_PCRE" ] || return 0
   TMP=`mktemp -d`; TRAPRM="${TRAPRM} ${TMP}"; trap "rm -rf ${TRAPRM# }" EXIT
-  wget --no-check-certificate -qO- "https://github.com/PCRE2Project/pcre1/archive/refs/heads/trunk.zip" |bsdtar -xz -C "$TMP" --strip-components=1
+  wget --no-check-certificate -qO- "http://file.lib.mk/SOURCE/pcre1_8.45.tar.gz" |tar -xz -C "$TMP" --strip-components=1
   cd "$TMP"
   autoreconf -fvi
   CC_FOR_BUILD=cc \
@@ -472,6 +472,7 @@ function build_sniproxy(){
   mkdir -p "/usr/local/cross/${ARCH}/include/sys"
   cp -rf /usr/include/bsd "/usr/local/cross/${ARCH}/include"
   cp -rf /usr/include/bsd/sys/queue.h "/usr/local/cross/${ARCH}/include/sys"
+  sed -i -e 's/        if (con->listener->fallback_address == NULL) {/        if (result == -2) {\n            assert(client_socket_open(con));\n            con->state = SERVER_CLOSED;\n            return;\n        }\n\n&/' -e '/if (result\.address == NULL) {/,/return;/s/abort_connection(con);/assert(client_socket_open(con));\n        con->state = SERVER_CLOSED;/' src/connection.c
   find /usr/share \( -name 'lib-prefix.m4' -o -name 'lib-ld.m4' \) -exec cp -t m4/ {} +
   [ -f "./setver.sh" ] && sh ./setver.sh
   autoreconf --install
@@ -500,32 +501,32 @@ function build_sniproxy(){
 
 function build() {
   ARCH="${1:-x86_64}"
-  build_dnsmasq "${ARCH}"
-  [ $? -eq 0 ] || return 1
+  # build_dnsmasq "${ARCH}"
+  # [ $? -eq 0 ] || return 1
   build_libev "${ARCH}"
   [ $? -eq 0 ] || return 1
-  # build_prce "${ARCH}"
+  build_prce "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_udns "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  build_sniproxy "${ARCH}"
+  [ $? -eq 0 ] || return 1
+  # build_gmp "${ARCH}"
   # [ $? -eq 0 ] || return 1
-  # build_udns "${ARCH}"
+  # build_nettle "${ARCH}"
   # [ $? -eq 0 ] || return 1
-  # build_sniproxy "${ARCH}"
+  # build_idn2 "${ARCH}"
   # [ $? -eq 0 ] || return 1
-  build_gmp "${ARCH}"
-  [ $? -eq 0 ] || return 1
-  build_nettle "${ARCH}"
-  [ $? -eq 0 ] || return 1
-  build_idn2 "${ARCH}"
-  [ $? -eq 0 ] || return 1
-  build_gnutls "${ARCH}"
-  [ $? -eq 0 ] || return 1
-  build_readline "${ARCH}"
-  [ $? -eq 0 ] || return 1
-  build_libseccomp "${ARCH}"
-  [ $? -eq 0 ] || return 1
-  build_lz4 "${ARCH}"
-  [ $? -eq 0 ] || return 1
-  build_ocserv "${ARCH}"
-  [ $? -eq 0 ] || return 1
+  # build_gnutls "${ARCH}"
+  # [ $? -eq 0 ] || return 1
+  # build_readline "${ARCH}"
+  # [ $? -eq 0 ] || return 1
+  # build_libseccomp "${ARCH}"
+  # [ $? -eq 0 ] || return 1
+  # build_lz4 "${ARCH}"
+  # [ $? -eq 0 ] || return 1
+  # build_ocserv "${ARCH}"
+  # [ $? -eq 0 ] || return 1
 }
 
 
